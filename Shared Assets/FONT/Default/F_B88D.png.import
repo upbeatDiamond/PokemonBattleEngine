@@ -1,0 +1,34 @@
+[remap]
+
+importer="texture"
+type="CompressedTexture2D"
+uid="uid://dv32a03h5kjyr"
+path="res://.godot/imported/F_B88D.png-6810f36891105137de94d54af7c4eb5e.ctex"
+metadata={
+"vram_texture": false
+}
+
+[deps]
+
+source_file="res://Shared Assets/FONT/Default/F_B88D.png"
+dest_files=["res://.godot/imported/F_B88D.png-6810f36891105137de94d54af7c4eb5e.ctex"]
+
+[params]
+
+compress/mode=0
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=false
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=1
