@@ -1,4 +1,4 @@
-public static class PBETypeEffectiveness
+class_name PBETypeEffectiveness
 
 #region Static Collections
 ## <summary>The type effectiveness table. The first key is the attacking type and the second key is the defending type.</summary>
@@ -44,11 +44,8 @@ var _table : Dictionary = {
 			{ PBEType.Rock, 1.0f },
 			{ PBEType.Steel, 0.5f },
 			{ PBEType.Water, 1.0f },
-		}
 		},
-		{
-			PBEType.Dark,
-			new Dictionary<PBEType, float>
+			PBEType.Dark:
 		{
 			{ PBEType.None, 1.0f },
 			{ PBEType.Bug, 1.0f },
@@ -68,11 +65,8 @@ var _table : Dictionary = {
 			{ PBEType.Rock, 1.0f },
 			{ PBEType.Steel, 0.5f },
 			{ PBEType.Water, 1.0f },
-		}
 		},
-		{
-			PBEType.Dragon,
-			new Dictionary<PBEType, float>
+			PBEType.Dragon:#new Dictionary<PBEType, float>
 		{
 			{ PBEType.None, 1.0f },
 			{ PBEType.Bug, 1.0f },
@@ -92,11 +86,8 @@ var _table : Dictionary = {
 			{ PBEType.Rock, 1.0f },
 			{ PBEType.Steel, 0.5f },
 			{ PBEType.Water, 1.0f },
-		}
 		},
-		{
-			PBEType.Electric,
-			new Dictionary<PBEType, float>
+			PBEType.Electric:#new Dictionary<PBEType, float>
 		{
 			{ PBEType.None, 1.0f },
 			{ PBEType.Bug, 1.0f },
@@ -116,11 +107,9 @@ var _table : Dictionary = {
 			{ PBEType.Rock, 1.0f },
 			{ PBEType.Steel, 1.0f },
 			{ PBEType.Water, 2.0f },
-		}
 		},
-		{
-			PBEType.Fighting,
-			new Dictionary<PBEType, float>
+			PBEType.Fighting:
+			#new Dictionary<PBEType, float>
 		{
 			{ PBEType.None, 1.0f },
 			{ PBEType.Bug, 0.5f },
@@ -433,113 +422,88 @@ var _table : Dictionary = {
 	};
 #endregion
 
-public static PBEResult IsAffectedByAttack(PBEBattlePokemon user, PBEBattlePokemon target, PBEType moveType, out float damageMultiplier, bool useKnownInfo = false)
-{
-	if (moveType >= PBEType.MAX)
-	{
+static func IsAffectedByAttack(user:PBEBattlePokemon, target:PBEBattlePokemon, moveType:PBEType, damageMultiplier:float, useKnownInfo:=false) -> PBEResult
+	if (moveType >= PBEType.MAX):
 		throw new ArgumentOutOfRangeException(nameof(moveType));
-	}
-
-	PBEResult result;
-	if (moveType == PBEType.Ground)
-	{
+	
+	var result : PBEResult
+	
+	if (moveType == PBEType.Ground):
 		result = target.IsGrounded(user, useKnownInfo: useKnownInfo);
-		if (result != PBEResult.Success)
-		{
+		if (result != PBEResult.Success):
 			damageMultiplier = 0;
 			return result;
-		}
-	}
+	
 	bool ignoreGhost = user.Ability == PBEAbility.Scrappy || target.Status2.HasFlag(PBEStatus2.Identified),
 			ignoreDark = target.Status2.HasFlag(PBEStatus2.MiracleEye);
 	damageMultiplier = GetEffectiveness(moveType, target, useKnownInfo, ignoreGhost: ignoreGhost, ignoreDark: ignoreDark);
-	if (damageMultiplier <= 0) # (-infinity, 0]
-	{
+	if (damageMultiplier <= 0): # (-infinity, 0]
 		damageMultiplier = 0;
 		return PBEResult.Ineffective_Type;
-	}
-	else if (damageMultiplier < 1) # (0, 1)
-	{
+	
+	elif (damageMultiplier < 1): # (0, 1)
 		result = PBEResult.NotVeryEffective_Type;
-	}
-	else if (damageMultiplier == 1) # [1, 1]
-	{
+	
+	elif (damageMultiplier == 1): # [1, 1]
 		result = PBEResult.Success;
-	}
-	else # (1, infinity)
-	{
+	
+	else: # (1, infinity)
 		return PBEResult.SuperEffective_Type;
-	}
-	PBEAbility kAbility = useKnownInfo ? target.KnownAbility : target.Ability;
-	if (kAbility == PBEAbility.WonderGuard && !user.HasCancellingAbility())
-	{
+	
+	var kAbility : PBEAbility = useKnownInfo ? target.KnownAbility : target.Ability;
+	if (kAbility == PBEAbility.WonderGuard && !user.HasCancellingAbility()):
 		damageMultiplier = 0;
 		result = PBEResult.Ineffective_Ability;
-	}
+	
 	return result;
-}
+
 ## <summary>Checks if <see cref="PBEMoveEffect.ThunderWave"/>'s type affects the target, taking into account <see cref="PBEAbility.Normalize"/>.</summary>
-public static PBEResult ThunderWaveTypeCheck(PBEBattlePokemon user, PBEBattlePokemon target, PBEMove move, bool useKnownInfo = false)
-{
+static func ThunderWaveTypeCheck(PBEBattlePokemon user, PBEBattlePokemon target, PBEMove move, bool useKnownInfo = false) -> PBEResult:
 	PBEType moveType = user.GetMoveType(move);
 	float d = GetEffectiveness(moveType, target, useKnownInfo);
-	if (d <= 0)
-	{
+	if (d <= 0):
 		return PBEResult.Ineffective_Type;
-	}
 	return PBEResult.Success;
-}
 
-public static float GetEffectiveness(PBEType attackingType, PBEType defendingType, bool ignoreGhost = false, bool ignoreDark = false)
-{
-	if (attackingType >= PBEType.MAX)
-	{
+
+static func GetEffectiveness(PBEType attackingType, PBEType defendingType, bool ignoreGhost = false, bool ignoreDark = false) -> float:
+	if (attackingType >= PBEType.MAX):
 		throw new ArgumentOutOfRangeException(nameof(attackingType));
-	}
-	if (defendingType >= PBEType.MAX)
-	{
+	if (defendingType >= PBEType.MAX):
 		throw new ArgumentOutOfRangeException(nameof(defendingType));
-	}
-
+	
 	float d = _table[attackingType][defendingType];
-	if (d <= 0 && ((ignoreGhost && defendingType == PBEType.Ghost) || (ignoreDark && defendingType == PBEType.Dark)))
-	{
+	if (d <= 0 && ((ignoreGhost && defendingType == PBEType.Ghost) || (ignoreDark && defendingType == PBEType.Dark))):
 		return 1;
-	}
 	return d;
-}
-public static float GetEffectiveness(PBEType attackingType, PBEType defendingType1, PBEType defendingType2, bool ignoreGhost = false, bool ignoreDark = false)
-{
+
+
+func static float GetEffectiveness(PBEType attackingType, PBEType defendingType1, PBEType defendingType2, bool ignoreGhost = false, bool ignoreDark = false):
 	float d = GetEffectiveness(attackingType, defendingType1, ignoreGhost: ignoreGhost, ignoreDark: ignoreDark);
 	d *= GetEffectiveness(attackingType, defendingType2, ignoreGhost: ignoreGhost, ignoreDark: ignoreDark);
 	return d;
-}
-public static float GetEffectiveness(PBEType attackingType, IPBEPokemonTypes defendingTypes, bool ignoreGhost = false, bool ignoreDark = false)
-{
+
+
+func static float GetEffectiveness(PBEType attackingType, IPBEPokemonTypes defendingTypes, bool ignoreGhost = false, bool ignoreDark = false):
 	return GetEffectiveness(attackingType, defendingTypes.Type1, defendingTypes.Type2, ignoreGhost: ignoreGhost, ignoreDark: ignoreDark);
-}
-public static float GetEffectiveness_Known(PBEType attackingType, IPBEPokemonKnownTypes defendingTypes, bool ignoreGhost = false, bool ignoreDark = false)
-{
+
+
+func static float GetEffectiveness_Known(PBEType attackingType, IPBEPokemonKnownTypes defendingTypes, bool ignoreGhost = false, bool ignoreDark = false):
 	return GetEffectiveness(attackingType, defendingTypes.KnownType1, defendingTypes.KnownType2, ignoreGhost: ignoreGhost, ignoreDark: ignoreDark);
-}
-public static float GetEffectiveness<T>(PBEType attackingType, T defendingTypes, bool useKnownInfo, bool ignoreGhost = false, bool ignoreDark = false)
-	where T : IPBEPokemonTypes, IPBEPokemonKnownTypes
-{
+
+
+func static float GetEffectiveness<T>(PBEType attackingType, T defendingTypes, useKnownInfo:bool, ignoreGhost := false, ignoreDark := false):
+	#where T : IPBEPokemonTypes, IPBEPokemonKnownTypes
 	return GetEffectiveness(attackingType, useKnownInfo ? defendingTypes.KnownType1 : defendingTypes.Type1, useKnownInfo ? defendingTypes.KnownType2 : defendingTypes.Type2, ignoreGhost: ignoreGhost, ignoreDark: ignoreDark);
-}
-public static float GetStealthRockMultiplier(PBEType type1, PBEType type2)
-{
-	if (type1 >= PBEType.MAX)
-	{
+
+
+func static float GetStealthRockMultiplier(PBEType type1, PBEType type2):
+	if (type1 >= PBEType.MAX):
 		throw new ArgumentOutOfRangeException(nameof(type1));
-	}
-	if (type2 >= PBEType.MAX)
-	{
+	if (type2 >= PBEType.MAX):
 		throw new ArgumentOutOfRangeException(nameof(type2));
-	}
+	
 	float d = 0.125f;
 	d *= _table[PBEType.Rock][type1];
 	d *= _table[PBEType.Rock][type2];
 	return d;
-}
-}

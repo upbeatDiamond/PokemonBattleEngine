@@ -1,6 +1,7 @@
+class_name PBEBattleEnums
+
 ## <summary>Represents the battle's terrain.</summary>
-public enum PBEBattleTerrain : byte
-{
+enum PBEBattleTerrain {
 	Cave, # Rock, RockSlide, RockThrow
 	Grass, # Grass, SeedBomb, NeedleArm
 	## <summary>Used for bridges, buildings, and link battles.</summary>
@@ -9,11 +10,11 @@ public enum PBEBattleTerrain : byte
 	Sand, # Ground, Earthquake, MudSlap
 	Snow, # Ice, Blizzard, Avalanche
 	Water, # Water, HydroPump, WaterPulse
-	MAX
+	MAX,
 }
+
 ## <summary>Represents the format of a specific battle.</summary>
-public enum PBEBattleFormat : byte
-{
+enum PBEBattleFormat{
 	## <summary>A 1v1 battle. Each Pokémon is able to use moves or switch out for another Pokémon.</summary>
 	Single,
 	## <summary>A 2v2 battle where all Pokémon are able to use moves or switch out for another Pokémon.</summary>
@@ -26,14 +27,15 @@ public enum PBEBattleFormat : byte
 	## <summary>Invalid battle format.</summary>
 	MAX
 }
-public enum PBEBattleType : byte
-{
+
+
+enum PBEBattleType {
 	Trainer,
 	Wild
 }
+
 ## <summary>Represents the current state of a specific battle.</summary>
-public enum PBEBattleState : byte
-{
+enum PBEBattleState {
 	## <summary>The battle is waiting for teams.</summary>
 	WaitingForPlayers,
 	## <summary>The battle is ready to begin.</summary>
@@ -51,9 +53,9 @@ public enum PBEBattleState : byte
 	## <summary>The battle ended.</summary>
 	Ended
 }
+
 ## <summary>Represents the result of an ended battle.</summary>
-public enum PBEBattleResult : byte
-{
+enum PBEBattleResult{
 	## <summary>Team 0 forfeited.</summary>
 	Team0Forfeit,
 	## <summary>Team 0 defeated Team 1.</summary>
@@ -69,9 +71,9 @@ public enum PBEBattleResult : byte
 	## <summary>A wild Pokémon escaped from the trainer(s).</summary>
 	WildFlee
 }
+
 ## <summary>Represents the weather in a specific battle.</summary>
-public enum PBEWeather : byte
-{
+enum PBEWeather{
 	## <summary>There is no weather.</summary>
 	None,
 	## <summary>It is hailing.</summary>
@@ -84,9 +86,9 @@ public enum PBEWeather : byte
 	Sandstorm,
 	MAX
 }
+
 ## <summary>Represents a position on the battle field.</summary>
-public enum PBEFieldPosition : byte
-{
+enum PBEFieldPosition {
 	## <summary>A Pokémon is not on the field.</summary>
 	None,
 	## <summary>The Pokémon to a player's left in a Double, Triple, or Rotation battle.</summary>
@@ -97,10 +99,10 @@ public enum PBEFieldPosition : byte
 	Right,
 	MAX
 }
+
 ## <summary>Represents a <see cref="PBEMove"/>'s targets.</summary>
-[Flags]
-public enum PBETurnTarget : byte
-{
+##[flags]
+enum PBETurnTarget {
 	## <summary>The Pokémon has not chosen any targets.</summary>
 	None,
 	## <summary>The move is targetting the player's left Pokémon.</summary>
@@ -117,7 +119,7 @@ public enum PBETurnTarget : byte
 	FoeRight = 1 << 5
 }
 ## <summary>Represents a Pokémon's decision for a turn.</summary>
-public enum PBETurnDecision : byte
+enum PBETurnDecision 
 {
 	## <summary>The Pokémon has not made a decision.</summary>
 	None,
@@ -131,7 +133,7 @@ public enum PBETurnDecision : byte
 	WildFlee
 }
 ## <summary>Represents a specific Pokémon's non-volatile status.</summary>
-public enum PBEStatus1 : byte
+enum PBEStatus1 
 {
 	## <summary>The Pokémon has no status.</summary>
 	None,
@@ -150,9 +152,8 @@ public enum PBEStatus1 : byte
 	MAX
 }
 ## <summary>Represents a specific Pokémon's volatile status.</summary>
-[Flags]
-public enum PBEStatus2 : uint
-{
+#[flags]
+enum PBEStatus2 {
 	## <summary>The Pokémon has no status.</summary>
 	None,
 	## <summary>The Pokémon is high up in the air. A move will miss against the Pokémon unless it has <see cref="PBEMoveFlag.HitsAirborne"/> or either Pokémon has <see cref="PBEAbility.NoGuard"/>.</summary>
@@ -194,8 +195,8 @@ public enum PBEStatus2 : uint
 	Underwater = 1 << 21
 }
 ## <summary>Keeps track of which types <see cref="PBEStatus2.Roost"/> changes to/from <see cref="PBEType.Flying"/>.</summary>
-[Flags]
-public enum PBERoostTypes : byte
+#[flags]
+enum PBERoostTypes 
 {
 	None,
 	KnownType1 = 1 << 0,
@@ -204,8 +205,8 @@ public enum PBERoostTypes : byte
 	Type2 = 1 << 3
 }
 ## <summary>Represents a specific <see cref="PBEBattle"/>'s status.</summary>
-[Flags]
-public enum PBEBattleStatus : byte
+#[flags]
+enum PBEBattleStatus 
 {
 	## <summary>The battle has no status.</summary>
 	None,
@@ -213,9 +214,8 @@ public enum PBEBattleStatus : byte
 	TrickRoom = 1 << 0 # TODO: Full Incense, Lagging Tail, Stall, Quick Claw
 }
 ## <summary>Represents a specific <see cref="PBETeam"/>'s status.</summary>
-[Flags]
-public enum PBETeamStatus : ushort
-{
+#[flags]
+enum PBETeamStatus {
 	## <summary>The team has no status.</summary>
 	None,
 	## <summary>The team will take less damage from <see cref="PBEMoveCategory.Special"/> moves.</summary>
@@ -237,8 +237,9 @@ public enum PBETeamStatus : ushort
 	## <summary>The team is protected from spread moves for a turn.</summary>
 	WideGuard = 1 << 9
 }
+
 ## <summary>Represents an action regarding a <see cref="PBEAbility"/>.</summary>
-public enum PBEAbilityAction : byte
+enum PBEAbilityAction 
 {
 	## <summary>The ability is first announced.</summary>
 	Announced = 0,
@@ -260,7 +261,7 @@ public enum PBEAbilityAction : byte
 	Weather = 8
 }
 ## <summary>Represents an action regarding a <see cref="PBEItem"/>.</summary>
-public enum PBEItemAction : byte
+enum PBEItemAction 
 {
 	## <summary>The item initiated its main effect.</summary>
 	Announced = 0,
@@ -271,14 +272,14 @@ public enum PBEItemAction : byte
 	## <summary>The item restored HP to a Pokémon.</summary>
 	RestoredHP = 3
 }
-public enum PBEItemTurnAction : byte
+enum PBEItemTurnAction 
 {
 	NoEffect = 0,
 	Attempt = 1,
 	Success = 2
 }
 ## <summary>Represents an action regarding a <see cref="PBEStatus1"/> or <see cref="PBEStatus2"/>.</summary>
-public enum PBEStatusAction : byte
+enum PBEStatusAction 
 {
 	## <summary>The status was added to a Pokémon.</summary>
 	## <example>The Pokémon became <see cref="PBEStatus1.Paralyzed"/>.</example>
@@ -299,14 +300,14 @@ public enum PBEStatusAction : byte
 	## <example>A Pokémon with <see cref="PBEStatus2.Confused"/> regained its senses.</example>
 	Ended = 5
 }
-public enum PBEBattleStatusAction : byte
+enum PBEBattleStatusAction 
 {
 	Added = 0,
 	Cleared = 1,
 	Ended = 2
 }
 ## <summary>Represents an action regarding a <see cref="PBETeamStatus"/>.</summary>
-public enum PBETeamStatusAction : byte
+enum PBETeamStatusAction 
 {
 	## <summary>The status was added to a team.</summary>
 	## <example>A team set up <see cref="PBETeamStatus.LightScreen"/>.</example>
@@ -319,7 +320,7 @@ public enum PBETeamStatusAction : byte
 	Ended = 2
 }
 ## <summary>Represents the result of an intention.</summary>
-public enum PBEResult : byte
+enum PBEResult 
 {
 	## <summary>No failure.</summary>
 	Success = 0,
@@ -353,14 +354,14 @@ public enum PBEResult : byte
 	SuperEffective_Type = 14
 }
 ## <summary>Represents an action regarding a <see cref="PBEWeather"/>.</summary>
-public enum PBEWeatherAction : byte
+enum PBEWeatherAction 
 {
 	## <summary>The weather was added to the battle.</summary>
 	Added = 0,
 	## <summary>The weather was removed from the battle.</summary>
 	Ended = 1
 }
-public enum PBESpecialMessage : byte
+enum PBESpecialMessage 
 {
 	DraggedOut = 0,
 	Endure = 1,
@@ -374,7 +375,7 @@ public enum PBESpecialMessage : byte
 	Recoil = 9,
 	Struggle = 10
 }
-public enum PBEMoveLockType : byte
+enum PBEMoveLockType 
 {
 	ChoiceItem = 0,
 	Temporary = 1
