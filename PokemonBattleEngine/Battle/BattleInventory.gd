@@ -1,12 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Packets;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
 public sealed class PBEBattleInventory : IReadOnlyDictionary<PBEItem, PBEBattleInventory.PBEBattleInventorySlot>
 {
 	public sealed class PBEBattleInventorySlot

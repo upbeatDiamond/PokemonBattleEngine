@@ -1,13 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Data.Legality;
-using Kermalis.PokemonBattleEngine.Utils;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
 public abstract class PBETrainerInfoBase
 {
 	public ReadOnlyCollection<IPBEPokemon> Party { get; }

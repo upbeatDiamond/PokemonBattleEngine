@@ -1,19 +1,9 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Data.Utils;
-using Kermalis.PokemonBattleEngine.Utils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
 public sealed partial class PBEBattle
 {
-	/// <summary>Gets the position across from the inputted position for a specific battle format.</summary>
-	/// <param name="battleFormat">The battle format.</param>
-	/// <param name="position">The position.</param>
-	/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="battleFormat"/> is invalid or <paramref name="position"/> is invalid for <paramref name="battleFormat"/>.</exception>
+	## <summary>Gets the position across from the inputted position for a specific battle format.</summary>
+	## <param name="battleFormat">The battle format.</param>
+	## <param name="position">The position.</param>
+	## <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="battleFormat"/> is invalid or <paramref name="position"/> is invalid for <paramref name="battleFormat"/>.</exception>
 	public static PBEFieldPosition GetPositionAcross(PBEBattleFormat battleFormat, PBEFieldPosition position)
 	{
 		switch (battleFormat)
@@ -68,11 +58,11 @@ public sealed partial class PBEBattle
 		}
 	}
 
-	/// <summary>Gets the Pokémon surrounding <paramref name="pkmn"/>.</summary>
-	/// <param name="pkmn">The Pokémon to check.</param>
-	/// <param name="includeAllies">True if allies should be included, False otherwise.</param>
-	/// <param name="includeFoes">True if foes should be included, False otherwise.</param>
-	/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="pkmn"/>'s <see cref="PBEBattle"/>'s <see cref="BattleFormat"/> is invalid or <paramref name="pkmn"/>'s <see cref="PBEBattlePokemon.FieldPosition"/> is invalid for <paramref name="pkmn"/>'s <see cref="PBEBattle"/>'s <see cref="BattleFormat"/>.</exception>
+	## <summary>Gets the Pokémon surrounding <paramref name="pkmn"/>.</summary>
+	## <param name="pkmn">The Pokémon to check.</param>
+	## <param name="includeAllies">True if allies should be included, False otherwise.</param>
+	## <param name="includeFoes">True if foes should be included, False otherwise.</param>
+	## <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="pkmn"/>'s <see cref="PBEBattle"/>'s <see cref="BattleFormat"/> is invalid or <paramref name="pkmn"/>'s <see cref="PBEBattlePokemon.FieldPosition"/> is invalid for <paramref name="pkmn"/>'s <see cref="PBEBattle"/>'s <see cref="BattleFormat"/>.</exception>
 	public static IReadOnlyList<PBEBattlePokemon> GetRuntimeSurrounding(PBEBattlePokemon pkmn, bool includeAllies, bool includeFoes)
 	{
 		if (!includeAllies && !includeFoes)
@@ -237,14 +227,14 @@ public sealed partial class PBEBattle
 		PBETeam ot = user.Team.OpposingTeam;
 		if (!ot.TryGetPokemon(PBEFieldPosition.Left, out PBEBattlePokemon? pkmn))
 		{
-			// Left not found; fallback to its teammate
+			# Left not found; fallback to its teammate
 			switch (user.Battle.BattleFormat)
 			{
 				case PBEBattleFormat.Double:
 				{
 					if (!ot.TryGetPokemon(PBEFieldPosition.Right, out pkmn))
 					{
-						return; // Nobody left and nobody right; fail
+						return; # Nobody left and nobody right; fail
 					}
 					break;
 				}
@@ -254,15 +244,15 @@ public sealed partial class PBEBattle
 					{
 						if (user.FieldPosition != PBEFieldPosition.Right || canHitFarCorners)
 						{
-							// Center fainted as well but the user can reach far right
+							# Center fainted as well but the user can reach far right
 							if (!ot.TryGetPokemon(PBEFieldPosition.Right, out pkmn))
 							{
-								return; // Nobody left, center, or right; fail
+								return; # Nobody left, center, or right; fail
 							}
 						}
 						else
 						{
-							return; // Nobody left and nobody center; fail since we can't reach the right
+							return; # Nobody left and nobody center; fail since we can't reach the right
 						}
 					}
 					break;
@@ -284,7 +274,7 @@ public sealed partial class PBEBattle
 				default: throw new InvalidOperationException();
 				case PBEBattleFormat.Triple:
 				{
-					// Center not found; fallback to its teammate
+					# Center not found; fallback to its teammate
 					switch (user.FieldPosition)
 					{
 						case PBEFieldPosition.Left:
@@ -295,12 +285,12 @@ public sealed partial class PBEBattle
 								{
 									if (!ot.TryGetPokemon(PBEFieldPosition.Left, out pkmn))
 									{
-										return; // Nobody center, right, or left; fail
+										return; # Nobody center, right, or left; fail
 									}
 								}
 								else
 								{
-									return; // Nobody center and nobody right; fail since we can't reach the left
+									return; # Nobody center and nobody right; fail since we can't reach the left
 								}
 							}
 							break;
@@ -311,19 +301,19 @@ public sealed partial class PBEBattle
 							{
 								if (!ot.TryGetPokemon(PBEFieldPosition.Right, out PBEBattlePokemon? right))
 								{
-									return; // Nobody left or right; fail
+									return; # Nobody left or right; fail
 								}
-								pkmn = right; // Nobody left; pick right
+								pkmn = right; # Nobody left; pick right
 							}
 							else
 							{
 								if (!ot.TryGetPokemon(PBEFieldPosition.Right, out PBEBattlePokemon? right))
 								{
-									pkmn = left; // Nobody right; pick left
+									pkmn = left; # Nobody right; pick left
 								}
 								else
 								{
-									pkmn = rand.RandomBool() ? left : right; // Left and right present; randomly select left or right
+									pkmn = rand.RandomBool() ? left : right; # Left and right present; randomly select left or right
 								}
 							}
 							break;
@@ -336,12 +326,12 @@ public sealed partial class PBEBattle
 								{
 									if (!ot.TryGetPokemon(PBEFieldPosition.Right, out pkmn))
 									{
-										return; // Nobody center, left, or right; fail
+										return; # Nobody center, left, or right; fail
 									}
 								}
 								else
 								{
-									return; // Nobody center and nobody left; fail since we can't reach the right
+									return; # Nobody center and nobody left; fail since we can't reach the right
 								}
 							}
 							break;
@@ -359,14 +349,14 @@ public sealed partial class PBEBattle
 		PBETeam ot = user.Team.OpposingTeam;
 		if (!ot.TryGetPokemon(PBEFieldPosition.Right, out PBEBattlePokemon? pkmn))
 		{
-			// Right not found; fallback to its teammate
+			# Right not found; fallback to its teammate
 			switch (user.Battle.BattleFormat)
 			{
 				case PBEBattleFormat.Double:
 				{
 					if (!ot.TryGetPokemon(PBEFieldPosition.Left, out pkmn))
 					{
-						return; // Nobody right and nobody left; fail
+						return; # Nobody right and nobody left; fail
 					}
 					break;
 				}
@@ -376,15 +366,15 @@ public sealed partial class PBEBattle
 					{
 						if (user.FieldPosition != PBEFieldPosition.Left || canHitFarCorners)
 						{
-							// Center fainted as well but the user can reach far left
+							# Center fainted as well but the user can reach far left
 							if (!ot.TryGetPokemon(PBEFieldPosition.Left, out pkmn))
 							{
-								return; // Nobody right, center, or left; fail
+								return; # Nobody right, center, or left; fail
 							}
 						}
 						else
 						{
-							return; // Nobody right and nobody center; fail since we can't reach the left
+							return; # Nobody right and nobody center; fail since we can't reach the left
 						}
 					}
 					break;
@@ -394,15 +384,15 @@ public sealed partial class PBEBattle
 		}
 		targets.Add(pkmn);
 	}
-	/// <summary>Gets all Pokémon that will be hit.</summary>
-	/// <param name="user">The Pokémon that will act.</param>
-	/// <param name="requestedTargets">The targets the Pokémon wishes to hit.</param>
-	/// <param name="canHitFarCorners">Whether the move can hit far Pokémon in a triple battle.</param>
-	/// <param name="rand">The random to use.</param>
+	## <summary>Gets all Pokémon that will be hit.</summary>
+	## <param name="user">The Pokémon that will act.</param>
+	## <param name="requestedTargets">The targets the Pokémon wishes to hit.</param>
+	## <param name="canHitFarCorners">Whether the move can hit far Pokémon in a triple battle.</param>
+	## <param name="rand">The random to use.</param>
 	private static PBEBattlePokemon[] GetRuntimeTargets(PBEBattlePokemon user, PBETurnTarget requestedTargets, bool canHitFarCorners, PBERandom rand)
 	{
 		var targets = new List<PBEBattlePokemon>();
-		// Foes first, then allies (since initial attack effects run that way)
+		# Foes first, then allies (since initial attack effects run that way)
 		if (requestedTargets.HasFlag(PBETurnTarget.FoeLeft))
 		{
 			FindFoeLeftTarget(user, canHitFarCorners, targets);
@@ -428,14 +418,14 @@ public sealed partial class PBEBattle
 		{
 			t.TryAddPokemonToCollection(PBEFieldPosition.Right, targets);
 		}
-		return targets.Distinct().ToArray(); // Remove duplicate targets
+		return targets.Distinct().ToArray(); # Remove duplicate targets
 	}
 
-	/// <summary>Determines whether chosen targets are valid for a given move.</summary>
-	/// <param name="pkmn">The Pokémon that will act.</param>
-	/// <param name="move">The move the Pokémon wishes to use.</param>
-	/// <param name="targets">The targets bitfield to validate.</param>
-	/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="targets"/>, <paramref name="move"/>, <paramref name="pkmn"/>'s <see cref="PBEBattlePokemon.FieldPosition"/>, or <paramref name="pkmn"/>'s <see cref="PBEBattle"/>'s <see cref="BattleFormat"/> is invalid.</exception>
+	## <summary>Determines whether chosen targets are valid for a given move.</summary>
+	## <param name="pkmn">The Pokémon that will act.</param>
+	## <param name="move">The move the Pokémon wishes to use.</param>
+	## <param name="targets">The targets bitfield to validate.</param>
+	## <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="targets"/>, <paramref name="move"/>, <paramref name="pkmn"/>'s <see cref="PBEBattlePokemon.FieldPosition"/>, or <paramref name="pkmn"/>'s <see cref="PBEBattle"/>'s <see cref="BattleFormat"/> is invalid.</exception>
 	public static bool AreTargetsValid(PBEBattlePokemon pkmn, PBEMove move, PBETurnTarget targets)
 	{
 		if (move == PBEMove.None || move >= PBEMove.MAX)
@@ -870,11 +860,11 @@ public sealed partial class PBEBattle
 		}
 	}
 
-	/// <summary>Gets a random target a move can hit when called by <see cref="PBEMoveEffect.Metronome"/>.</summary>
-	/// <param name="pkmn">The Pokémon using <paramref name="calledMove"/>.</param>
-	/// <param name="calledMove">The move being called.</param>
-	/// <param name="rand">The random to use.</param>
-	/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="calledMove"/>, <paramref name="pkmn"/>'s <see cref="PBEBattlePokemon.FieldPosition"/>, or <paramref name="pkmn"/>'s <see cref="PBEBattle"/>'s <see cref="BattleFormat"/> is invalid.</exception>
+	## <summary>Gets a random target a move can hit when called by <see cref="PBEMoveEffect.Metronome"/>.</summary>
+	## <param name="pkmn">The Pokémon using <paramref name="calledMove"/>.</param>
+	## <param name="calledMove">The move being called.</param>
+	## <param name="rand">The random to use.</param>
+	## <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="calledMove"/>, <paramref name="pkmn"/>'s <see cref="PBEBattlePokemon.FieldPosition"/>, or <paramref name="pkmn"/>'s <see cref="PBEBattle"/>'s <see cref="BattleFormat"/> is invalid.</exception>
 	public static PBETurnTarget GetRandomTargetForMetronome(PBEBattlePokemon pkmn, PBEMove calledMove, PBERandom rand)
 	{
 		if (calledMove == PBEMove.None || calledMove >= PBEMove.MAX || !PBEDataUtils.IsMoveUsable(calledMove))
@@ -924,7 +914,7 @@ public sealed partial class PBEBattle
 					case PBEMoveTarget.AllTeam:
 					case PBEMoveTarget.Self:
 					case PBEMoveTarget.SelfOrAllySurrounding:
-					case PBEMoveTarget.SingleAllySurrounding: // Helping Hand cannot be called by Metronome anyway
+					case PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Center)
 						{
@@ -1024,7 +1014,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleAllySurrounding: // Helping Hand cannot be called by Metronome anyway
+					case PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -1202,7 +1192,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleAllySurrounding: // Helping Hand cannot be called by Metronome anyway
+					case PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -1336,7 +1326,7 @@ public sealed partial class PBEBattle
 					case PBEMoveTarget.AllTeam:
 					case PBEMoveTarget.Self:
 					case PBEMoveTarget.SelfOrAllySurrounding:
-					case PBEMoveTarget.SingleAllySurrounding: // Helping Hand cannot be called by Metronome anyway
+					case PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{

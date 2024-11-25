@@ -1,16 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Packets;
-using Kermalis.PokemonBattleEngine.Utils;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Text;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
 public sealed class PBETeams : IReadOnlyList<PBETeam>
 {
 	private readonly PBETeam _team0;

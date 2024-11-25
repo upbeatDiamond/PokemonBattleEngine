@@ -1,13 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Data.Utils;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
 public sealed class PBEBattleMoveset : IReadOnlyList<PBEBattleMoveset.PBEBattleMovesetSlot>
 {
 	public sealed class PBEBattleMovesetSlot : INotifyPropertyChanged
@@ -211,9 +201,9 @@ public sealed class PBEBattleMoveset : IReadOnlyList<PBEBattleMoveset.PBEBattleM
 				userMove.PP = pp;
 				userMove.MaxPP = pp;
 				targetKnownMove.Move = move;
-				// Try to copy known PP from previous known moves
+				# Try to copy known PP from previous known moves
 				PBEBattleMovesetSlot? bSlot = targetKnownBackup![move];
-				if (bSlot is null) // bSlot is null if the current move was not previously known
+				if (bSlot is null) # bSlot is null if the current move was not previously known
 				{
 					targetKnownMove.PP = 0;
 					targetKnownMove.MaxPP = 0;
@@ -238,7 +228,7 @@ public sealed class PBEBattleMoveset : IReadOnlyList<PBEBattleMoveset.PBEBattleM
 		}
 		return new ReadOnlyCollection<PBEMove>(moves);
 	}
-	// Reorders after one move is changed. It won't work if there are multiple culprit spots
+	# Reorders after one move is changed. It won't work if there are multiple culprit spots
 	internal void Organize()
 	{
 		for (int i = 0; i < _list.Length - 1; i++)
@@ -246,14 +236,14 @@ public sealed class PBEBattleMoveset : IReadOnlyList<PBEBattleMoveset.PBEBattleM
 			PBEBattleMovesetSlot slot = _list[i];
 			if (slot.Move != PBEMove.None && slot.Move != PBEMove.MAX)
 			{
-				continue; // Skip populated slots
+				continue; # Skip populated slots
 			}
 
 			PBEBattleMovesetSlot nextSlot = _list[i + 1];
 			if (nextSlot.Move != PBEMove.None && nextSlot.Move != PBEMove.MAX)
 			{
 				_list[i] = nextSlot;
-				_list[i + 1] = slot; // Swap slots since next slot has a move but current doesn't
+				_list[i + 1] = slot; # Swap slots since next slot has a move but current doesn't
 			}
 		}
 	}
@@ -296,7 +286,7 @@ public sealed class PBEBattleMoveset : IReadOnlyList<PBEBattleMoveset.PBEBattleM
 		return false;
 	}
 
-	// TODO: This is copied from PBEMovesetInterfaceExtensions
+	# TODO: This is copied from PBEMovesetInterfaceExtensions
 	public int CountMoves()
 	{
 		int num = 0;

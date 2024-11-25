@@ -1,14 +1,8 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
-using System;
-using System.Linq;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
 public sealed partial class PBEBattle
 {
-	/// <summary>Gets the influence a stat change has on a stat.</summary>
-	/// <param name="change">The stat change.</param>
-	/// <param name="forMissing">True if the stat is <see cref="PBEStat.Accuracy"/> or <see cref="PBEStat.Evasion"/>.</param>
+	## <summary>Gets the influence a stat change has on a stat.</summary>
+	## <param name="change">The stat change.</param>
+	## <param name="forMissing">True if the stat is <see cref="PBEStat.Accuracy"/> or <see cref="PBEStat.Evasion"/>.</param>
 	public static float GetStatChangeModifier(sbyte change, bool forMissing)
 	{
 		float baseVal = forMissing ? 3 : 2;
@@ -17,7 +11,7 @@ public sealed partial class PBEBattle
 		return numerator / denominator;
 	}
 
-	// Verified: Sturdy and Substitute only activate on damaging attacks (so draining HP or liquid ooze etc can bypass sturdy)
+	# Verified: Sturdy and Substitute only activate on damaging attacks (so draining HP or liquid ooze etc can bypass sturdy)
 	private ushort DealDamage(PBEBattlePokemon culprit, PBEBattlePokemon victim, int hp, bool ignoreSubstitute = true, bool ignoreSturdy = true)
 	{
 		if (hp < 1)
@@ -38,7 +32,7 @@ public sealed partial class PBEBattle
 		bool sturdyHappened = false, focusBandHappened = false, focusSashHappened = false;
 		if (!ignoreSturdy && victim.HP == 0)
 		{
-			// TODO: Endure
+			# TODO: Endure
 			if (oldHP == victim.MaxHP && victim.Ability == PBEAbility.Sturdy && !culprit.HasCancellingAbility())
 			{
 				sturdyHappened = true;
@@ -72,10 +66,10 @@ public sealed partial class PBEBattle
 		}
 		return (ushort)(oldHP - victim.HP);
 	}
-	/// <summary>Restores HP to <paramref name="pkmn"/> and broadcasts the HP changing if it changes.</summary>
-	/// <param name="pkmn">The Pokémon receiving the HP.</param>
-	/// <param name="hp">The amount of HP <paramref name="pkmn"/> will try to gain.</param>
-	/// <returns>The amount of HP restored.</returns>
+	## <summary>Restores HP to <paramref name="pkmn"/> and broadcasts the HP changing if it changes.</summary>
+	## <param name="pkmn">The Pokémon receiving the HP.</param>
+	## <param name="hp">The amount of HP <paramref name="pkmn"/> will try to gain.</param>
+	## <returns>The amount of HP restored.</returns>
 	private ushort HealDamage(PBEBattlePokemon pkmn, int hp)
 	{
 		if (hp < 1)
@@ -84,7 +78,7 @@ public sealed partial class PBEBattle
 		}
 		ushort oldHP = pkmn.HP;
 		float oldPercentage = pkmn.HPPercentage;
-		pkmn.HP = (ushort)Math.Min(pkmn.MaxHP, pkmn.HP + hp); // Always try to heal at least 1 HP
+		pkmn.HP = (ushort)Math.Min(pkmn.MaxHP, pkmn.HP + hp); # Always try to heal at least 1 HP
 		ushort healAmt = (ushort)(pkmn.HP - oldHP);
 		if (healAmt > 0)
 		{
@@ -207,37 +201,37 @@ public sealed partial class PBEBattle
 			{
 				int val = _rand.RandomInt(0, 99);
 				byte magnitude;
-				if (val < 5) // Magnitude 4 - 5%
+				if (val < 5) # Magnitude 4 - 5%
 				{
 					magnitude = 4;
 					basePower = 10;
 				}
-				else if (val < 15) // Magnitude 5 - 10%
+				else if (val < 15) # Magnitude 5 - 10%
 				{
 					magnitude = 5;
 					basePower = 30;
 				}
-				else if (val < 35) // Magnitude 6 - 20%
+				else if (val < 35) # Magnitude 6 - 20%
 				{
 					magnitude = 6;
 					basePower = 50;
 				}
-				else if (val < 65) // Magnitude 7 - 30%
+				else if (val < 65) # Magnitude 7 - 30%
 				{
 					magnitude = 7;
 					basePower = 70;
 				}
-				else if (val < 85) // Magnitude 8 - 20%
+				else if (val < 85) # Magnitude 8 - 20%
 				{
 					magnitude = 8;
 					basePower = 90;
 				}
-				else if (val < 95) // Magnitude 9 - 10%
+				else if (val < 95) # Magnitude 9 - 10%
 				{
 					magnitude = 9;
 					basePower = 110;
 				}
-				else // Magnitude 10 - 5%
+				else # Magnitude 10 - 5%
 				{
 					magnitude = 10;
 					basePower = 150;
@@ -268,7 +262,7 @@ public sealed partial class PBEBattle
 		}
 		#endregion
 
-		// Technician goes before any other power boosts
+		# Technician goes before any other power boosts
 		if (user.Ability == PBEAbility.Technician && basePower <= 60)
 		{
 			basePower *= 1.5f;
@@ -1093,7 +1087,7 @@ public sealed partial class PBEBattle
 	}
 	private int CalculateConfusionDamage(PBEBattlePokemon pkmn)
 	{
-		// Verified: Unaware has no effect on confusion damage
+		# Verified: Unaware has no effect on confusion damage
 		float m = GetStatChangeModifier(pkmn.AttackChange, false);
 		float a = CalculateAttack(pkmn, pkmn, PBEType.None, pkmn.Attack * m);
 		m = GetStatChangeModifier(pkmn.DefenseChange, false);

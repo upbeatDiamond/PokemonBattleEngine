@@ -1,13 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Data.Utils;
-using Kermalis.PokemonBattleEngine.Packets;
-using Kermalis.PokemonBattleEngine.Utils;
-using System;
-using System.IO;
-using System.Linq;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
 public sealed partial class PBEBattle
 {
 	public delegate void BattleEvent(PBEBattle battle, IPBEPacket packet);
@@ -27,7 +17,7 @@ public sealed partial class PBEBattle
 	}
 	private void BroadcastAbilityReplaced(PBEBattlePokemon abilityOwner, PBEAbility newAbility)
 	{
-		PBEAbility? oldAbility = newAbility == PBEAbility.None ? null : abilityOwner.Ability; // Gastro Acid does not reveal previous ability
+		PBEAbility? oldAbility = newAbility == PBEAbility.None ? null : abilityOwner.Ability; # Gastro Acid does not reveal previous ability
 		abilityOwner.Ability = newAbility;
 		abilityOwner.KnownAbility = newAbility;
 		Broadcast(new PBEAbilityReplacedPacket(abilityOwner, oldAbility, newAbility));
@@ -110,7 +100,7 @@ public sealed partial class PBEBattle
 		bool owned;
 		if (!_calledFromOtherMove && moveUser.Moves.Contains(move))
 		{
-			// Check if this move is known first. If you check for PBEMove.MAX then you will get multiple results
+			# Check if this move is known first. If you check for PBEMove.MAX then you will get multiple results
 			if (!moveUser.KnownMoves.Contains(move))
 			{
 				moveUser.KnownMoves[PBEMove.MAX]!.Move = move;
@@ -146,8 +136,8 @@ public sealed partial class PBEBattle
 			pokemon.RevertForm = newForm;
 			pokemon.RevertAbility = newAbility;
 		}
-		// This calcs all stats and then adds/removes HP based on the new MaxHP. So if the new MaxHP was 5 more than old, the mon would gain 5 HP.
-		// This is the same logic a level-up and evolution would use when HP changes.
+		# This calcs all stats and then adds/removes HP based on the new MaxHP. So if the new MaxHP was 5 more than old, the mon would gain 5 HP.
+		# This is the same logic a level-up and evolution would use when HP changes.
 		pokemon.SetStats(true, false);
 		IPBEPokemonData pData = PBEDataProvider.Instance.GetPokemonData(pokemon.Species, newForm);
 		PBEType type1 = pData.Type1;
@@ -156,11 +146,11 @@ public sealed partial class PBEBattle
 		PBEType type2 = pData.Type2;
 		pokemon.Type2 = type2;
 		pokemon.KnownType2 = type2;
-		float weight = pData.Weight; // TODO: Is weight updated here? Bulbapedia claims in Autotomize's page that it is not
+		float weight = pData.Weight; # TODO: Is weight updated here? Bulbapedia claims in Autotomize's page that it is not
 		pokemon.Weight = weight;
 		pokemon.KnownWeight = weight;
 		Broadcast(new PBEPkmnFormChangedPacket(pokemon, isRevertForm));
-		// BUG: PBEStatus2.PowerTrick is not cleared when changing form (meaning it can still be baton passed)
+		# BUG: PBEStatus2.PowerTrick is not cleared when changing form (meaning it can still be baton passed)
 		if (Settings.BugFix && pokemon.Status2.HasFlag(PBEStatus2.PowerTrick))
 		{
 			BroadcastStatus2(pokemon, pokemon, PBEStatus2.PowerTrick, PBEStatusAction.Ended);
@@ -335,7 +325,7 @@ public sealed partial class PBEBattle
 	public static string? GetDefaultMessage(PBEBattle battle, IPBEPacket packet, bool showRawHP = false, PBETrainer? userTrainer = null,
 		Func<PBEBattlePokemon, bool, string>? pkmnNameFunc = null, Func<PBETrainer, string>? trainerNameFunc = null, Func<PBETeam, bool, string>? teamNameFunc = null)
 	{
-		// This is not used by switching in or out or wild Pokémon appearing; those always use the known nickname
+		# This is not used by switching in or out or wild Pokémon appearing; those always use the known nickname
 		string GetPkmnName(PBEBattlePokemon pkmn, bool firstLetterCapitalized)
 		{
 			if (pkmnNameFunc is not null)
@@ -347,7 +337,7 @@ public sealed partial class PBEBattle
 				string wildPrefix = firstLetterCapitalized ? "The wild " : "the wild ";
 				return wildPrefix + pkmn.KnownNickname;
 			}
-			// Replay/spectator always see prefix, but if you're battling a multi-battle, your Pokémon should still have no prefix
+			# Replay/spectator always see prefix, but if you're battling a multi-battle, your Pokémon should still have no prefix
 			if (userTrainer is null || (pkmn.Trainer != userTrainer && pkmn.Team.Trainers.Count > 1))
 			{
 				return $"{GetTrainerName(pkmn.Trainer)}'s {pkmn.KnownNickname}";
@@ -374,7 +364,7 @@ public sealed partial class PBEBattle
 			}
 			return team.CombinedName;
 		}
-		// This is not used by PBEBattleResultPacket; those use GetRawCombinedName()
+		# This is not used by PBEBattleResultPacket; those use GetRawCombinedName()
 		string GetTeamName(PBETeam team, bool firstLetterCapitalized)
 		{
 			if (teamNameFunc is not null)
@@ -915,13 +905,13 @@ public sealed partial class PBEBattle
 					}
 					case PBEItemTurnAction.Success:
 					{
-						//string message;
+						#string message;
 						switch (itp.Item)
 						{
-							// No "success" items yet
+							# No "success" items yet
 							default: throw new InvalidDataException(nameof(itp.Item));
 						}
-						//return string.Format(message, GetPkmnName(itemUser, true), itemEnglish);
+						#return string.Format(message, GetPkmnName(itemUser, true), itemEnglish);
 					}
 					default: throw new InvalidDataException(nameof(itp.ItemAction));
 				}
@@ -996,7 +986,7 @@ public sealed partial class PBEBattle
 				PBEBattlePokemon pokemon = phcp.PokemonTrainer.GetPokemon(phcp.Pokemon);
 				float percentageChange = phcp.NewHPPercentage - phcp.OldHPPercentage;
 				float absPercentageChange = Math.Abs(percentageChange);
-				if (showRawHP || userTrainer == pokemon.Trainer) // Owner should see raw values
+				if (showRawHP || userTrainer == pokemon.Trainer) # Owner should see raw values
 				{
 					int change = phcp.NewHP - phcp.OldHP;
 					int absChange = Math.Abs(change);
@@ -1113,7 +1103,7 @@ public sealed partial class PBEBattle
 				PBEBattlePokemon target = rtph.TargetTrainer.GetPokemon(rtph.Target);
 				return string.Format("{0} copied {1}'s types!", GetPkmnName(user, true), GetPkmnName(target, false));
 			}
-			case PBESpecialMessagePacket smp: // TODO: Clean
+			case PBESpecialMessagePacket smp: # TODO: Clean
 			{
 				string message;
 				switch (smp.Message)
@@ -1504,7 +1494,7 @@ public sealed partial class PBEBattle
 						switch (tsp.TeamStatusAction)
 						{
 							case PBETeamStatusAction.Added: message = "Spikes were scattered all around the feet of {0} team!"; teamCaps = false; break;
-							//case PBETeamStatusAction.Cleared: message = "The spikes disappeared from around {0} team's feet!"; teamCaps = false; break;
+							#case PBETeamStatusAction.Cleared: message = "The spikes disappeared from around {0} team's feet!"; teamCaps = false; break;
 							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
@@ -1514,7 +1504,7 @@ public sealed partial class PBEBattle
 						switch (tsp.TeamStatusAction)
 						{
 							case PBETeamStatusAction.Added: message = "Pointed stones float in the air around {0} team!"; teamCaps = false; break;
-							//case PBETeamStatusAction.Cleared: message = "The pointed stones disappeared from around {0} team!"; teamCaps = false; break;
+							#case PBETeamStatusAction.Cleared: message = "The pointed stones disappeared from around {0} team!"; teamCaps = false; break;
 							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
@@ -1675,10 +1665,10 @@ public sealed partial class PBEBattle
 		return null;
 	}
 
-	/// <summary>Writes battle events to <see cref="Console.Out"/> in English.</summary>
-	/// <param name="battle">The battle that <paramref name="packet"/> belongs to.</param>
-	/// <param name="packet">The battle event packet.</param>
-	/// <exception cref="ArgumentNullException">Thrown when <paramref name="battle"/> or <paramref name="packet"/> are null.</exception>
+	## <summary>Writes battle events to <see cref="Console.Out"/> in English.</summary>
+	## <param name="battle">The battle that <paramref name="packet"/> belongs to.</param>
+	## <param name="packet">The battle event packet.</param>
+	## <exception cref="ArgumentNullException">Thrown when <paramref name="battle"/> or <paramref name="packet"/> are null.</exception>
 	public static void ConsoleBattleEventHandler(PBEBattle battle, IPBEPacket packet)
 	{
 		string? message = GetDefaultMessage(battle, packet, showRawHP: true);

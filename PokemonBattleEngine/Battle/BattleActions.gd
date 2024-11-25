@@ -1,115 +1,104 @@
-﻿using Kermalis.EndianBinaryIO;
-using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Data.Utils;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
+class_name PBETurnAction
 
-namespace Kermalis.PokemonBattleEngine.Battle;
+public byte PokemonId
+var Decision : PBETurnDecision
+var FightMove : PBEMove
+var FightTargets : PBETurnTarget #{ get; internal set; } # Internal set because of PBEMoveTarget.RandomFoeSurrounding (TODO: Shouldn't this happen at runtime?)
+var UseItem : PBEItem
+var SwitchPokemonId : byte
 
-public sealed class PBETurnAction
+internal PBETurnAction(EndianBinaryReader r)
 {
-	public byte PokemonId { get; }
-	public PBETurnDecision Decision { get; }
-	public PBEMove FightMove { get; }
-	public PBETurnTarget FightTargets { get; internal set; } // Internal set because of PBEMoveTarget.RandomFoeSurrounding (TODO: Shouldn't this happen at runtime?)
-	public PBEItem UseItem { get; }
-	public byte SwitchPokemonId { get; }
-
-	internal PBETurnAction(EndianBinaryReader r)
+	PokemonId = r.ReadByte();
+	Decision = r.ReadEnum<PBETurnDecision>();
+	switch (Decision)
 	{
-		PokemonId = r.ReadByte();
-		Decision = r.ReadEnum<PBETurnDecision>();
-		switch (Decision)
+		case PBETurnDecision.Fight:
 		{
-			case PBETurnDecision.Fight:
-			{
-				FightMove = r.ReadEnum<PBEMove>();
-				FightTargets = r.ReadEnum<PBETurnTarget>();
-				break;
-			}
-			case PBETurnDecision.Item:
-			{
-				UseItem = r.ReadEnum<PBEItem>();
-				break;
-			}
-			case PBETurnDecision.SwitchOut:
-			{
-				SwitchPokemonId = r.ReadByte();
-				break;
-			}
-			case PBETurnDecision.WildFlee: break;
-			default: throw new InvalidDataException(nameof(Decision));
+			FightMove = r.ReadEnum<PBEMove>();
+			FightTargets = r.ReadEnum<PBETurnTarget>();
+			break;
 		}
-	}
-	// Fight
-	public PBETurnAction(PBEBattlePokemon pokemon, PBEMove fightMove, PBETurnTarget fightTargets)
-		: this(pokemon.Id, fightMove, fightTargets) { }
-	public PBETurnAction(byte pokemonId, PBEMove fightMove, PBETurnTarget fightTargets)
-	{
-		PokemonId = pokemonId;
-		Decision = PBETurnDecision.Fight;
-		FightMove = fightMove;
-		FightTargets = fightTargets;
-	}
-	// Item
-	public PBETurnAction(PBEBattlePokemon pokemon, PBEItem item)
-		: this(pokemon.Id, item) { }
-	public PBETurnAction(byte pokemonId, PBEItem item)
-	{
-		PokemonId = pokemonId;
-		Decision = PBETurnDecision.Item;
-		UseItem = item;
-	}
-	// Switch
-	public PBETurnAction(PBEBattlePokemon pokemon, PBEBattlePokemon switchPokemon)
-		: this(pokemon.Id, switchPokemon.Id) { }
-	public PBETurnAction(byte pokemonId, byte switchPokemonId)
-	{
-		PokemonId = pokemonId;
-		Decision = PBETurnDecision.SwitchOut;
-		SwitchPokemonId = switchPokemonId;
-	}
-	// Internal wild flee
-	internal PBETurnAction(PBEBattlePokemon pokemon)
-		: this(pokemon.Id) { }
-	internal PBETurnAction(byte pokemonId)
-	{
-		PokemonId = pokemonId;
-		Decision = PBETurnDecision.WildFlee;
-	}
-
-	internal void ToBytes(EndianBinaryWriter w)
-	{
-		w.WriteByte(PokemonId);
-		w.WriteEnum(Decision);
-		switch (Decision)
+		case PBETurnDecision.Item:
 		{
-			case PBETurnDecision.Fight:
-			{
-				w.WriteEnum(FightMove);
-				w.WriteEnum(FightTargets);
-				break;
-			}
-			case PBETurnDecision.Item:
-			{
-				w.WriteEnum(UseItem);
-				break;
-			}
-			case PBETurnDecision.SwitchOut:
-			{
-				w.WriteByte(SwitchPokemonId);
-				break;
-			}
-			case PBETurnDecision.WildFlee: break;
-			default: throw new InvalidDataException(nameof(Decision));
+			UseItem = r.ReadEnum<PBEItem>();
+			break;
 		}
+		case PBETurnDecision.SwitchOut:
+		{
+			SwitchPokemonId = r.ReadByte();
+			break;
+		}
+		case PBETurnDecision.WildFlee: break;
+		default: throw new InvalidDataException(nameof(Decision));
 	}
 }
-public sealed class PBESwitchIn
+# Fight
+public PBETurnAction(PBEBattlePokemon pokemon, PBEMove fightMove, PBETurnTarget fightTargets)
+	: this(pokemon.Id, fightMove, fightTargets) { }
+public PBETurnAction(byte pokemonId, PBEMove fightMove, PBETurnTarget fightTargets)
 {
+	PokemonId = pokemonId;
+	Decision = PBETurnDecision.Fight;
+	FightMove = fightMove;
+	FightTargets = fightTargets;
+}
+# Item
+public PBETurnAction(PBEBattlePokemon pokemon, PBEItem item)
+	: this(pokemon.Id, item) { }
+public PBETurnAction(byte pokemonId, PBEItem item)
+{
+	PokemonId = pokemonId;
+	Decision = PBETurnDecision.Item;
+	UseItem = item;
+}
+# Switch
+public PBETurnAction(PBEBattlePokemon pokemon, PBEBattlePokemon switchPokemon)
+	: this(pokemon.Id, switchPokemon.Id) { }
+public PBETurnAction(byte pokemonId, byte switchPokemonId)
+{
+	PokemonId = pokemonId;
+	Decision = PBETurnDecision.SwitchOut;
+	SwitchPokemonId = switchPokemonId;
+}
+# Internal wild flee
+internal PBETurnAction(PBEBattlePokemon pokemon)
+	: this(pokemon.Id) { }
+internal PBETurnAction(byte pokemonId)
+{
+	PokemonId = pokemonId;
+	Decision = PBETurnDecision.WildFlee;
+}
+
+internal void ToBytes(EndianBinaryWriter w)
+{
+	w.WriteByte(PokemonId);
+	w.WriteEnum(Decision);
+	switch (Decision)
+	{
+		case PBETurnDecision.Fight:
+		{
+			w.WriteEnum(FightMove);
+			w.WriteEnum(FightTargets);
+			break;
+		}
+		case PBETurnDecision.Item:
+		{
+			w.WriteEnum(UseItem);
+			break;
+		}
+		case PBETurnDecision.SwitchOut:
+		{
+			w.WriteByte(SwitchPokemonId);
+			break;
+		}
+		case PBETurnDecision.WildFlee: break;
+		default: throw new InvalidDataException(nameof(Decision));
+	}
+}
+}
+public sealed class PBESwitchIn
+	{
 	public byte PokemonId { get; }
 	public PBEFieldPosition Position { get; }
 
@@ -131,9 +120,10 @@ public sealed class PBESwitchIn
 		w.WriteByte(PokemonId);
 		w.WriteEnum(Position);
 	}
-}
+	}
+
 public sealed partial class PBEBattle
-{
+	{
 	internal static bool AreActionsValid(PBETrainer trainer, IReadOnlyCollection<PBETurnAction> actions, [NotNullWhen(false)] out string? invalidReason)
 	{
 		if (trainer.Battle._battleState != PBEBattleState.WaitingForActions)
@@ -201,7 +191,7 @@ public sealed partial class PBEBattle
 					}
 					if (!trainer.Inventory.TryGetValue(action.UseItem, out PBEBattleInventory.PBEBattleInventorySlot? slot))
 					{
-						invalidReason = $"Trainer \"{trainer.Name}\" does not have any {action.UseItem}"; // Handles wild Pokémon
+						invalidReason = $"Trainer \"{trainer.Name}\" does not have any {action.UseItem}"; # Handles wild Pokémon
 						return false;
 					}
 					bool used = items.TryGetValue(action.UseItem, out int amtUsed);
@@ -313,7 +303,7 @@ public sealed partial class PBEBattle
 						else if (pkmn.FieldPosition == PBEFieldPosition.Center)
 						{
 							PBETeam oppTeam = trainer.Team.OpposingTeam;
-							int r; // Keep randomly picking until a non-fainted foe is selected
+							int r; # Keep randomly picking until a non-fainted foe is selected
 						roll:
 							r = trainer.Battle._rand.RandomInt(0, 2);
 							if (r == 0)
@@ -492,7 +482,7 @@ public sealed partial class PBEBattle
 				trainer.Battle.BattleState = PBEBattleState.ReadyToRunTurn;
 			}
 		}
-		else // WaitingForSwitches
+		else # WaitingForSwitches
 		{
 			trainer.SwitchInsRequired = 0;
 			if (trainer.Battle.Trainers.All(t => t.SwitchInsRequired == 0))
@@ -502,9 +492,10 @@ public sealed partial class PBEBattle
 		}
 		return true;
 	}
-}
-public sealed partial class PBETrainer
-{
+	}
+
+class PBETrainer:
+	
 	public bool AreActionsValid([NotNullWhen(false)] out string? invalidReason, params PBETurnAction[] actions)
 	{
 		return PBEBattle.AreActionsValid(this, actions, out invalidReason);
@@ -547,4 +538,3 @@ public sealed partial class PBETrainer
 	{
 		return PBEBattle.SelectFleeIfValid(this, out invalidReason);
 	}
-}

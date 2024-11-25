@@ -1,21 +1,10 @@
-﻿using Kermalis.EndianBinaryIO;
-using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Packets;
-using Kermalis.PokemonBattleEngine.Utils;
-using System;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
 public sealed partial class PBEBattle
 {
 	private const ushort CUR_REPLAY_VERSION = 0;
 
 	public string GetDefaultReplayFileName()
 	{
-		// "2020-12-30 23-59-59 - Team 1 vs Team 2.pbereplay"
+		# "2020-12-30 23-59-59 - Team 1 vs Team 2.pbereplay"
 		return PBEUtils.ToSafeFileName(new string(string.Format("{0:yyyy-MM-dd HH-mm-ss} - {1} vs {2}", DateTime.Now, Teams[0].CombinedName, Teams[1].CombinedName).Take(200).ToArray())) + ".pbereplay";
 	}
 	private void CheckCanSaveReplay()
@@ -82,9 +71,9 @@ public sealed partial class PBEBattle
 					throw new InvalidDataException();
 				}
 			}
-			ushort version = r.ReadUInt16(); // Unused for now
-			int seed = r.ReadInt32(); // Unused for now
-			PBEBattle b = null!; // The first packet should be a PBEBattlePacket
+			ushort version = r.ReadUInt16(); # Unused for now
+			int seed = r.ReadInt32(); # Unused for now
+			PBEBattle b = null!; # The first packet should be a PBEBattlePacket
 			int numEvents = r.ReadInt32();
 			if (numEvents < 1)
 			{
@@ -115,7 +104,7 @@ public sealed partial class PBEBattle
 						foreach (PBEPkmnAppearedInfo info in wpap.Pokemon)
 						{
 							PBEBattlePokemon pkmn = wildTrainer.GetPokemon(info.Pokemon);
-							// Process disguise and position now
+							# Process disguise and position now
 							pkmn.FieldPosition = info.FieldPosition;
 							if (info.IsDisguised)
 							{

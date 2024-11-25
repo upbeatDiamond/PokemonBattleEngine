@@ -1,20 +1,10 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Data.Utils;
-using Kermalis.PokemonBattleEngine.Packets;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
 public sealed partial class PBEBattle
 {
 	private bool _calledFromOtherMove = false;
 
 	private void DoSwitchInEffects(IEnumerable<PBEBattlePokemon> battlers, PBEBattlePokemon? forcedInBy = null)
 	{
-		// Set EXP Seens first
+		# Set EXP Seens first
 		foreach (PBEBattlePokemon pkmn in battlers)
 		{
 			PBETeam opTeam = pkmn.Team.OpposingTeam;
@@ -30,7 +20,7 @@ public sealed partial class PBEBattle
 		foreach (PBEBattlePokemon pkmn in order)
 		{
 			bool grounded = pkmn.IsGrounded(forcedInBy) == PBEResult.Success;
-			// Verified: (Spikes/StealthRock/ToxicSpikes in the order they were applied) before ability
+			# Verified: (Spikes/StealthRock/ToxicSpikes in the order they were applied) before ability
 			if (grounded && pkmn.Team.TeamStatus.HasFlag(PBETeamStatus.Spikes))
 			{
 				BroadcastTeamStatusDamage(pkmn.Team, PBETeamStatus.Spikes, pkmn);
@@ -70,30 +60,30 @@ public sealed partial class PBEBattle
 						pkmn.Status1Counter = 1;
 					}
 					BroadcastStatus1(pkmn, pkmn, pkmn.Status1, PBEStatusAction.Added);
-					// Immunity activates in ActivateAbility() below
+					# Immunity activates in ActivateAbility() below
 				}
 			}
 
 			ActivateAbility(pkmn, true);
 		}
 
-		// Verified: Castform/Cherrim transformation goes last. Even if multiple weather abilities activate, they will not change until every ability has been activated
+		# Verified: Castform/Cherrim transformation goes last. Even if multiple weather abilities activate, they will not change until every ability has been activated
 		CastformCherrimCheck(order);
 	}
 	private void DoPostHitEffects(PBEBattlePokemon user, PBEBattlePokemon victim, IPBEMoveData mData, PBEType moveType)
 	{
-		IllusionBreak(victim, user); // Verified: Illusion before Rocky Helmet
-		if (victim.HP > 0 && victim.Ability == PBEAbility.Justified && moveType == PBEType.Dark) // Verified: Justified before Rocky Helmet
+		IllusionBreak(victim, user); # Verified: Illusion before Rocky Helmet
+		if (victim.HP > 0 && victim.Ability == PBEAbility.Justified && moveType == PBEType.Dark) # Verified: Justified before Rocky Helmet
 		{
 			BroadcastAbility(victim, user, PBEAbility.Justified, PBEAbilityAction.Damage);
 			ApplyStatChangeIfPossible(victim, victim, PBEStat.Attack, +1);
 		}
-		if (victim.HP > 0 && victim.Ability == PBEAbility.Rattled && (moveType == PBEType.Bug || moveType == PBEType.Dark || moveType == PBEType.Ghost)) // Verified: Rattled before Rocky Helmet
+		if (victim.HP > 0 && victim.Ability == PBEAbility.Rattled && (moveType == PBEType.Bug || moveType == PBEType.Dark || moveType == PBEType.Ghost)) # Verified: Rattled before Rocky Helmet
 		{
 			BroadcastAbility(victim, user, PBEAbility.Rattled, PBEAbilityAction.Damage);
 			ApplyStatChangeIfPossible(victim, victim, PBEStat.Speed, +1);
 		}
-		if (victim.HP > 0 && victim.Ability == PBEAbility.WeakArmor && mData.Category == PBEMoveCategory.Physical) // Verified: Weak Armor before Rocky Helmet
+		if (victim.HP > 0 && victim.Ability == PBEAbility.WeakArmor && mData.Category == PBEMoveCategory.Physical) # Verified: Weak Armor before Rocky Helmet
 		{
 			BroadcastAbility(victim, user, PBEAbility.WeakArmor, PBEAbilityAction.Damage);
 			ApplyStatChangeIfPossible(victim, victim, PBEStat.Defense, -1);
@@ -116,7 +106,7 @@ public sealed partial class PBEBattle
 					LowHPBerryCheck(user);
 				}
 			}
-			// Verified: Cute Charm can activate when victim is about to faint
+			# Verified: Cute Charm can activate when victim is about to faint
 			if (user.HP > 0 && victim.Ability == PBEAbility.CuteCharm && user.IsAttractionPossible(victim) == PBEResult.Success && GetManipulableChance(victim, 30))
 			{
 				BroadcastAbility(victim, user, PBEAbility.CuteCharm, PBEAbilityAction.ChangedStatus);
@@ -124,24 +114,24 @@ public sealed partial class PBEBattle
 			}
 			if (user.HP > 0 && victim.Ability == PBEAbility.EffectSpore && user.Status1 == PBEStatus1.None)
 			{
-				// Commented in case the Rainbow affects Effect Spore
-				//int randomNum = PBERandom.RandomInt(0, 99);
+				# Commented in case the Rainbow affects Effect Spore
+				#int randomNum = PBERandom.RandomInt(0, 99);
 				if (GetManipulableChance(victim, 30))
 				{
-					// Spaghetti code taken from the assembly in generation 5 games
+					# Spaghetti code taken from the assembly in generation 5 games
 					PBEStatus1 status = PBEStatus1.None;
 					int randomNum = _rand.RandomInt(0, 29);
 					if (randomNum <= 20)
 					{
-						if (randomNum > 10) // 11-20 (10%)
+						if (randomNum > 10) # 11-20 (10%)
 						{
-							// TODO: Can it really not paralyze electric? I thought that's gen 6+
+							# TODO: Can it really not paralyze electric? I thought that's gen 6+
 							if (!user.HasType(PBEType.Electric) && user.IsParalysisPossible(victim) == PBEResult.Success)
 							{
 								status = PBEStatus1.Paralyzed;
 							}
 						}
-						else // 0-10 (11%)
+						else # 0-10 (11%)
 						{
 							if (user.IsSleepPossible(victim) == PBEResult.Success)
 							{
@@ -149,7 +139,7 @@ public sealed partial class PBEBattle
 							}
 						}
 					}
-					else // 21-29 (9%)
+					else # 21-29 (9%)
 					{
 						if (user.IsPoisonPossible(victim) == PBEResult.Success)
 						{
@@ -191,7 +181,7 @@ public sealed partial class PBEBattle
 				BroadcastStatus1(user, victim, PBEStatus1.Paralyzed, PBEStatusAction.Added);
 				AntiStatusAbilityCheck(user);
 			}
-			// Verified: Above abilities before Rocky Helmet
+			# Verified: Above abilities before Rocky Helmet
 			if (user.HP > 0 && victim.Item == PBEItem.RockyHelmet)
 			{
 				BroadcastItem(victim, user, PBEItem.RockyHelmet, PBEItemAction.Damage);
@@ -210,8 +200,8 @@ public sealed partial class PBEBattle
 		#region User
 		if (user.HP > 0)
 		{
-			// Verified: Recoil before LifeOrb
-			// Verified: Recoil calls berry check directly, and both can faint here
+			# Verified: Recoil before LifeOrb
+			# Verified: Recoil calls berry check directly, and both can faint here
 			if (recoilDamage is not null)
 			{
 				BroadcastRecoil(user);
@@ -225,7 +215,7 @@ public sealed partial class PBEBattle
 			{
 				BroadcastItem(user, user, PBEItem.LifeOrb, PBEItemAction.Damage);
 				DealDamage(user, user, user.MaxHP / 10);
-				FaintCheck(user); // No berry check because we are holding Life Orb
+				FaintCheck(user); # No berry check because we are holding Life Orb
 			}
 		}
 		#endregion
@@ -245,24 +235,24 @@ public sealed partial class PBEBattle
 
 		IEnumerable<PBEBattlePokemon> a = allies.Select(v => v.Pkmn).Where(p => p.HP > 0);
 		IEnumerable<PBEBattlePokemon> f = foes.Select(v => v.Pkmn).Where(p => p.HP > 0);
-		// Verified: ColorChange (foes, allies) before Berry
+		# Verified: ColorChange (foes, allies) before Berry
 		if (colorChangeType != PBEType.None)
 		{
 			DoColorChange(f);
 			DoColorChange(a);
 		}
-		// Verified: Berry (allies, foes) before AntiStatusAbility
+		# Verified: Berry (allies, foes) before AntiStatusAbility
 		LowHPBerryCheck(a, forcedToEatBy: user);
 		LowHPBerryCheck(f, forcedToEatBy: user);
-		// Verified: AntiStatusAbility (allies, foes)
-		AntiStatusAbilityCheck(a); // Heal a status that was given with the user's Mold Breaker
+		# Verified: AntiStatusAbility (allies, foes)
+		AntiStatusAbilityCheck(a); # Heal a status that was given with the user's Mold Breaker
 		AntiStatusAbilityCheck(f);
 		#endregion
 	}
 	private void DoTurnEndedEffects()
 	{
 		IEnumerable<PBEBattlePokemon> order = GetActingOrder(ActiveBattlers, true);
-		// Verified: Weather stops before doing damage
+		# Verified: Weather stops before doing damage
 		if (Weather != PBEWeather.None && WeatherCounter > 0)
 		{
 			WeatherCounter--;
@@ -274,7 +264,7 @@ public sealed partial class PBEBattle
 				CastformCherrimCheck(order);
 			}
 		}
-		// Verified: Hailstorm/Sandstorm/IceBody/RainDish/SolarPower before all
+		# Verified: Hailstorm/Sandstorm/IceBody/RainDish/SolarPower before all
 		if (Weather != PBEWeather.None && ShouldDoWeatherEffects())
 		{
 			foreach (PBEBattlePokemon pkmn in order)
@@ -355,7 +345,7 @@ public sealed partial class PBEBattle
 			}
 		}
 
-		// Verified: Healer/ShedSkin/BlackSludge/Leftovers before LeechSeed
+		# Verified: Healer/ShedSkin/BlackSludge/Leftovers before LeechSeed
 		foreach (PBEBattlePokemon pkmn in order)
 		{
 			if (pkmn.HP == 0)
@@ -368,7 +358,7 @@ public sealed partial class PBEBattle
 				{
 					foreach (PBEBattlePokemon ally in GetRuntimeSurrounding(pkmn, true, false))
 					{
-						// TODO: #265
+						# TODO: #265
 						if (ally.Status1 != PBEStatus1.None && GetManipulableChance(pkmn, 30))
 						{
 							BroadcastAbility(pkmn, ally, pkmn.Ability, PBEAbilityAction.ChangedStatus);
@@ -411,7 +401,7 @@ public sealed partial class PBEBattle
 					{
 						BroadcastItem(pkmn, pkmn, pkmn.Item, PBEItemAction.Damage);
 						DealDamage(pkmn, pkmn, pkmn.MaxHP / Settings.BlackSludgeDamageDenominator);
-						FaintCheck(pkmn); // No need to call HealingBerryCheck() because if you are holding BlackSludge you are not holding a healing berry
+						FaintCheck(pkmn); # No need to call HealingBerryCheck() because if you are holding BlackSludge you are not holding a healing berry
 					}
 					else if (pkmn.HP < pkmn.MaxHP)
 					{
@@ -432,7 +422,7 @@ public sealed partial class PBEBattle
 			}
 		}
 
-		// Verified: LeechSeed before Status1/PoisonHeal
+		# Verified: LeechSeed before Status1/PoisonHeal
 		foreach (PBEBattlePokemon pkmn in order)
 		{
 			if (pkmn.HP == 0 || !pkmn.Status2.HasFlag(PBEStatus2.LeechSeed))
@@ -446,9 +436,9 @@ public sealed partial class PBEBattle
 			BroadcastStatus2(pkmn, sucker, PBEStatus2.LeechSeed, PBEStatusAction.Damage);
 			int restoreAmt = DealDamage(sucker, pkmn, pkmn.MaxHP / Settings.LeechSeedDenominator);
 
-			// In the games, the pkmn faints after taking damage (before liquid ooze/heal)
-			// We cannot have it faint and then still broadcast ability like the games, similar to why we can't faint before Explosion
-			// The faint order should be maintained, though, so the correct winner can be chosen
+			# In the games, the pkmn faints after taking damage (before liquid ooze/heal)
+			# We cannot have it faint and then still broadcast ability like the games, similar to why we can't faint before Explosion
+			# The faint order should be maintained, though, so the correct winner can be chosen
 			ApplyBigRoot(pkmn, ref restoreAmt);
 			if (pkmn.Ability == PBEAbility.LiquidOoze)
 			{
@@ -473,7 +463,7 @@ public sealed partial class PBEBattle
 			}
 		}
 
-		// Verified: Status1/PoisonHeal before Curse
+		# Verified: Status1/PoisonHeal before Curse
 		foreach (PBEBattlePokemon pkmn in order)
 		{
 			if (pkmn.HP == 0)
@@ -504,7 +494,7 @@ public sealed partial class PBEBattle
 					}
 					if (pkmn.Status1 == PBEStatus1.BadlyPoisoned)
 					{
-						pkmn.Status1Counter++; // Counter still increments if PoisonHeal exists
+						pkmn.Status1Counter++; # Counter still increments if PoisonHeal exists
 					}
 					break;
 				}
@@ -526,7 +516,7 @@ public sealed partial class PBEBattle
 			}
 		}
 
-		// Verified: Nightmare before Curse, not same loop
+		# Verified: Nightmare before Curse, not same loop
 		foreach (PBEBattlePokemon pkmn in order)
 		{
 			if (pkmn.HP == 0 || !pkmn.Status2.HasFlag(PBEStatus2.Nightmare))
@@ -541,7 +531,7 @@ public sealed partial class PBEBattle
 			}
 		}
 
-		// Verified: Curse before MagnetRise
+		# Verified: Curse before MagnetRise
 		foreach (PBEBattlePokemon pkmn in order)
 		{
 			if (pkmn.HP == 0 || !pkmn.Status2.HasFlag(PBEStatus2.Cursed))
@@ -556,7 +546,7 @@ public sealed partial class PBEBattle
 			}
 		}
 
-		// Verified: MagnetRise before Abilities/Orbs
+		# Verified: MagnetRise before Abilities/Orbs
 		foreach (PBEBattlePokemon pkmn in order)
 		{
 			if (pkmn.HP == 0 || !pkmn.Status2.HasFlag(PBEStatus2.MagnetRise) || pkmn.MagnetRiseTurns == 0)
@@ -570,14 +560,14 @@ public sealed partial class PBEBattle
 			}
 		}
 
-		// Verified: BadDreams/Moody/SlowStart/SpeedBoost before Orbs, but activate together
+		# Verified: BadDreams/Moody/SlowStart/SpeedBoost before Orbs, but activate together
 		foreach (PBEBattlePokemon pkmn in order)
 		{
 			if (pkmn.HP == 0)
 			{
 				continue;
 			}
-			// Ability before Orb
+			# Ability before Orb
 			switch (pkmn.Ability)
 			{
 				case PBEAbility.BadDreams:
@@ -639,7 +629,7 @@ public sealed partial class PBEBattle
 					break;
 				}
 			}
-			// Orb
+			# Orb
 			switch (pkmn.Item)
 			{
 				case PBEItem.FlameOrb:
@@ -669,8 +659,8 @@ public sealed partial class PBEBattle
 
 	public bool ShouldDoWeatherEffects()
 	{
-		// If HP is needed to be above 0, use HPPercentage so clients can continue to use this
-		// However, I see no instance of this getting called where an ActiveBattler has 0 hp
+		# If HP is needed to be above 0, use HPPercentage so clients can continue to use this
+		# However, I see no instance of this getting called where an ActiveBattler has 0 hp
 		return ActiveBattlers.FindIndex(p => p.Ability == PBEAbility.AirLock || p.Ability == PBEAbility.CloudNine) == -1;
 	}
 	public bool WillLeafGuardActivate()
@@ -689,14 +679,14 @@ public sealed partial class PBEBattle
 			if (trainer.IsWild)
 			{
 				PBEBattlePokemon wildPkmn = trainer.ActiveBattlersOrdered.First();
-				wildPkmn.TurnAction = new PBETurnAction(wildPkmn); // Convert into a WildFlee turn action for the first Pokémon
+				wildPkmn.TurnAction = new PBETurnAction(wildPkmn); # Convert into a WildFlee turn action for the first Pokémon
 				trainer.RequestedFlee = false;
 				continue;
 			}
 			PBEBattlePokemon? pkmn = trainer.ActiveBattlersOrdered.FirstOrDefault();
 			if (pkmn is not null)
 			{
-				// Verified: RunAway before SmokeBall
+				# Verified: RunAway before SmokeBall
 				if (pkmn.Ability == PBEAbility.RunAway)
 				{
 					BroadcastAbility(pkmn, pkmn, PBEAbility.RunAway, PBEAbilityAction.Announced);
@@ -712,13 +702,13 @@ public sealed partial class PBEBattle
 			}
 			else
 			{
-				pkmn = trainer.Party[0]; // Use the first fainted Pokémon's speed if there's no active battler
+				pkmn = trainer.Party[0]; # Use the first fainted Pokémon's speed if there's no active battler
 			}
-			// TODO: I'm using the gen 3/4 formula below.
-			// TODO: Figure out the gen 5 formula, as well as what to use in a double wild battle
+			# TODO: I'm using the gen 3/4 formula below.
+			# TODO: Figure out the gen 5 formula, as well as what to use in a double wild battle
 			int a = pkmn.Speed;
 			int b = (int)trainer.Team.OpposingTeam.ActiveBattlers.Average(p => p.Speed);
-			int c = ++trainer.Team.NumTimesTriedToFlee; // Increment even if guaranteed
+			int c = ++trainer.Team.NumTimesTriedToFlee; # Increment even if guaranteed
 			bool success;
 			if (a > b)
 			{
@@ -743,7 +733,7 @@ public sealed partial class PBEBattle
 	}
 	private void WildFleeCheck(PBEBattlePokemon pkmn)
 	{
-		// TODO: Trapping effects
+		# TODO: Trapping effects
 		SetEscaped(pkmn);
 	}
 
@@ -793,7 +783,7 @@ public sealed partial class PBEBattle
 	}
 	private void GiveEXP(PBEBattlePokemon victor, uint amount)
 	{
-		// TODO: Should we allow remote battles with learning moves? No packets right now
+		# TODO: Should we allow remote battles with learning moves? No packets right now
 		BroadcastPkmnEXPEarned(victor, amount);
 		PBEGrowthRate growthRate = PBEDataProvider.Instance.GetPokemonData(victor).GrowthRate;
 	top:
@@ -806,7 +796,7 @@ public sealed partial class PBEBattle
 			victor.Level++;
 			victor.SetStats(true, false);
 			BroadcastPkmnLevelChanged(victor);
-			// BUG: PBEStatus2.PowerTrick is not cleared when leveling up, even though the stats are replaced (meaning it can still be baton passed)
+			# BUG: PBEStatus2.PowerTrick is not cleared when leveling up, even though the stats are replaced (meaning it can still be baton passed)
 			if (Settings.BugFix && victor.Status2.HasFlag(PBEStatus2.PowerTrick))
 			{
 				BroadcastStatus2(victor, victor, PBEStatus2.PowerTrick, PBEStatusAction.Ended);
@@ -819,7 +809,7 @@ public sealed partial class PBEBattle
 			amount -= grewBy;
 			if (amount > 0)
 			{
-				goto top; // Keep gaining and leveling
+				goto top; # Keep gaining and leveling
 			}
 		}
 		else
@@ -1011,12 +1001,12 @@ public sealed partial class PBEBattle
 			pkmnFactor *= PokedexCountTable(pkmnCaught, 1, 0.9f, 0.8f, 0.7f, 0.5f, 0.3f);
 		}
 		float a = pkmnFactor * rate * bonusBall / (3 * wildPkmn.MaxHP) * bonusStatus;
-		float c = a * PokedexCountTable(pkmnCaught, 2.5f, 2, 1.5f, 1, 0.5f, 0); // Critical capture modifier
+		float c = a * PokedexCountTable(pkmnCaught, 2.5f, 2, 1.5f, 1, 0.5f, 0); # Critical capture modifier
 		isCriticalCapture = _rand.RandomInt(0, 0xFF) < c / 6;
 		byte numShakes = isCriticalCapture ? (byte)1 : (byte)3;
 		if (a >= 0xFF)
 		{
-			shakes = numShakes; // Skip shake checks
+			shakes = numShakes; # Skip shake checks
 			success = true;
 			return;
 		}
@@ -1025,13 +1015,13 @@ public sealed partial class PBEBattle
 		{
 			if (_rand.RandomInt(0, 0xFFFF) >= b)
 			{
-				break; // Shake check fails
+				break; # Shake check fails
 			}
 		}
 		success = shakes == numShakes;
 		if (shakes == 2)
 		{
-			shakes = 3; // If there are only 2 shakes and a failure, shake three times and still fail
+			shakes = 3; # If there are only 2 shakes and a failure, shake three times and still fail
 		}
 	}
 	private void UseItem(PBEBattlePokemon user, PBEItem item)
@@ -1078,7 +1068,7 @@ public sealed partial class PBEBattle
 
 	private void UseMove(PBEBattlePokemon user, PBEMove move, PBETurnTarget requestedTargets)
 	{
-		// Cancel the semi-invulnerable move if the user is affected by its status1
+		# Cancel the semi-invulnerable move if the user is affected by its status1
 		if (!_calledFromOtherMove && PreMoveStatusCheck(user, move))
 		{
 			if (user.Status2.HasFlag(PBEStatus2.Airborne))
@@ -1279,8 +1269,8 @@ public sealed partial class PBEBattle
 	{
 		IPBEMoveData mData = PBEDataProvider.Instance.GetMoveData(move);
 
-		// Verified: Sleep and Freeze don't interact with Flinch unless they come out of the status
-		// Sleep causes Confusion, Flinch, and Infatuation to activate if the user is trying to use Snore
+		# Verified: Sleep and Freeze don't interact with Flinch unless they come out of the status
+		# Sleep causes Confusion, Flinch, and Infatuation to activate if the user is trying to use Snore
 		if (user.Status1 == PBEStatus1.Asleep)
 		{
 			user.Status1Counter++;
@@ -1311,7 +1301,7 @@ public sealed partial class PBEBattle
 				return true;
 			}
 		}
-		// Verified: Flinch before Confusion, Infatuation, and Paralysis can do anything
+		# Verified: Flinch before Confusion, Infatuation, and Paralysis can do anything
 		if (user.Status2.HasFlag(PBEStatus2.Flinching))
 		{
 			BroadcastStatus2(user, user, PBEStatus2.Flinching, PBEStatusAction.CausedImmobility);
@@ -1322,7 +1312,7 @@ public sealed partial class PBEBattle
 			}
 			return true;
 		}
-		// Verified: Confusion before Infatuation and Paralysis
+		# Verified: Confusion before Infatuation and Paralysis
 		if (user.Status2.HasFlag(PBEStatus2.Confused))
 		{
 			user.ConfusionCounter++;
@@ -1340,7 +1330,7 @@ public sealed partial class PBEBattle
 					int damage = CalculateConfusionDamage(user);
 					DealDamage(user, user, damage, ignoreSturdy: false);
 					BroadcastStatus2(user, user, PBEStatus2.Confused, PBEStatusAction.Damage);
-					// BUG: Confusion damage does not activate these items
+					# BUG: Confusion damage does not activate these items
 					if (!FaintCheck(user) && Settings.BugFix)
 					{
 						LowHPBerryCheck(user);
@@ -1349,13 +1339,13 @@ public sealed partial class PBEBattle
 				}
 			}
 		}
-		// Verified: Paralysis before Infatuation
+		# Verified: Paralysis before Infatuation
 		if (user.Status1 == PBEStatus1.Paralyzed && _rand.RandomBool(25, 100))
 		{
 			BroadcastStatus1(user, user, PBEStatus1.Paralyzed, PBEStatusAction.CausedImmobility);
 			return true;
 		}
-		// Infatuation
+		# Infatuation
 		if (user.Status2.HasFlag(PBEStatus2.Infatuated))
 		{
 			BroadcastStatus2(user, user.InfatuatedWithPokemon!, PBEStatus2.Infatuated, PBEStatusAction.Announced);
@@ -1373,13 +1363,13 @@ public sealed partial class PBEBattle
 		{
 			return false;
 		}
-		// Verified: WideGuard happens before Protect
+		# Verified: WideGuard happens before Protect
 		if (target.Team.TeamStatus.HasFlag(PBETeamStatus.WideGuard) && mData.Category != PBEMoveCategory.Status && PBEDataUtils.IsSpreadMove(user.GetMoveTargets(mData)))
 		{
 			BroadcastTeamStatusDamage(target.Team, PBETeamStatus.WideGuard, target);
 			return true;
 		}
-		// Feint ignores Quick Guard unless the target is an ally
+		# Feint ignores Quick Guard unless the target is an ally
 		if (target.Team.TeamStatus.HasFlag(PBETeamStatus.QuickGuard) && mData.Priority > 0 && (mData.Effect != PBEMoveEffect.Feint || user.Team == target.Team))
 		{
 			BroadcastTeamStatusDamage(target.Team, PBETeamStatus.QuickGuard, target);
@@ -1414,9 +1404,9 @@ public sealed partial class PBEBattle
 		{
 			goto miss;
 		}
-		// These go after semi-invulnerable
+		# These go after semi-invulnerable
 		float chance = mData.Accuracy;
-		if (chance == 0) // Moves that don't miss
+		if (chance == 0) # Moves that don't miss
 		{
 			return false;
 		}
@@ -1447,7 +1437,7 @@ public sealed partial class PBEBattle
 			}
 			else
 			{
-				goto roll; // Skip all modifiers
+				goto roll; # Skip all modifiers
 			}
 		}
 		if (target.Ability == PBEAbility.WonderSkin && mData.Category == PBEMoveCategory.Status && !user.HasCancellingAbility())
@@ -1609,8 +1599,8 @@ public sealed partial class PBEBattle
 	}
 	private bool GetManipulableChance(PBEBattlePokemon pkmn, int chance)
 	{
-		// TODO: Does the Rainbow affect abilities activating, such as CuteCharm/Static, Healer/ShedSkin, etc, and which side of the field would they activate from? Victim?
-		// TODO: If it does affect abilities, does it affect Effect Spore? It uses its own weird rng
+		# TODO: Does the Rainbow affect abilities activating, such as CuteCharm/Static, Healer/ShedSkin, etc, and which side of the field would they activate from? Victim?
+		# TODO: If it does affect abilities, does it affect Effect Spore? It uses its own weird rng
 		if (pkmn.Ability == PBEAbility.SereneGrace)
 		{
 			chance *= 2;
@@ -1622,7 +1612,7 @@ public sealed partial class PBEBattle
 	{
 		if (!switchIn)
 		{
-			CastformCherrimCheck(pkmn); // Switch-Ins check this after all Pokémon are sent out
+			CastformCherrimCheck(pkmn); # Switch-Ins check this after all Pokémon are sent out
 		}
 		AntiStatusAbilityCheck(pkmn);
 		switch (pkmn.Ability)
@@ -1712,15 +1702,15 @@ public sealed partial class PBEBattle
 			}
 			case PBEAbility.Intimidate:
 			{
-				// Verified: Do not announce if the positions are empty
+				# Verified: Do not announce if the positions are empty
 				IReadOnlyList<PBEBattlePokemon> targets = GetRuntimeSurrounding(pkmn, false, true);
 				if (targets.Count > 0)
 				{
-					// Verified: Announce even if nobody is lowered (due to Substitute, Minimized Attack, or Ability)
+					# Verified: Announce even if nobody is lowered (due to Substitute, Minimized Attack, or Ability)
 					BroadcastAbility(pkmn, pkmn, PBEAbility.Intimidate, PBEAbilityAction.Stats);
 					foreach (PBEBattlePokemon target in GetActingOrder(targets, true))
 					{
-						ApplyStatChangeIfPossible(pkmn, target, PBEStat.Attack, -1); // Verified: Substitute, Minimized Attack, and Ability are announced
+						ApplyStatChangeIfPossible(pkmn, target, PBEStat.Attack, -1); # Verified: Substitute, Minimized Attack, and Ability are announced
 					}
 				}
 				break;
@@ -1773,7 +1763,7 @@ public sealed partial class PBEBattle
 	{
 		if (pkmn.HP == 0)
 		{
-			return; // #344 - Castform/Cherrim can change form while fainting from Explosion, if they kill someone with a weather-blocking ability
+			return; # #344 - Castform/Cherrim can change form while fainting from Explosion, if they kill someone with a weather-blocking ability
 		}
 		if (pkmn.Species == PBESpecies.Castform && pkmn.OriginalSpecies == PBESpecies.Castform)
 		{
@@ -1818,7 +1808,7 @@ public sealed partial class PBEBattle
 	}
 	private void ShayminCheck(PBEBattlePokemon pkmn)
 	{
-		// If a Shaymin_Sky is given MagmaArmor and then Frozen, it will change to Shaymin and obtain Shaymin's ability, therefore losing MagmaArmor and as a result will not be cured of its Frozen status.
+		# If a Shaymin_Sky is given MagmaArmor and then Frozen, it will change to Shaymin and obtain Shaymin's ability, therefore losing MagmaArmor and as a result will not be cured of its Frozen status.
 		if (pkmn.Species == PBESpecies.Shaymin && pkmn.OriginalSpecies == PBESpecies.Shaymin && pkmn.Form == PBEForm.Shaymin_Sky && pkmn.Status1 == PBEStatus1.Frozen)
 		{
 			const PBEForm newForm = PBEForm.Shaymin;
@@ -1952,7 +1942,7 @@ public sealed partial class PBEBattle
 		}
 		AntiStatusAbilityCheck(target);
 	}
-	// TODO: Use & add packet handlers
+	# TODO: Use & add packet handlers
 	private void WhiteHerbCheck(PBEBattlePokemon pkmn)
 	{
 		if (pkmn.Item == PBEItem.WhiteHerb)
@@ -1991,9 +1981,9 @@ public sealed partial class PBEBattle
 		{
 			BroadcastItem(pkmn, forcedToEatBy, pkmn.Item, PBEItemAction.Consumed);
 			HealDamage(pkmn, pkmn.MaxHP / 8);
-			// Verified: Ignores Safeguard & Substitute, but not Own Tempo
-			// Mold Breaker etc actually affect whether Own Tempo is ignored, which is what forcedToEatBy is for
-			// I verified each of the times the Pokémon eats to check if Mold Breaker affected the outcome
+			# Verified: Ignores Safeguard & Substitute, but not Own Tempo
+			# Mold Breaker etc actually affect whether Own Tempo is ignored, which is what forcedToEatBy is for
+			# I verified each of the times the Pokémon eats to check if Mold Breaker affected the outcome
 			if (pkmn.Nature.GetRelationshipToFlavor(flavor) < 0 && pkmn.IsConfusionPossible(forcedToEatBy, ignoreSubstitute: true, ignoreSafeguard: true) == PBEResult.Success)
 			{
 				CauseConfusion(pkmn, forcedToEatBy);
@@ -2006,7 +1996,7 @@ public sealed partial class PBEBattle
 		}
 		void DoStatItem(PBEStat stat, int change)
 		{
-			// Verified: Mold Breaker affects Contrary/Simple here, unlike with Belly Drum
+			# Verified: Mold Breaker affects Contrary/Simple here, unlike with Belly Drum
 			if (pkmn.IsStatChangePossible(stat, forcedToEatBy, change, out sbyte oldValue, out sbyte newValue, ignoreSubstitute: true) == PBEResult.Success)
 			{
 				BroadcastItem(pkmn, forcedToEatBy, pkmn.Item, PBEItemAction.Consumed);
@@ -2025,7 +2015,7 @@ public sealed partial class PBEBattle
 				case PBEItem.SalacBerry: DoStatItem(PBEStat.Speed, +1); break;
 				case PBEItem.StarfBerry:
 				{
-					// Verified: Starf Berry does not activate for Accuracy or Evasion, or if all other stats are maximized
+					# Verified: Starf Berry does not activate for Accuracy or Evasion, or if all other stats are maximized
 					List<PBEStat> statsThatCanGoUp = PBEDataUtils.StarfBerryStats.FindAll(s => pkmn.GetStatChange(s) < Settings.MaxStatChange);
 					if (statsThatCanGoUp.Count > 0)
 					{
@@ -2052,7 +2042,7 @@ public sealed partial class PBEBattle
 	}
 	private void SetAbility(PBEBattlePokemon user, PBEBattlePokemon target, PBEAbility ability)
 	{
-		// This func assumes new ability is different from current
+		# This func assumes new ability is different from current
 		PBEAbility oldAbility = target.Ability;
 		BroadcastAbilityReplaced(target, ability);
 
@@ -2084,14 +2074,14 @@ public sealed partial class PBEBattle
 		BroadcastWeather(Weather, PBEWeatherAction.Added);
 		if (!switchIn)
 		{
-			CastformCherrimCheckAll(); // Switch-Ins check this after all Pokémon are sent out
+			CastformCherrimCheckAll(); # Switch-Ins check this after all Pokémon are sent out
 		}
 	}
 
 	private void RecordExecutedMove(PBEBattlePokemon user, PBEMove move, IPBEMoveData mData)
 	{
 		user.HasUsedMoveThisTurn = true;
-		// Doesn't care if there is a Choice Locked move already. As long as the user knows it, it will become locked. (Metronome calling a move the user knows, Ditto transforming into someone else with transform)
+		# Doesn't care if there is a Choice Locked move already. As long as the user knows it, it will become locked. (Metronome calling a move the user knows, Ditto transforming into someone else with transform)
 		if ((user.Item == PBEItem.ChoiceBand || user.Item == PBEItem.ChoiceScarf || user.Item == PBEItem.ChoiceSpecs) && user.Moves.Contains(move))
 		{
 			BroadcastMoveLock_ChoiceItem(user, move);
@@ -2106,7 +2096,7 @@ public sealed partial class PBEBattle
 		if (!_calledFromOtherMove)
 		{
 			const int amountToReduce = 1;
-			// TODO: If target is not self and has pressure
+			# TODO: If target is not self and has pressure
 			PBEBattleMoveset.PBEBattleMovesetSlot slot = pkmn.Moves[move]!;
 			int oldPP = slot.PP;
 			int newPP = Math.Max(0, oldPP - amountToReduce);
@@ -2140,7 +2130,7 @@ public sealed partial class PBEBattle
 		user.Transform(target);
 		BroadcastTransform(user, target);
 		BroadcastStatus2(user, target, PBEStatus2.Transformed, PBEStatusAction.Added);
-		// Remove power trick (so it cannot be baton passed)
+		# Remove power trick (so it cannot be baton passed)
 		if (user.Status2.HasFlag(PBEStatus2.PowerTrick))
 		{
 			BroadcastStatus2(user, user, PBEStatus2.PowerTrick, PBEStatusAction.Ended);
@@ -2225,7 +2215,7 @@ public sealed partial class PBEBattle
 				result = target.IsFlinchPossible(user);
 				if (result == PBEResult.Success)
 				{
-					target.Status2 |= PBEStatus2.Flinching; // No broadcast, not known
+					target.Status2 |= PBEStatus2.Flinching; # No broadcast, not known
 				}
 				break;
 			}
@@ -2335,7 +2325,7 @@ public sealed partial class PBEBattle
 			}
 			case PBEStatus2.Protected:
 			{
-				// TODO: If the user goes last, fail
+				# TODO: If the user goes last, fail
 				if (_rand.RandomBool(user.GetProtectionChance(), ushort.MaxValue))
 				{
 					user.Protection_Used = true;
@@ -2368,7 +2358,7 @@ public sealed partial class PBEBattle
 				{
 					int hpRequired = target.MaxHP / 4;
 					DealDamage(user, target, hpRequired);
-					LowHPBerryCheck(target); // Verified: Berry is eaten between damage and substitute
+					LowHPBerryCheck(target); # Verified: Berry is eaten between damage and substitute
 					target.SubstituteHP = (ushort)hpRequired;
 					BroadcastStatus2(target, user, PBEStatus2.Substitute, PBEStatusAction.Added);
 				}
@@ -2422,7 +2412,7 @@ public sealed partial class PBEBattle
 				}
 				return;
 			}
-			// Do not broadcast "could not be lowered!" for Mud-Slap, etc
+			# Do not broadcast "could not be lowered!" for Mud-Slap, etc
 			broadcast = !isSecondaryEffect;
 		}
 		if (broadcast)
@@ -2443,7 +2433,7 @@ public sealed partial class PBEBattle
 			PBEBattlePokemon? p = pkmn.GetPkmnWouldDisguiseAs();
 			if (p is not null)
 			{
-				pkmn.Status2 |= PBEStatus2.Disguised; // No broadcast, not known
+				pkmn.Status2 |= PBEStatus2.Disguised; # No broadcast, not known
 				pkmn.KnownGender = p.Gender;
 				pkmn.KnownCaughtBall = p.CaughtBall;
 				pkmn.KnownNickname = p.Nickname;
@@ -2467,8 +2457,8 @@ public sealed partial class PBEBattle
 		RemoveInfatuationsAndLockOns(pkmnLeaving);
 		pkmnComing.FieldPosition = pos;
 		var switches = new PBEPkmnAppearedInfo[] { CreateSwitchInInfo(pkmnComing) };
-		PBETrainer.SwitchTwoPokemon(pkmnLeaving, pkmnComing); // Swap after Illusion
-		ActiveBattlers.Add(pkmnComing); // Add to active before broadcast
+		PBETrainer.SwitchTwoPokemon(pkmnLeaving, pkmnComing); # Swap after Illusion
+		ActiveBattlers.Add(pkmnComing); # Add to active before broadcast
 		BroadcastPkmnSwitchIn(pkmnComing.Trainer, switches, forcedByPkmn);
 		if (forcedByPkmn is not null)
 		{
@@ -2513,7 +2503,7 @@ public sealed partial class PBEBattle
 			{
 				BasicHit(user, targets, mData, beforePostHit: beforePostHit, afterPostHit: afterPostHit);
 			}
-			RecordExecutedMove(user, move, mData); // Should only count as the last used move if it finishes charging
+			RecordExecutedMove(user, move, mData); # Should only count as the last used move if it finishes charging
 		}
 		else
 		{
@@ -2928,7 +2918,7 @@ public sealed partial class PBEBattle
 					else
 					{
 						SetAbility(user, target, user.Ability);
-						// TODO: #234 - Reveal other Pokémon's Ability
+						# TODO: #234 - Reveal other Pokémon's Ability
 					}
 				}
 			}
@@ -2960,7 +2950,7 @@ public sealed partial class PBEBattle
 					else
 					{
 						SetAbility(user, user, target.Ability);
-						// TODO: #234 - Reveal other Pokémon's Ability
+						# TODO: #234 - Reveal other Pokémon's Ability
 					}
 				}
 			}
@@ -3042,7 +3032,7 @@ public sealed partial class PBEBattle
 		{
 			void BeforeDoingDamage(PBEBattlePokemon target)
 			{
-				// Verified: Reflect then Light Screen
+				# Verified: Reflect then Light Screen
 				if (target.Team.TeamStatus.HasFlag(PBETeamStatus.Reflect))
 				{
 					target.Team.ReflectCount = 0;
@@ -3172,7 +3162,7 @@ public sealed partial class PBEBattle
 					ApplyStatus1IfPossible(user, target, status1, false);
 				}
 			}
-			MultiHit(user, targets, mData, numHits, subsequentMissChecks: subsequentMissChecks, beforePostHit: status1 != PBEStatus1.None ? BeforePostHit : null); // Doesn't need to be its own func but neater
+			MultiHit(user, targets, mData, numHits, subsequentMissChecks: subsequentMissChecks, beforePostHit: status1 != PBEStatus1.None ? BeforePostHit : null); # Doesn't need to be its own func but neater
 		}
 		RecordExecutedMove(user, move, mData);
 	}
@@ -3268,7 +3258,7 @@ public sealed partial class PBEBattle
 		{
 			void BeforePostHit(PBEBattlePokemon target, ushort damageDealt)
 			{
-				// BUG: SecretPower is unaffected by SereneGrace and the Rainbow
+				# BUG: SecretPower is unaffected by SereneGrace and the Rainbow
 				if (target.HP > 0
 					&& (Settings.BugFix
 					? GetManipulableChance(user, mData.EffectParam)
@@ -3294,14 +3284,14 @@ public sealed partial class PBEBattle
 	}
 	private void Ef_Selfdestruct(PBEBattlePokemon user, PBEBattlePokemon[] targets, PBEMove move, IPBEMoveData mData)
 	{
-		// TODO: Damp
+		# TODO: Damp
 		BroadcastMoveUsed(user, move);
 		PPReduce(user, move);
-		// In gen 5, the user faints first (and loses if possible)
-		// Due to technical limitations, we cannot faint first, but we should still make the user lose so it is the same behavior
+		# In gen 5, the user faints first (and loses if possible)
+		# Due to technical limitations, we cannot faint first, but we should still make the user lose so it is the same behavior
 		DealDamage(user, user, user.MaxHP);
 		TrySetLoser(user);
-		if (targets.Length == 0) // You still faint if there are no targets
+		if (targets.Length == 0) # You still faint if there are no targets
 		{
 			BroadcastMoveResult(user, user, PBEResult.NoTarget);
 		}
@@ -3309,7 +3299,7 @@ public sealed partial class PBEBattle
 		{
 			BasicHit(user, targets, mData);
 		}
-		FaintCheck(user); // No berry check because we are always fainted
+		FaintCheck(user); # No berry check because we are always fainted
 		RecordExecutedMove(user, move, mData);
 	}
 	private void Ef_SmellingSalt(PBEBattlePokemon user, PBEBattlePokemon[] targets, PBEMove move, IPBEMoveData mData)
@@ -3336,7 +3326,7 @@ public sealed partial class PBEBattle
 	}
 	private void Ef_Snore(PBEBattlePokemon user, PBEBattlePokemon[] targets, PBEMove move, IPBEMoveData mData)
 	{
-		// TODO: Snore etc fail in BasicHit?
+		# TODO: Snore etc fail in BasicHit?
 		BroadcastMoveUsed(user, move);
 		PPReduce(user, move);
 		if (targets.Length == 0)
@@ -3390,7 +3380,7 @@ public sealed partial class PBEBattle
 		{
 			PBEResult FailFunc(PBEBattlePokemon target)
 			{
-				if (target.TurnAction is null // Just switched in, used item, etc
+				if (target.TurnAction is null # Just switched in, used item, etc
 					|| target.HasUsedMoveThisTurn
 					|| target.TurnAction.Decision != PBETurnDecision.Fight
 					|| PBEDataProvider.Instance.GetMoveData(target.TurnAction.FightMove).Category == PBEMoveCategory.Status)
@@ -3472,11 +3462,11 @@ public sealed partial class PBEBattle
 			int oldHP = user.HP;
 			int DamageFunc(PBEBattlePokemon target)
 			{
-				// Only faint/deal damage first time
+				# Only faint/deal damage first time
 				if (user.HP > 0)
 				{
 					DealDamage(user, user, oldHP);
-					FaintCheck(user); // No berry check because we are always fainted
+					FaintCheck(user); # No berry check because we are always fainted
 				}
 				return oldHP;
 			}
@@ -3513,7 +3503,7 @@ public sealed partial class PBEBattle
 			}
 			void BeforePostHit()
 			{
-				// This Any is for Sturdy survivors
+				# This Any is for Sturdy survivors
 				if (Array.FindIndex(targets, p => p.HP == 0) != -1)
 				{
 					BroadcastOneHitKnockout();
@@ -3626,7 +3616,7 @@ public sealed partial class PBEBattle
 				ApplyBigRoot(user, ref restoreAmt);
 				if (target.Ability == PBEAbility.LiquidOoze)
 				{
-					// Verified: User faints first here, target faints at normal spot afterwards
+					# Verified: User faints first here, target faints at normal spot afterwards
 					BroadcastAbility(target, user, PBEAbility.LiquidOoze, PBEAbilityAction.Damage);
 					DealDamage(target, user, restoreAmt);
 					if (!FaintCheck(user))
@@ -3715,8 +3705,8 @@ public sealed partial class PBEBattle
 						}
 						BroadcastPainSplit(user, target);
 						LowHPBerryCheck(user);
-						LowHPBerryCheck(target, forcedToEatBy: user); // Verified: Berry is activated but no illusion breaking
-																	  // Verified: ColorChange/LifeOrb is ignored
+						LowHPBerryCheck(target, forcedToEatBy: user); # Verified: Berry is activated but no illusion breaking
+																	  # Verified: ColorChange/LifeOrb is ignored
 					}
 				}
 			}
@@ -3749,7 +3739,7 @@ public sealed partial class PBEBattle
 			else
 			{
 				user.Status1 = PBEStatus1.Asleep;
-				SetSleepTurns(user, Settings.SleepMaxTurns, Settings.SleepMaxTurns); // Not a typo; Rest always sleeps for max turns
+				SetSleepTurns(user, Settings.SleepMaxTurns, Settings.SleepMaxTurns); # Not a typo; Rest always sleeps for max turns
 				user.Status1Counter = 0;
 				BroadcastStatus1(user, user, PBEStatus1.Asleep, PBEStatusAction.Added);
 				HealDamage(user, user.MaxHP);
@@ -3838,7 +3828,7 @@ public sealed partial class PBEBattle
 				if (!MissCheck(user, target, mData))
 				{
 					int requirement = target.MaxHP / 2;
-					// BUG: The games do not check if the target has Contrary
+					# BUG: The games do not check if the target has Contrary
 					sbyte oldValue = 0, newValue = 0;
 					if (target.HP <= requirement
 						|| (Settings.BugFix
@@ -3857,7 +3847,7 @@ public sealed partial class PBEBattle
 						}
 						else
 						{
-							ApplyStatChangeIfPossible(user, target, PBEStat.Attack, byte.MaxValue); // byte.MaxValue will work for all PBESettings
+							ApplyStatChangeIfPossible(user, target, PBEStat.Attack, byte.MaxValue); # byte.MaxValue will work for all PBESettings
 						}
 					}
 				}
@@ -3891,7 +3881,7 @@ public sealed partial class PBEBattle
 						case PBEBattleTerrain.Water: type = PBEType.Water; break;
 						default: throw new InvalidDataException(nameof(BattleTerrain));
 					}
-					// Verified: Works on dual-type, fails on single-type
+					# Verified: Works on dual-type, fails on single-type
 					if (target.Type1 == type && target.Type2 == PBEType.None)
 					{
 						BroadcastMoveResult(user, target, PBEResult.InvalidConditions);
@@ -3959,7 +3949,7 @@ public sealed partial class PBEBattle
 		{
 			if (user.HasType(PBEType.Ghost))
 			{
-				if (targets.Length == 1 && targets[0] == user) // Just gained the Ghost type after selecting the move, so get a random target
+				if (targets.Length == 1 && targets[0] == user) # Just gained the Ghost type after selecting the move, so get a random target
 				{
 					PBEFieldPosition prioritizedPos = GetPositionAcross(BattleFormat, user.FieldPosition);
 					PBETurnTarget moveTarget = prioritizedPos == PBEFieldPosition.Left ? PBETurnTarget.FoeLeft : prioritizedPos == PBEFieldPosition.Center ? PBETurnTarget.FoeCenter : PBETurnTarget.FoeRight;
@@ -4052,15 +4042,15 @@ public sealed partial class PBEBattle
 		{
 			foreach (PBEBattlePokemon target in targets)
 			{
-				// TODO: When triple battle shifting happens, all moves that can target allies but not the user will have to check if the user targetted itself due to shifting.
-				// For now, I'll put this check here, because this is the only move that will attempt to target the user when the move cannot normally do so (single/rotation battle).
+				# TODO: When triple battle shifting happens, all moves that can target allies but not the user will have to check if the user targetted itself due to shifting.
+				# For now, I'll put this check here, because this is the only move that will attempt to target the user when the move cannot normally do so (single/rotation battle).
 				if (target == user)
 				{
 					BroadcastMoveResult(user, user, PBEResult.NoTarget);
 				}
 				else
 				{
-					ApplyStatus2IfPossible(user, target, PBEStatus2.HelpingHand, true); // No MissCheck because should be able to hit through protect, shadowforce, etc
+					ApplyStatus2IfPossible(user, target, PBEStatus2.HelpingHand, true); # No MissCheck because should be able to hit through protect, shadowforce, etc
 				}
 			}
 		}
@@ -4070,7 +4060,7 @@ public sealed partial class PBEBattle
 	{
 		BroadcastMoveUsed(user, move);
 		PPReduce(user, move);
-		// Record before the called move is recorded
+		# Record before the called move is recorded
 		RecordExecutedMove(user, move, mData);
 
 		PBEMove calledMove = _rand.RandomElement(PBEDataUtils.MetronomeMoves);
@@ -4119,7 +4109,7 @@ public sealed partial class PBEBattle
 			{
 				if (!MissCheck(user, target, mData))
 				{
-					// Fail if pure flying-type roosts
+					# Fail if pure flying-type roosts
 					if (target.Type1 == PBEType.None && target.Type2 == PBEType.None)
 					{
 						BroadcastMoveResult(user, target, PBEResult.InvalidConditions);
@@ -4215,8 +4205,8 @@ public sealed partial class PBEBattle
 	{
 		BroadcastMoveUsed(user, move);
 		PPReduce(user, move);
-		// TODO: Trapping effects, SmokeBall
-		// In gen 5 there is a bug that prevents wild Pokémon holding a SmokeBall from escaping if they are affected by trapping effects
+		# TODO: Trapping effects, SmokeBall
+		# In gen 5 there is a bug that prevents wild Pokémon holding a SmokeBall from escaping if they are affected by trapping effects
 		if (BattleType == PBEBattleType.Wild && BattleFormat == PBEBattleFormat.Single)
 		{
 			SetEscaped(user);
@@ -4243,12 +4233,12 @@ public sealed partial class PBEBattle
 				{
 					continue;
 				}
-				// TODO: Trapping effects
+				# TODO: Trapping effects
 				if (BattleType == PBEBattleType.Wild)
 				{
 					if (BattleFormat == PBEBattleFormat.Single)
 					{
-						// Wild single battle requires user's level to be >= target's level, then it'll end the battle
+						# Wild single battle requires user's level to be >= target's level, then it'll end the battle
 						if (user.Level < target.Level)
 						{
 							BroadcastMoveResult(user, target, PBEResult.Ineffective_Level);
@@ -4259,13 +4249,13 @@ public sealed partial class PBEBattle
 					}
 					else
 					{
-						// Trainer using whirlwind in a wild double+ battle will cause it to fail (even if there's only one wild Pokémon left)
+						# Trainer using whirlwind in a wild double+ battle will cause it to fail (even if there's only one wild Pokémon left)
 						if (!user.IsWild)
 						{
 							BroadcastMoveResult(user, target, PBEResult.InvalidConditions);
 							continue;
 						}
-						// A wild Pokémon using it will cause it to switch the target out (as normal below)
+						# A wild Pokémon using it will cause it to switch the target out (as normal below)
 					}
 				}
 				List<PBEBattlePokemon> possibleSwitcheroonies = target.Trainer.Party.FindAll(p => p.FieldPosition == PBEFieldPosition.None && p.CanBattle);

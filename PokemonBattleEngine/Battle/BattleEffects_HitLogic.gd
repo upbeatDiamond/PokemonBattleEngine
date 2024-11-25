@@ -1,11 +1,5 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
-using System;
-using System.Collections.Generic;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
-// This constant looping order that's present in hitting as well as turn ended effects is very weird and unnecessary, but I mimic it for accuracy
-// That's why this file exists in favor of the order I had before
+# This constant looping order that's present in hitting as well as turn ended effects is very weird and unnecessary, but I mimic it for accuracy
+# That's why this file exists in favor of the order I had before
 public sealed partial class PBEBattle
 {
 	private class PBEAttackVictim
@@ -22,7 +16,7 @@ public sealed partial class PBEBattle
 		}
 	}
 
-	// TODO: TripleKick miss logic
+	# TODO: TripleKick miss logic
 	private void Hit_GetVictims(PBEBattlePokemon user, PBEBattlePokemon[] targets, IPBEMoveData mData, PBEType moveType, out List<PBEAttackVictim> victims,
 		Func<PBEBattlePokemon, PBEResult>? failFunc = null)
 	{
@@ -33,7 +27,7 @@ public sealed partial class PBEBattle
 			{
 				continue;
 			}
-			// Verified: These fails are after type effectiveness (So SuckerPunch will not affect Ghost types due to Normalize before it fails due to invalid conditions)
+			# Verified: These fails are after type effectiveness (So SuckerPunch will not affect Ghost types due to Normalize before it fails due to invalid conditions)
 			if (failFunc is not null && failFunc.Invoke(target) != PBEResult.Success)
 			{
 				continue;
@@ -47,7 +41,7 @@ public sealed partial class PBEBattle
 		victims.RemoveAll(t => MissCheck(user, t.Pkmn, mData));
 		return;
 	}
-	// Outs are for hit targets that were not behind substitute
+	# Outs are for hit targets that were not behind substitute
 	private static void Hit_HitTargets(PBETeam user, Action<List<PBEAttackVictim>> doSub, Action<List<PBEAttackVictim>> doNormal, List<PBEAttackVictim> victims,
 		out List<PBEAttackVictim> allies, out List<PBEAttackVictim> foes)
 	{
@@ -112,23 +106,23 @@ public sealed partial class PBEBattle
 		Action<PBEBattlePokemon>? afterPostHit = null,
 		Func<int, int?>? recoilFunc = null)
 	{
-		// Targets array is [FoeLeft, FoeCenter, FoeRight, AllyLeft, AllyCenter, AllyRight]
-		// User can faint or heal with a berry at LiquidOoze, IronBarbs/RockyHelmet, and also at Recoil/LifeOrb
-		// -------------Official order-------------
-		// Setup   - [effectiveness/fail checks foes], [effectiveness/fail checks allies], [miss/protection checks foes] [miss/protection checks allies], gem,
-		// Allies  - [sub damage allies, sub effectiveness allies, sub crit allies, sub break allies], [hit allies], [effectiveness allies], [crit allies], [posthit allies], [faint allies],
-		// Foes    - [sub damage foes, sub effectiveness foes, sub crit foes, sub break foes], [hit foes], [effectiveness foes], [crit foes], [posthit foes], [faint foes],
-		// Cleanup - recoil, lifeorb, [colorchange foes], [colorchange allies], [berry allies], [berry foes], [antistatusability allies], [antistatusability foes], exp
+		# Targets array is [FoeLeft, FoeCenter, FoeRight, AllyLeft, AllyCenter, AllyRight]
+		# User can faint or heal with a berry at LiquidOoze, IronBarbs/RockyHelmet, and also at Recoil/LifeOrb
+		# -------------Official order-------------
+		# Setup   - [effectiveness/fail checks foes], [effectiveness/fail checks allies], [miss/protection checks foes] [miss/protection checks allies], gem,
+		# Allies  - [sub damage allies, sub effectiveness allies, sub crit allies, sub break allies], [hit allies], [effectiveness allies], [crit allies], [posthit allies], [faint allies],
+		# Foes    - [sub damage foes, sub effectiveness foes, sub crit foes, sub break foes], [hit foes], [effectiveness foes], [crit foes], [posthit foes], [faint foes],
+		# Cleanup - recoil, lifeorb, [colorchange foes], [colorchange allies], [berry allies], [berry foes], [antistatusability allies], [antistatusability foes], exp
 
 		PBEType moveType = user.GetMoveType(mData);
-		// DreamEater checks for sleep before gem activates
-		// SuckerPunch fails
+		# DreamEater checks for sleep before gem activates
+		# SuckerPunch fails
 		Hit_GetVictims(user, targets, mData, moveType, out List<PBEAttackVictim> victims, failFunc: failFunc);
 		if (victims.Count == 0)
 		{
 			return;
 		}
-		float basePower = CalculateBasePower(user, targets, mData, moveType); // Gem activates here
+		float basePower = CalculateBasePower(user, targets, mData, moveType); # Gem activates here
 		float initDamageMultiplier = victims.Count > 1 ? 0.75f : 1;
 		int totalDamageDealt = 0;
 		void CalcDamage(PBEAttackVictim victim)
@@ -136,9 +130,9 @@ public sealed partial class PBEBattle
 			PBEBattlePokemon target = victim.Pkmn;
 			PBEResult result = victim.Result;
 			float damageMultiplier = initDamageMultiplier * victim.TypeEffectiveness;
-			// Brick Break destroys Light Screen and Reflect before doing damage (after gem)
-			// Feint destroys protection
-			// Pay Day scatters coins
+			# Brick Break destroys Light Screen and Reflect before doing damage (after gem)
+			# Feint destroys protection
+			# Pay Day scatters coins
 			beforeDoingDamage?.Invoke(target);
 			bool crit = CritCheck(user, target, mData);
 			damageMultiplier *= CalculateDamageMultiplier(user, target, mData, moveType, result, crit);
@@ -179,14 +173,14 @@ public sealed partial class PBEBattle
 			foreach (PBEAttackVictim victim in normals)
 			{
 				PBEBattlePokemon target = victim.Pkmn;
-				// Stats/statuses are changed before post-hit effects
-				// HP-draining moves restore HP
-				beforePostHit?.Invoke(target, victim.Damage); // TODO: LiquidOoze fainting/healing
+				# Stats/statuses are changed before post-hit effects
+				# HP-draining moves restore HP
+				beforePostHit?.Invoke(target, victim.Damage); # TODO: LiquidOoze fainting/healing
 				DoPostHitEffects(user, target, mData, moveType);
-				// ShadowForce destroys protection
-				// SmellingSalt cures paralysis
-				// WakeUpSlap cures sleep
-				afterPostHit?.Invoke(target); // Verified: These happen before Recoil/LifeOrb
+				# ShadowForce destroys protection
+				# SmellingSalt cures paralysis
+				# WakeUpSlap cures sleep
+				afterPostHit?.Invoke(target); # Verified: These happen before Recoil/LifeOrb
 			}
 			Hit_FaintCheck(normals);
 		}
@@ -194,20 +188,20 @@ public sealed partial class PBEBattle
 		Hit_HitTargets(user.Team, DoSub, DoNormal, victims, out List<PBEAttackVictim> allies, out List<PBEAttackVictim> foes);
 		DoPostAttackedEffects(user, allies, foes, true, recoilDamage: recoilFunc?.Invoke(totalDamageDealt), colorChangeType: moveType);
 	}
-	// None of these moves are multi-target
+	# None of these moves are multi-target
 	private void FixedDamageHit(PBEBattlePokemon user, PBEBattlePokemon[] targets, IPBEMoveData mData, Func<PBEBattlePokemon, int> damageFunc,
 		Func<PBEBattlePokemon, PBEResult>? failFunc = null,
 		Action? beforePostHit = null)
 	{
 		PBEType moveType = user.GetMoveType(mData);
-		// Endeavor fails if the target's HP is <= the user's HP
-		// One hit knockout moves fail if the target's level is > the user's level
+		# Endeavor fails if the target's HP is <= the user's HP
+		# One hit knockout moves fail if the target's level is > the user's level
 		Hit_GetVictims(user, targets, mData, moveType, out List<PBEAttackVictim> victims, failFunc: failFunc);
 		if (victims.Count == 0)
 		{
 			return;
 		}
-		// BUG: Gems activate for these moves despite base power not being involved
+		# BUG: Gems activate for these moves despite base power not being involved
 		if (!Settings.BugFix)
 		{
 			_ = CalculateBasePower(user, targets, mData, moveType);
@@ -215,7 +209,7 @@ public sealed partial class PBEBattle
 		void CalcDamage(PBEAttackVictim victim)
 		{
 			PBEBattlePokemon target = victim.Pkmn;
-			// FinalGambit user faints here
+			# FinalGambit user faints here
 			victim.Damage = DealDamage(user, target, damageFunc.Invoke(target));
 		}
 		void DoSub(List<PBEAttackVictim> subs)
@@ -239,7 +233,7 @@ public sealed partial class PBEBattle
 			foreach (PBEAttackVictim victim in normals)
 			{
 				PBEBattlePokemon target = victim.Pkmn;
-				// "It's a one-hit KO!"
+				# "It's a one-hit KO!"
 				beforePostHit?.Invoke();
 				DoPostHitEffects(user, target, mData, moveType);
 			}
@@ -249,7 +243,7 @@ public sealed partial class PBEBattle
 		Hit_HitTargets(user.Team, DoSub, DoNormal, victims, out List<PBEAttackVictim> allies, out List<PBEAttackVictim> foes);
 		DoPostAttackedEffects(user, allies, foes, false, colorChangeType: moveType);
 	}
-	// None of these moves are multi-target
+	# None of these moves are multi-target
 	private void MultiHit(PBEBattlePokemon user, PBEBattlePokemon[] targets, IPBEMoveData mData, byte numHits,
 		bool subsequentMissChecks = false,
 		Action<PBEBattlePokemon>? beforePostHit = null)
@@ -260,7 +254,7 @@ public sealed partial class PBEBattle
 		{
 			return;
 		}
-		float basePower = CalculateBasePower(user, targets, mData, moveType); // Verified: Gem boost applies to all hits
+		float basePower = CalculateBasePower(user, targets, mData, moveType); # Verified: Gem boost applies to all hits
 		float initDamageMultiplier = victims.Count > 1 ? 0.75f : 1;
 		void CalcDamage(PBEAttackVictim victim)
 		{
@@ -291,7 +285,7 @@ public sealed partial class PBEBattle
 		}
 		void DoNormal(List<PBEAttackVictim> normals)
 		{
-			normals.RemoveAll(v => v.Pkmn.HP == 0); // Remove ones that fainted from previous hits
+			normals.RemoveAll(v => v.Pkmn.HP == 0); # Remove ones that fainted from previous hits
 			foreach (PBEAttackVictim victim in normals)
 			{
 				CalcDamage(victim);
@@ -300,7 +294,7 @@ public sealed partial class PBEBattle
 			foreach (PBEAttackVictim victim in normals)
 			{
 				PBEBattlePokemon target = victim.Pkmn;
-				// Twineedle has a chance to poison on each strike
+				# Twineedle has a chance to poison on each strike
 				beforePostHit?.Invoke(target);
 				DoPostHitEffects(user, target, mData, moveType);
 			}

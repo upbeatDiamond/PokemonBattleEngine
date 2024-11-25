@@ -1,14 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Packets;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
 public sealed class PBETrainers : IReadOnlyList<PBETrainer>
 {
 	private readonly List<PBETrainer> _trainers;

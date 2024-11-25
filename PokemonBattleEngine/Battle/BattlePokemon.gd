@@ -1,15 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Data.Utils;
-using Kermalis.PokemonBattleEngine.Packets;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
-namespace Kermalis.PokemonBattleEngine.Battle;
-
-/// <summary>Represents a specific Pokémon during a battle.</summary>
+## <summary>Represents a specific Pokémon during a battle.</summary>
 public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, IPBESpeciesForm
 {
 	public PBEBattle Battle { get; }
@@ -24,25 +13,25 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 
 	#region Basic Properties
 
-	/// <summary>The Pokémon's current HP.</summary>
+	## <summary>The Pokémon's current HP.</summary>
 	public ushort HP { get; set; }
-	/// <summary>The Pokémon's maximum HP.</summary>
+	## <summary>The Pokémon's maximum HP.</summary>
 	public ushort MaxHP { get; set; }
-	/// <summary>The Pokémon's current HP as a percentage.</summary>
+	## <summary>The Pokémon's current HP as a percentage.</summary>
 	public float HPPercentage { get; set; }
-	/// <summary>The Pokémon's attack stat.</summary>
+	## <summary>The Pokémon's attack stat.</summary>
 	public ushort Attack { get; set; }
 	public sbyte AttackChange { get; set; }
-	/// <summary>The Pokémon's defense stat.</summary>
+	## <summary>The Pokémon's defense stat.</summary>
 	public ushort Defense { get; set; }
 	public sbyte DefenseChange { get; set; }
-	/// <summary>The Pokémon's special attack stat.</summary>
+	## <summary>The Pokémon's special attack stat.</summary>
 	public ushort SpAttack { get; set; }
 	public sbyte SpAttackChange { get; set; }
-	/// <summary>The Pokémon's special defense stat.</summary>
+	## <summary>The Pokémon's special defense stat.</summary>
 	public ushort SpDefense { get; set; }
 	public sbyte SpDefenseChange { get; set; }
-	/// <summary>The Pokémon's speed stat.</summary>
+	## <summary>The Pokémon's speed stat.</summary>
 	public ushort Speed { get; set; }
 	public sbyte SpeedChange { get; set; }
 	public sbyte AccuracyChange { get; set; }
@@ -52,59 +41,59 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 	public PBEReadOnlyStatCollection? IndividualValues { get; }
 	public byte Friendship { get; set; }
 	public byte OriginalLevel { get; set; }
-	/// <summary>The Pokémon's level.</summary>
+	## <summary>The Pokémon's level.</summary>
 	public byte Level { get; set; }
 	public uint OriginalEXP { get; set; }
 	public uint EXP { get; set; }
-	/// <summary>The Pokémon's nature.</summary>
+	## <summary>The Pokémon's nature.</summary>
 	public PBENature Nature { get; set; }
-	/// <summary>The moveset the Pokémon had upon entering battle.</summary>
+	## <summary>The moveset the Pokémon had upon entering battle.</summary>
 	public PBEReadOnlyPartyMoveset? OriginalMoveset { get; }
 
-	/// <summary>The Pokémon's field position.</summary>
+	## <summary>The Pokémon's field position.</summary>
 	public PBEFieldPosition FieldPosition { get; set; }
-	/// <summary>The Pokémon's current ability.</summary>
+	## <summary>The Pokémon's current ability.</summary>
 	public PBEAbility Ability { get; set; }
-	/// <summary>The ability the Pokémon is known to have.</summary>
+	## <summary>The ability the Pokémon is known to have.</summary>
 	public PBEAbility KnownAbility { get; set; }
-	/// <summary>The ability the Pokémon had upon entering battle.</summary>
+	## <summary>The ability the Pokémon had upon entering battle.</summary>
 	public PBEAbility OriginalAbility { get; set; }
-	/// <summary>The ability the Pokémon will regain upon switching out, fainting, or the battle ending.</summary>
+	## <summary>The ability the Pokémon will regain upon switching out, fainting, or the battle ending.</summary>
 	public PBEAbility RevertAbility { get; set; }
-	/// <summary>The Pokémon's gender.</summary>
+	## <summary>The Pokémon's gender.</summary>
 	public PBEGender Gender { get; set; }
-	/// <summary>The gender the Pokémon looks like (affected by transforming and disguising).</summary>
+	## <summary>The gender the Pokémon looks like (affected by transforming and disguising).</summary>
 	public PBEGender KnownGender { get; set; }
-	/// <summary>The Pokémon's current item.</summary>
+	## <summary>The Pokémon's current item.</summary>
 	public PBEItem Item { get; set; }
-	/// <summary>The item the Pokémon is known to have.</summary>
+	## <summary>The item the Pokémon is known to have.</summary>
 	public PBEItem KnownItem { get; set; }
-	/// <summary>The item the Pokémon had upon entering battle.</summary>
+	## <summary>The item the Pokémon had upon entering battle.</summary>
 	public PBEItem OriginalItem { get; set; }
-	/// <summary>The Pokémon's current ball (affected by catching).</summary>
+	## <summary>The Pokémon's current ball (affected by catching).</summary>
 	public PBEItem CaughtBall { get; set; }
-	/// <summary>The ball the Pokémon is known to be in (affected by disguising).</summary>
+	## <summary>The ball the Pokémon is known to be in (affected by disguising).</summary>
 	public PBEItem KnownCaughtBall { get; set; }
-	/// <summary>The ball the Pokémon was in upon entering battle.</summary>
+	## <summary>The ball the Pokémon was in upon entering battle.</summary>
 	public PBEItem OriginalCaughtBall { get; set; }
-	/// <summary>The moves the Pokémon currently has.</summary>
+	## <summary>The moves the Pokémon currently has.</summary>
 	public PBEBattleMoveset Moves { get; }
-	/// <summary>The moves the Pokémon is known to have.</summary>
+	## <summary>The moves the Pokémon is known to have.</summary>
 	public PBEBattleMoveset KnownMoves { get; }
-	/// <summary>The nickname the Pokémon normally has.</summary>
+	## <summary>The nickname the Pokémon normally has.</summary>
 	public string Nickname { get; set; }
-	/// <summary>The nickname the Pokémon is known to have.</summary>
+	## <summary>The nickname the Pokémon is known to have.</summary>
 	public string KnownNickname { get; set; }
-	/// <summary>The shininess the Pokémon normally has.</summary>
+	## <summary>The shininess the Pokémon normally has.</summary>
 	public bool Shiny { get; set; }
-	/// <summary>The shininess everyone sees the Pokémon has.</summary>
+	## <summary>The shininess everyone sees the Pokémon has.</summary>
 	public bool KnownShiny { get; set; }
 	public bool Pokerus { get; set; }
-	/// <summary>The current species of the Pokémon (affected by transforming and form changing).</summary>
+	## <summary>The current species of the Pokémon (affected by transforming and form changing).</summary>
 	public PBESpecies Species { get; set; }
-	/// <summary>The species everyone sees the Pokémon as (affected by transforming, disguising, and form changing).</summary>
+	## <summary>The species everyone sees the Pokémon as (affected by transforming, disguising, and form changing).</summary>
 	public PBESpecies KnownSpecies { get; set; }
-	/// <summary>The species the Pokémon was upon entering battle.</summary>
+	## <summary>The species the Pokémon was upon entering battle.</summary>
 	public PBESpecies OriginalSpecies { get; set; }
 	public PBEForm Form { get; set; }
 	public PBEForm KnownForm { get; set; }
@@ -114,13 +103,13 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 	public PBEStatus1 OriginalStatus1 { get; set; }
 	public PBEStatus2 Status2 { get; set; }
 	public PBEStatus2 KnownStatus2 { get; set; }
-	/// <summary>The Pokémon's first type.</summary>
+	## <summary>The Pokémon's first type.</summary>
 	public PBEType Type1 { get; set; }
-	/// <summary>The first type everyone believes the Pokémon has.</summary>
+	## <summary>The first type everyone believes the Pokémon has.</summary>
 	public PBEType KnownType1 { get; set; }
-	/// <summary>The Pokémon's second type.</summary>
+	## <summary>The Pokémon's second type.</summary>
 	public PBEType Type2 { get; set; }
-	/// <summary>The second type everyone believes the Pokémon has.</summary>
+	## <summary>The second type everyone believes the Pokémon has.</summary>
 	public PBEType KnownType2 { get; set; }
 	public float Weight { get; set; }
 	public float KnownWeight { get; set; }
@@ -129,30 +118,30 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 
 	#region Statuses
 
-	/// <summary>The counter used for <see cref="PBEStatus1.BadlyPoisoned"/> and <see cref="PBEStatus1.Asleep"/>.</summary>
+	## <summary>The counter used for <see cref="PBEStatus1.BadlyPoisoned"/> and <see cref="PBEStatus1.Asleep"/>.</summary>
 	public byte Status1Counter { get; set; }
-	/// <summary>The amount of turns the Pokémon will sleep for before waking.</summary>
+	## <summary>The amount of turns the Pokémon will sleep for before waking.</summary>
 	public byte SleepTurns { get; set; }
-	/// <summary>The counter used for <see cref="PBEStatus2.Confused"/>.</summary>
+	## <summary>The counter used for <see cref="PBEStatus2.Confused"/>.</summary>
 	public byte ConfusionCounter { get; set; }
-	/// <summary>The amount of turns the Pokémon will be confused for before snapping out of it.</summary>
+	## <summary>The amount of turns the Pokémon will be confused for before snapping out of it.</summary>
 	public byte ConfusionTurns { get; set; }
-	/// <summary>The Pokémon that <see cref="PBEStatus2.Infatuated"/> is bound to.</summary>
+	## <summary>The Pokémon that <see cref="PBEStatus2.Infatuated"/> is bound to.</summary>
 	public PBEBattlePokemon? InfatuatedWithPokemon { get; set; }
-	/// <summary>The amount of turns until <see cref="PBEStatus2.MagnetRise"/> ends.</summary>
+	## <summary>The amount of turns until <see cref="PBEStatus2.MagnetRise"/> ends.</summary>
 	public byte MagnetRiseTurns { get; set; }
-	/// <summary>The Pokémon that <see cref="PBEStatus2.LockOn"/> is bound to.</summary>
+	## <summary>The Pokémon that <see cref="PBEStatus2.LockOn"/> is bound to.</summary>
 	public PBEBattlePokemon? LockOnPokemon { get; set; }
 	public byte LockOnTurns { get; set; }
-	/// <summary>The amount of times the Pokémon has successfully used <see cref="PBEMoveEffect.Protect"/>, <see cref="PBEMoveEffect.QuickGuard"/>, and/or <see cref="PBEMoveEffect.WideGuard"/> consecutively.</summary>
+	## <summary>The amount of times the Pokémon has successfully used <see cref="PBEMoveEffect.Protect"/>, <see cref="PBEMoveEffect.QuickGuard"/>, and/or <see cref="PBEMoveEffect.WideGuard"/> consecutively.</summary>
 	public int Protection_Counter { get; set; }
 	public bool Protection_Used { get; set; }
 	public PBERoostTypes RoostTypes { get; set; }
-	/// <summary>The position to return <see cref="PBEStatus2.LeechSeed"/> HP to on <see cref="SeededTeam"/>.</summary>
+	## <summary>The position to return <see cref="PBEStatus2.LeechSeed"/> HP to on <see cref="SeededTeam"/>.</summary>
 	public PBEFieldPosition SeededPosition { get; set; }
-	/// <summary>The team responsible for <see cref="PBEStatus2.LeechSeed"/>.</summary>
+	## <summary>The team responsible for <see cref="PBEStatus2.LeechSeed"/>.</summary>
 	public PBETeam? SeededTeam { get; set; }
-	/// <summary>The amount of HP the Pokémon's <see cref="PBEStatus2.Substitute"/> has left.</summary>
+	## <summary>The amount of HP the Pokémon's <see cref="PBEStatus2.Substitute"/> has left.</summary>
 	public ushort SubstituteHP { get; set; }
 	public PBEBattleMoveset TransformBackupMoves { get; }
 
@@ -160,26 +149,26 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 
 	#region Actions
 
-	/// <summary><see langword="true"/> if the Pokémon has successfully executed a move this turn.</summary>
+	## <summary><see langword="true"/> if the Pokémon has successfully executed a move this turn.</summary>
 	public bool HasUsedMoveThisTurn { get; set; }
-	/// <summary>The action the Pokémon will try to perform when the turn is run. <see langword="null"/> if the Pokémon just switched in, attempted to flee, etc.</summary>
+	## <summary>The action the Pokémon will try to perform when the turn is run. <see langword="null"/> if the Pokémon just switched in, attempted to flee, etc.</summary>
 	public PBETurnAction? TurnAction { get; set; }
-	/// <summary>The move the Pokémon is forced to use by multi-turn moves.</summary>
-	public PBEMove TempLockedMove { get; set; } // TODO: Tests - Does a pkmn lose its temp locked move if it runs out of pp on the move, all moves, or ever? (Some move can lower its pp while it's being used?)
-	/// <summary>The targets the Pokémon is forced to target by multi-turn moves.</summary>
+	## <summary>The move the Pokémon is forced to use by multi-turn moves.</summary>
+	public PBEMove TempLockedMove { get; set; } # TODO: Tests - Does a pkmn lose its temp locked move if it runs out of pp on the move, all moves, or ever? (Some move can lower its pp while it's being used?)
+	## <summary>The targets the Pokémon is forced to target by multi-turn moves.</summary>
 	public PBETurnTarget TempLockedTargets { get; set; }
-	/// <summary>The move the Pokémon is forced to use by its choice item.</summary>
-	public PBEMove ChoiceLockedMove { get; set; } // TODO: Tests - Does a pkmn lose its choice locked move if it runs out of pp on the move, all moves, or ever?
+	## <summary>The move the Pokémon is forced to use by its choice item.</summary>
+	public PBEMove ChoiceLockedMove { get; set; } # TODO: Tests - Does a pkmn lose its choice locked move if it runs out of pp on the move, all moves, or ever?
 
 	#endregion
 
 	#region Special Flags
 
-	/// <summary>True if the Pokémon has successfully used <see cref="PBEMoveEffect.Minimize"/> which makes it succeptible to double damage from <see cref="PBEMoveFlag.DoubleDamageMinimized"/>.</summary>
+	## <summary>True if the Pokémon has successfully used <see cref="PBEMoveEffect.Minimize"/> which makes it succeptible to double damage from <see cref="PBEMoveFlag.DoubleDamageMinimized"/>.</summary>
 	public bool Minimize_Used { get; set; }
-	/// <summary>The amount of turns left until a Pokémon with <see cref="PBEAbility.SlowStart"/> loses its hinderance.</summary>
+	## <summary>The amount of turns left until a Pokémon with <see cref="PBEAbility.SlowStart"/> loses its hinderance.</summary>
 	public byte SlowStart_HinderTurnsLeft { get; set; }
-	/// <summary>True if the Pokémon was present at the start of the turn, which would allow <see cref="PBEAbility.SpeedBoost"/> to activate.</summary>
+	## <summary>True if the Pokémon was present at the start of the turn, which would allow <see cref="PBEAbility.SpeedBoost"/> to activate.</summary>
 	public bool SpeedBoost_AbleToSpeedBoostThisTurn { get; set; }
 
 	#endregion
@@ -295,9 +284,9 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		KnownAbility = Ability = PBEAbility.MAX;
 		KnownGender = Gender = info.Gender;
 		KnownItem = Item = (PBEItem)ushort.MaxValue;
-		Moves = new PBEBattleMoveset(Battle.Settings); // For Transform
+		Moves = new PBEBattleMoveset(Battle.Settings); # For Transform
 		KnownMoves = new PBEBattleMoveset(Battle.Settings);
-		TransformBackupMoves = new PBEBattleMoveset(Battle.Settings); // For Transform
+		TransformBackupMoves = new PBEBattleMoveset(Battle.Settings); # For Transform
 		KnownNickname = Nickname = info.Nickname;
 		KnownShiny = Shiny = info.Shiny;
 		KnownSpecies = Species = info.Species;
@@ -328,7 +317,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 			EXPPokemon.Add(pkmn);
 		}
 	}
-	/// <summary>For use with level ups. Does not send any packets.</summary>
+	## <summary>For use with level ups. Does not send any packets.</summary>
 	public void LearnMove(PBEMove move, int index)
 	{
 		bool transformed = Status2.HasFlag(PBEStatus2.Transformed);
@@ -339,14 +328,14 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		int pp = PBEDataUtils.CalcMaxPP(move, 0, Battle.Settings);
 		slot.PP = pp;
 		slot.MaxPP = pp;
-		// Update known moves below
+		# Update known moves below
 		if (!transformed && FieldPosition != PBEFieldPosition.None)
 		{
 			moves = KnownMoves;
 			PBEBattleMoveset.PBEBattleMovesetSlot? slot2 = moves[oldMove];
-			if (slot2 is not null) // Check if move is known first
+			if (slot2 is not null) # Check if move is known first
 			{
-				slot2.Move = PBEMove.MAX; // Make the move unknown if the old move was known
+				slot2.Move = PBEMove.MAX; # Make the move unknown if the old move was known
 				slot2.PP = 0;
 				moves.Organize();
 			}
@@ -359,7 +348,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		Attack = Defense;
 		Defense = a;
 	}
-	/// <summary>Applies effects that occur on switching out or escaping such as <see cref="PBEAbility.NaturalCure"/>.</summary>
+	## <summary>Applies effects that occur on switching out or escaping such as <see cref="PBEAbility.NaturalCure"/>.</summary>
 	public void ApplyNaturalCure()
 	{
 		if (!PBEIgnore && Ability == PBEAbility.NaturalCure)
@@ -414,7 +403,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		SlowStart_HinderTurnsLeft = 0;
 		SpeedBoost_AbleToSpeedBoostThisTurn = false;
 	}
-	/// <summary>Sets and clears all information required for switching out.</summary>
+	## <summary>Sets and clears all information required for switching out.</summary>
 	public void ClearForSwitch()
 	{
 		EXPPokemon.Clear();
@@ -438,7 +427,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		ResetVolatileStuff();
 		SetStats(false, false);
 	}
-	/// <summary>Sets and clears all information required for fainting.</summary>
+	## <summary>Sets and clears all information required for fainting.</summary>
 	public void ClearForFaint()
 	{
 		FieldPosition = PBEFieldPosition.None;
@@ -448,8 +437,8 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		ResetVolatileStuff();
 		SetStats(false, false);
 	}
-	// GameFreak are very inconsistent with how they handle Power Trick when recalculating stats
-	// Form change, Transform, Level up
+	# GameFreak are very inconsistent with how they handle Power Trick when recalculating stats
+	# Form change, Transform, Level up
 	public void SetStats(bool calculateHP, bool setMaxHPIfCalcHP)
 	{
 		IPBEPokemonData pData = PBEDataProvider.Instance.GetPokemonData(this);
@@ -467,7 +456,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 			{
 				HP = hp;
 			}
-			else if (HP != 0 && oldMaxHP != hp) // Don't change for a fainted mon
+			else if (HP != 0 && oldMaxHP != hp) # Don't change for a fainted mon
 			{
 				HP = (ushort)Math.Max(1, HP + (hp - oldMaxHP));
 			}
@@ -479,8 +468,8 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		SpDefense = PBEDataUtils.CalculateStat(pData, PBEStat.SpDefense, nature, evs.SpDefense, ivs.SpDefense, level, settings);
 		Speed = PBEDataUtils.CalculateStat(pData, PBEStat.Speed, nature, evs.Speed, ivs.Speed, level, settings);
 	}
-	/// <summary>Copies the <paramref name="target"/>, does not set <see cref="PBEStatus2.Transformed"/>.</summary>
-	/// <param name="target">The Pokémon to transform into.</param>
+	## <summary>Copies the <paramref name="target"/>, does not set <see cref="PBEStatus2.Transformed"/>.</summary>
+	## <param name="target">The Pokémon to transform into.</param>
 	public void Transform(PBEBattlePokemon target)
 	{
 		if (Trainer != target.Trainer)
@@ -540,7 +529,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 			}
 		}
 	}
-	/// <summary>Divides <see cref="HP"/> by <see cref="MaxHP"/> and places the result in <see cref="HPPercentage"/>.</summary>
+	## <summary>Divides <see cref="HP"/> by <see cref="MaxHP"/> and places the result in <see cref="HPPercentage"/>.</summary>
 	public void UpdateHPPercentage()
 	{
 		HPPercentage = (float)HP / MaxHP;
@@ -552,7 +541,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		{
 			if (Type2 == PBEType.None)
 			{
-				Type1 = PBEType.Normal; // Pure flying-type becomes Normal-type
+				Type1 = PBEType.Normal; # Pure flying-type becomes Normal-type
 				t |= PBERoostTypes.Type1;
 			}
 			else
@@ -754,7 +743,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 			return PBEResult.Ineffective_Substitute;
 		}
 
-		// These abilities do not activate when the Pokémon changes its own stat
+		# These abilities do not activate when the Pokémon changes its own stat
 		if (causer != this && !causer.HasCancellingAbility())
 		{
 			switch (useKnownInfo ? KnownAbility : Ability)
@@ -799,8 +788,8 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 			}
 		}
 
-		// Verified: Contrary/Simple are silent
-		// These abilities activate when the Pokémon changes its own stat
+		# Verified: Contrary/Simple are silent
+		# These abilities activate when the Pokémon changes its own stat
 		if (causer == this || !causer.HasCancellingAbility())
 		{
 			switch (useKnownInfo ? KnownAbility : Ability)
@@ -829,7 +818,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		AccuracyChange = 0;
 		EvasionChange = 0;
 	}
-	/// <summary>For use with <see cref="PBEMoveEffect.Punishment"/> and <see cref="PBEMoveEffect.StoredPower"/>.</summary>
+	## <summary>For use with <see cref="PBEMoveEffect.Punishment"/> and <see cref="PBEMoveEffect.StoredPower"/>.</summary>
 	public int GetPositiveStatTotal()
 	{
 		return GetStatsGreaterThan(0).Sum(s => GetStatChange(s));
@@ -933,9 +922,9 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		}
 		return mData.Targets;
 	}
-	/// <summary>Gets the possible targets that a move can target when used by this Pokémon.</summary>
-	/// <param name="move">The move to check.</param>
-	/// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="move"/> is invalid.</exception>
+	## <summary>Gets the possible targets that a move can target when used by this Pokémon.</summary>
+	## <param name="move">The move to check.</param>
+	## <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="move"/> is invalid.</exception>
 	public PBEMoveTarget GetMoveTargets(PBEMove move)
 	{
 		if (move == PBEMove.None || move >= PBEMove.MAX)
@@ -944,15 +933,15 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		}
 		return GetMoveTargets(PBEDataProvider.Instance.GetMoveData(move));
 	}
-	/// <summary>Returns True if the Pokémon is only able to use <see cref="PBEMove.Struggle"/>.</summary>
+	## <summary>Returns True if the Pokémon is only able to use <see cref="PBEMove.Struggle"/>.</summary>
 	public bool IsForcedToStruggle()
 	{
-		if (TempLockedMove != PBEMove.None) // Temp locked moves deduct PP on the first turn and don't on the second, so having a temp locked move means it is supposed to be used again for the second turn
+		if (TempLockedMove != PBEMove.None) # Temp locked moves deduct PP on the first turn and don't on the second, so having a temp locked move means it is supposed to be used again for the second turn
 		{
 			return false;
 		}
-		else if ((ChoiceLockedMove != PBEMove.None && Moves[ChoiceLockedMove]!.PP == 0) // If the choice locked move has 0 pp, it is forced to struggle
-			|| Moves.All(s => s.PP == 0) // If all moves have 0 pp, then the user is forced to struggle
+		else if ((ChoiceLockedMove != PBEMove.None && Moves[ChoiceLockedMove]!.PP == 0) # If the choice locked move has 0 pp, it is forced to struggle
+			|| Moves.All(s => s.PP == 0) # If all moves have 0 pp, then the user is forced to struggle
 			)
 		{
 			return true;
@@ -962,7 +951,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 			return false;
 		}
 	}
-	/// <summary>Returns True if the Pokémon can switch out. Does not check if the Pokémon is on the field or if there are available Pokémon to switch into.</summary>
+	## <summary>Returns True if the Pokémon can switch out. Does not check if the Pokémon is on the field or if there are available Pokémon to switch into.</summary>
 	public bool CanSwitchOut()
 	{
 		return TempLockedMove == PBEMove.None;
@@ -1231,7 +1220,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		}
 		return PBEResult.Success;
 	}
-	/// <summary>Returns an array of moves the Pokémon can use.</summary>
+	## <summary>Returns an array of moves the Pokémon can use.</summary>
 	public PBEMove[] GetUsableMoves()
 	{
 		if (IsForcedToStruggle())
@@ -1244,7 +1233,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		}
 		else if (ChoiceLockedMove != PBEMove.None)
 		{
-			return new PBEMove[1] { ChoiceLockedMove }; // IsForcedToStruggle() being false means the choice locked move still has PP
+			return new PBEMove[1] { ChoiceLockedMove }; # IsForcedToStruggle() being false means the choice locked move still has PP
 		}
 		else
 		{
@@ -1261,7 +1250,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 			return usableMoves.ToArray();
 		}
 	}
-	/// <summary>Gets the chance of a protection move succeeding (based on <see cref="Protection_Counter"/>) out of <see cref="ushort.MaxValue"/>.</summary>
+	## <summary>Gets the chance of a protection move succeeding (based on <see cref="Protection_Counter"/>) out of <see cref="ushort.MaxValue"/>.</summary>
 	public ushort GetProtectionChance()
 	{
 		int count = Protection_Counter;
@@ -1273,11 +1262,11 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		for (int i = party.Count - 1; i >= 0; i--)
 		{
 			PBEBattlePokemon p = party[i];
-			// Does not copy eggs
+			# Does not copy eggs
 			if (p.CanBattle)
 			{
-				// If this Pokémon is the "last" conscious one, it will go out as itself (loop breaks)
-				// The only way to disguise as a Pokémon that's on the battlefield is the first turn of a Double/Triple/Rotation battle
+				# If this Pokémon is the "last" conscious one, it will go out as itself (loop breaks)
+				# The only way to disguise as a Pokémon that's on the battlefield is the first turn of a Double/Triple/Rotation battle
 				if (p.OriginalSpecies != OriginalSpecies)
 				{
 					return p;
@@ -1288,7 +1277,7 @@ public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, 
 		return null;
 	}
 
-	/// <summary>Will only be accurate for the host</summary>
+	## <summary>Will only be accurate for the host</summary>
 	public override string ToString()
 	{
 		var sb = new StringBuilder();
