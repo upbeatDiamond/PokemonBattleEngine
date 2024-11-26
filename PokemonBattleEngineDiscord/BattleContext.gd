@@ -1,28 +1,10 @@
-﻿using Discord;
-using Discord.WebSocket;
-using Kermalis.PokemonBattleEngine.Battle;
-using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Data.Utils;
-using Kermalis.PokemonBattleEngine.DefaultData.AI;
-using Kermalis.PokemonBattleEngine.Packets;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Kermalis.PokemonBattleEngineDiscord;
-
 internal sealed partial class BattleContext
 {
 	private sealed class Battler
 	{
 		public readonly PBETeam Team;
 		public readonly PBETrainer Trainer;
-		public readonly SocketUser? User; // Null means PBEAI is battling
+		public readonly SocketUser? User; # Null means PBEAI is battling
 		public readonly PBEDDAI? AI;
 
 		public Battler(PBETeam t, SocketUser? u)
@@ -84,7 +66,7 @@ internal sealed partial class BattleContext
 			battle.OnNewEvent += Battle_OnNewEvent;
 			battle.OnStateChanged += Battle_OnStateChanged;
 		}
-		_channel = null!; // _channel will be set in Begin()
+		_channel = null!; # _channel will be set in Begin()
 	}
 	public async Task Begin(ITextChannel channel)
 	{
@@ -138,7 +120,7 @@ internal sealed partial class BattleContext
 		{
 			if (_activeGuilds.TryGetValue(guild, out List<BattleContext>? list))
 			{
-				foreach (BattleContext bc in list.ToArray()) // Prevent collection being modified in loop
+				foreach (BattleContext bc in list.ToArray()) # Prevent collection being modified in loop
 				{
 					bc.CloseSilent(false);
 				}
@@ -177,7 +159,7 @@ internal sealed partial class BattleContext
 
 	public async Task Forfeit(SocketUser user)
 	{
-		// Assumes "user" is not null (AI)
+		# Assumes "user" is not null (AI)
 		await Forfeit(GetBattler(user));
 	}
 	private async Task Forfeit(Battler battler)
@@ -228,10 +210,10 @@ internal sealed partial class BattleContext
 			}
 			_activeChannels.Remove(_channel);
 			_activeGuilds[_channel.Guild].Remove(this);
-			// Only save replay if ((saveReplay is true) and (not battling an AI or (battling an AI and should save AI replays)))
+			# Only save replay if ((saveReplay is true) and (not battling an AI or (battling an AI and should save AI replays)))
 			if (saveReplay && ((u0 is not null && u1 is not null) || ReplaySaver.ShouldSaveAIBattles))
 			{
-				ReplaySaver.SaveReplay(_battle, BattleId); // Save battle in the lock so they don't conflict while directory checking
+				ReplaySaver.SaveReplay(_battle, BattleId); # Save battle in the lock so they don't conflict while directory checking
 			}
 		}
 		_battle.OnNewEvent -= Battle_OnNewEvent;
@@ -239,7 +221,7 @@ internal sealed partial class BattleContext
 		ReactionHandler.RemoveListeners(u0, u1);
 	}
 
-	private string? _embedTitle; // Mini performance saver
+	private string? _embedTitle; # Mini performance saver
 	private void SetEmbedTitle()
 	{
 		string s = $"**[#{BattleId}] ― {_battler0.GetName()} vs {_battler1.GetName()}";
@@ -562,7 +544,7 @@ internal sealed partial class BattleContext
 		}
 		throw new ArgumentOutOfRangeException(nameof(trainer));
 	}
-	// These two are passed to the message handler
+	# These two are passed to the message handler
 	private string GetTrainerName(PBETrainer trainer)
 	{
 		return GetBattler(trainer).GetName();
@@ -609,7 +591,7 @@ internal sealed partial class BattleContext
 	}
 	private async Task Battle_OnNewEvent(IPBEPacket packet)
 	{
-		// Packets that need extra logic and/or should not have a default message
+		# Packets that need extra logic and/or should not have a default message
 		switch (packet)
 		{
 			case PBEMovePPChangedPacket _: return;
@@ -618,13 +600,13 @@ internal sealed partial class BattleContext
 				PBETrainer trainer = arp.Trainer;
 				Battler battler = GetBattler(trainer);
 				SocketUser? user = battler.User;
-				if (user is null) // PBEAI
+				if (user is null) # PBEAI
 				{
 					battler.AI!.CreateActions();
 					return;
 				}
 				PBEBattlePokemon mainPkmn = trainer.ActionsRequired[0];
-				var reactionsToAdd = new List<(IUserMessage Message, IEmote Reaction)>(PBESettings.DefaultMaxPartySize - 1 + PBESettings.DefaultNumMoves); // 5 switch reactions, 4 move reactions
+				var reactionsToAdd = new List<(IUserMessage Message, IEmote Reaction)>(PBESettings.DefaultMaxPartySize - 1 + PBESettings.DefaultNumMoves); # 5 switch reactions, 4 move reactions
 				string description;
 				EmbedFieldBuilder[] fields;
 
@@ -632,7 +614,7 @@ internal sealed partial class BattleContext
 				{
 					async Task SwitchReactionClicked(IUserMessage switchMsg, PBEBattlePokemon switchPkmn)
 					{
-						await switchMsg.AddReactionAsync(_confirmationEmoji); // Put this here so it happens before RunTurn() takes its time
+						await switchMsg.AddReactionAsync(_confirmationEmoji); # Put this here so it happens before RunTurn() takes its time
 						trainer.SelectActionsIfValid(out _, new PBETurnAction(mainPkmn, switchPkmn));
 					}
 
@@ -652,7 +634,7 @@ internal sealed partial class BattleContext
 
 				async Task MoveReactionClicked(PBEMove move)
 				{
-					await mainMsg.AddReactionAsync(_confirmationEmoji); // Put this here so it happens before RunTurn() takes its time
+					await mainMsg.AddReactionAsync(_confirmationEmoji); # Put this here so it happens before RunTurn() takes its time
 					PBEMoveTarget possibleTargets = mainPkmn.GetMoveTargets(move);
 					PBETurnTarget targets;
 					switch (possibleTargets)
@@ -690,13 +672,13 @@ internal sealed partial class BattleContext
 				PBEMove[] usableMoves = mainPkmn.GetUsableMoves();
 				for (int i = 0; i < usableMoves.Length; i++)
 				{
-					PBEMove move = usableMoves[i]; // move must be evaluated before it reaches the lambda
+					PBEMove move = usableMoves[i]; # move must be evaluated before it reaches the lambda
 					Emote emoji = _moveEmotes[i][mainPkmn.GetMoveType(move)];
 					reactionsToAdd.Add((mainMsg, emoji));
 					ReactionHandler.AddListener(user, mainMsg, emoji, () => MoveReactionClicked(move));
 				}
 
-				// All listeners are added, so now we can send the reactions
+				# All listeners are added, so now we can send the reactions
 				foreach ((IUserMessage Message, IEmote Reaction) in reactionsToAdd)
 				{
 					await Message.AddReactionAsync(Reaction);
@@ -714,7 +696,7 @@ internal sealed partial class BattleContext
 				}
 				Battler battler = GetBattler(trainer);
 				SocketUser? user = battler.User;
-				if (user is null) // PBEAI
+				if (user is null) # PBEAI
 				{
 					battler.AI!.CreateSwitches();
 					return;
@@ -729,7 +711,7 @@ internal sealed partial class BattleContext
 
 				async Task SwitchReactionClicked(IUserMessage switchMsg, PBEBattlePokemon switchPkmn)
 				{
-					await switchMsg.AddReactionAsync(_confirmationEmoji); // Put this here so it happens before RunTurn() takes its time
+					await switchMsg.AddReactionAsync(_confirmationEmoji); # Put this here so it happens before RunTurn() takes its time
 					trainer.SelectSwitchesIfValid(out _, new PBESwitchIn(switchPkmn, PBEFieldPosition.Center));
 				}
 
@@ -743,7 +725,7 @@ internal sealed partial class BattleContext
 					ReactionHandler.AddListener(user, switchMsg, _switchEmoji, () => SwitchReactionClicked(switchMsg, switchPkmn));
 				}
 
-				// All listeners are added, so now we can send the reactions
+				# All listeners are added, so now we can send the reactions
 				for (int i = 0; i < reactionsToAdd.Length; i++)
 				{
 					(IUserMessage Message, IEmote Reaction) = reactionsToAdd[i];
@@ -757,7 +739,7 @@ internal sealed partial class BattleContext
 				{
 					SetEmbedTitle();
 				}
-				break; // Continue to the default message
+				break; # Continue to the default message
 			}
 			case PBETurnBeganPacket tbp:
 			{
@@ -766,7 +748,7 @@ internal sealed partial class BattleContext
 				await SendActiveBattlerEmbeds();
 				return;
 			}
-			case PBEBattleResultPacket brp: // We do not want the default message since it uses the combined name
+			case PBEBattleResultPacket brp: # We do not want the default message since it uses the combined name
 			{
 				string m;
 				switch (brp.BattleResult)
@@ -780,7 +762,7 @@ internal sealed partial class BattleContext
 				return;
 			}
 		}
-		// Get default message
+		# Get default message
 		string? message = PBEBattle.GetDefaultMessage(_battle, packet, trainerNameFunc: GetTrainerName, teamNameFunc: GetTeamName);
 		if (string.IsNullOrEmpty(message))
 		{

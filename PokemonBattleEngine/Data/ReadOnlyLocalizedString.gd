@@ -1,5 +1,3 @@
-﻿namespace Kermalis.PokemonBattleEngine.Data;
-
 public sealed class PBEReadOnlyLocalizedString : IPBEReadOnlyLocalizedString
 {
 	public string English { get; }

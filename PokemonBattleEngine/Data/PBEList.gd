@@ -1,12 +1,3 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
-
-namespace Kermalis.PokemonBattleEngine.Data;
-
 public sealed class PBEList<T> : INotifyCollectionChanged, INotifyPropertyChanged, IReadOnlyList<T>
 {
 	private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
