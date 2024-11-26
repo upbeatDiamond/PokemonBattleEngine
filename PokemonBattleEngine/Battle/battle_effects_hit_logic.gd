@@ -2,20 +2,7 @@
 # That's why this file exists in favor of the order I had before
 public sealed partial class PBEBattle
 {
-	private class PBEAttackVictim
-	{
-		public PBEBattlePokemon Pkmn { get; }
-		public PBEResult Result { get; }
-		public float TypeEffectiveness { get; }
-		public bool Crit { get; set; }
-		public ushort Damage { get; set; }
-
-		public PBEAttackVictim(PBEBattlePokemon pkmn, PBEResult result, float typeEffectiveness)
-		{
-			Pkmn = pkmn; Result = result; TypeEffectiveness = typeEffectiveness;
-		}
-	}
-
+	
 	# TODO: TripleKick miss logic
 	private void Hit_GetVictims(PBEBattlePokemon user, PBEBattlePokemon[] targets, IPBEMoveData mData, PBEType moveType, out List<PBEAttackVictim> victims,
 		Func<PBEBattlePokemon, PBEResult>? failFunc = null)
@@ -315,3 +302,15 @@ public sealed partial class PBEBattle
 		DoPostAttackedEffects(user, allies, foes, true, colorChangeType: moveType);
 	}
 }
+
+class PBEAttackVictim:
+	var Pkmn : PBEBattlePokemon
+	var Result : PBEResult 
+	var TypeEffectiveness : float 
+	var Crit : bool
+	var Damage : int #ushort 
+	
+	func _init(pkmn:PBEBattlePokemon , result:PBEResult , typeEffectiveness:float ):
+		Pkmn = pkmn
+		Result = result
+		TypeEffectiveness = typeEffectiveness

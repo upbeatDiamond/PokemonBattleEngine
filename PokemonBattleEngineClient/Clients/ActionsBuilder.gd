@@ -1,11 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
-using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngineClient.Views;
-using System;
-using System.Linq;
-
-namespace Kermalis.PokemonBattleEngineClient.Clients;
-
 internal sealed class ActionsBuilder
 {
 	private readonly BattleView _bv;

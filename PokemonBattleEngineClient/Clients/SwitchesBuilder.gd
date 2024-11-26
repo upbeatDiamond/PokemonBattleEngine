@@ -1,9 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
-using Kermalis.PokemonBattleEngineClient.Views;
-using System;
-
-namespace Kermalis.PokemonBattleEngineClient.Clients;
-
 internal sealed class SwitchesBuilder
 {
 	private readonly BattleView _bv;

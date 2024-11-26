@@ -1,10 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
-using Kermalis.PokemonBattleEngine.Packets;
-using Kermalis.PokemonBattleEngineClient.Views;
-using System;
-
-namespace Kermalis.PokemonBattleEngineClient.Clients;
-
 internal abstract class BattleClient : IDisposable
 {
 	protected const int WaitMilliseconds = 1750;
@@ -36,7 +29,7 @@ internal abstract class BattleClient : IDisposable
 	}
 
 	#region Automatic packet processing
-	// Returns true if the next packet should be run immediately
+	# Returns true if the next packet should be run immediately
 	protected virtual bool ProcessPacket(IPBEPacket packet)
 	{
 		switch (packet)
@@ -50,14 +43,14 @@ internal abstract class BattleClient : IDisposable
 			case PBEActionsRequestPacket _:
 			case PBESwitchInRequestPacket _: return true;
 			/*case PBEPkmnEXPChangedPacket pecp:
-            {
-                PBEBattlePokemon pokemon = pecp.PokemonTrainer.GetPokemon(pecp.Pokemon);
-                if (pokemon.FieldPosition != PBEFieldPosition.None)
-                {
-                    BattleView.Field.UpdatePokemon(pokemon, true, false);
-                }
-                break;
-            }*/ // Commented out because we don't have EXP bars
+			{
+				PBEBattlePokemon pokemon = pecp.PokemonTrainer.GetPokemon(pecp.Pokemon);
+				if (pokemon.FieldPosition != PBEFieldPosition.None)
+				{
+					BattleView.Field.UpdatePokemon(pokemon, true, false);
+				}
+				break;
+			}*/ # Commented out because we don't have EXP bars
 			case PBEPkmnFaintedPacket pfp:
 			{
 				PBEBattlePokemon pokemon = pfp.PokemonTrainer.GetPokemon(pfp.Pokemon);
@@ -93,7 +86,7 @@ internal abstract class BattleClient : IDisposable
 			}
 			case IPBEPkmnSwitchInPacket psip:
 			{
-				if (!psip.Forced) // TODO: Why not forced? bug?
+				if (!psip.Forced) # TODO: Why not forced? bug?
 				{
 					foreach (IPBEPkmnSwitchInInfo_Hidden info in psip.SwitchIns)
 					{

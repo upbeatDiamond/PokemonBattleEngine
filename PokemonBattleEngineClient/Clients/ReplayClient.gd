@@ -1,9 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
-using Kermalis.PokemonBattleEngine.Packets;
-using Kermalis.PokemonBattleEngineClient.Views;
-
-namespace Kermalis.PokemonBattleEngineClient.Clients;
-
 internal sealed class ReplayClient : NonLocalClient
 {
 	public override PBEBattle Battle { get; }

@@ -1,179 +1,179 @@
 ## <summary>Represents a specific Pokémon during a battle.</summary>
-public sealed class PBEBattlePokemon : IPBEPokemonKnownTypes, IPBEPokemonTypes, IPBESpeciesForm
-{
-	public PBEBattle Battle { get; }
-	public PBETeam Team { get; }
-	public PBETrainer Trainer { get; }
-	public byte Id { get; }
+class PBEBattlePokemon:# : IPBEPokemonKnownTypes, IPBEPokemonTypes, IPBESpeciesForm
+
+	public PBEBattle Battle 
+	public PBETeam Team 
+	public PBETrainer Trainer 
+	public byte Id 
 	public bool IsWild => Team.IsWild;
 	public bool IsLocallyHosted => Battle.IsLocallyHosted;
-	public bool PBEIgnore { get; }
+	public bool PBEIgnore 
 
 	public bool CanBattle => HP > 0 && !PBEIgnore;
 
 	#region Basic Properties
 
 	## <summary>The Pokémon's current HP.</summary>
-	public ushort HP { get; set; }
+	public ushort HP 
 	## <summary>The Pokémon's maximum HP.</summary>
-	public ushort MaxHP { get; set; }
+	public ushort MaxHP 
 	## <summary>The Pokémon's current HP as a percentage.</summary>
-	public float HPPercentage { get; set; }
+	public float HPPercentage 
 	## <summary>The Pokémon's attack stat.</summary>
-	public ushort Attack { get; set; }
-	public sbyte AttackChange { get; set; }
+	public ushort Attack 
+	public sbyte AttackChange 
 	## <summary>The Pokémon's defense stat.</summary>
-	public ushort Defense { get; set; }
-	public sbyte DefenseChange { get; set; }
+	public ushort Defense 
+	public sbyte DefenseChange 
 	## <summary>The Pokémon's special attack stat.</summary>
-	public ushort SpAttack { get; set; }
-	public sbyte SpAttackChange { get; set; }
+	public ushort SpAttack 
+	public sbyte SpAttackChange 
 	## <summary>The Pokémon's special defense stat.</summary>
-	public ushort SpDefense { get; set; }
-	public sbyte SpDefenseChange { get; set; }
+	public ushort SpDefense 
+	public sbyte SpDefenseChange 
 	## <summary>The Pokémon's speed stat.</summary>
-	public ushort Speed { get; set; }
-	public sbyte SpeedChange { get; set; }
-	public sbyte AccuracyChange { get; set; }
-	public sbyte EvasionChange { get; set; }
-	public PBEReadOnlyStatCollection? OriginalEffortValues { get; }
-	public PBEStatCollection? EffortValues { get; }
-	public PBEReadOnlyStatCollection? IndividualValues { get; }
-	public byte Friendship { get; set; }
-	public byte OriginalLevel { get; set; }
+	public ushort Speed 
+	public sbyte SpeedChange 
+	public sbyte AccuracyChange 
+	public sbyte EvasionChange 
+	public PBEReadOnlyStatCollection? OriginalEffortValues 
+	public PBEStatCollection? EffortValues 
+	public PBEReadOnlyStatCollection? IndividualValues 
+	public byte Friendship 
+	public byte OriginalLevel 
 	## <summary>The Pokémon's level.</summary>
-	public byte Level { get; set; }
-	public uint OriginalEXP { get; set; }
-	public uint EXP { get; set; }
+	public byte Level 
+	public uint OriginalEXP 
+	public uint EXP 
 	## <summary>The Pokémon's nature.</summary>
-	public PBENature Nature { get; set; }
+	public PBENature Nature 
 	## <summary>The moveset the Pokémon had upon entering battle.</summary>
-	public PBEReadOnlyPartyMoveset? OriginalMoveset { get; }
+	public PBEReadOnlyPartyMoveset? OriginalMoveset 
 
 	## <summary>The Pokémon's field position.</summary>
-	public PBEFieldPosition FieldPosition { get; set; }
+	public PBEFieldPosition FieldPosition 
 	## <summary>The Pokémon's current ability.</summary>
-	public PBEAbility Ability { get; set; }
+	public PBEAbility Ability 
 	## <summary>The ability the Pokémon is known to have.</summary>
-	public PBEAbility KnownAbility { get; set; }
+	public PBEAbility KnownAbility 
 	## <summary>The ability the Pokémon had upon entering battle.</summary>
-	public PBEAbility OriginalAbility { get; set; }
+	public PBEAbility OriginalAbility 
 	## <summary>The ability the Pokémon will regain upon switching out, fainting, or the battle ending.</summary>
-	public PBEAbility RevertAbility { get; set; }
+	public PBEAbility RevertAbility 
 	## <summary>The Pokémon's gender.</summary>
-	public PBEGender Gender { get; set; }
+	public PBEGender Gender 
 	## <summary>The gender the Pokémon looks like (affected by transforming and disguising).</summary>
-	public PBEGender KnownGender { get; set; }
+	public PBEGender KnownGender 
 	## <summary>The Pokémon's current item.</summary>
-	public PBEItem Item { get; set; }
+	public PBEItem Item 
 	## <summary>The item the Pokémon is known to have.</summary>
-	public PBEItem KnownItem { get; set; }
+	public PBEItem KnownItem 
 	## <summary>The item the Pokémon had upon entering battle.</summary>
-	public PBEItem OriginalItem { get; set; }
+	public PBEItem OriginalItem 
 	## <summary>The Pokémon's current ball (affected by catching).</summary>
-	public PBEItem CaughtBall { get; set; }
+	public PBEItem CaughtBall 
 	## <summary>The ball the Pokémon is known to be in (affected by disguising).</summary>
-	public PBEItem KnownCaughtBall { get; set; }
+	public PBEItem KnownCaughtBall 
 	## <summary>The ball the Pokémon was in upon entering battle.</summary>
-	public PBEItem OriginalCaughtBall { get; set; }
+	public PBEItem OriginalCaughtBall 
 	## <summary>The moves the Pokémon currently has.</summary>
-	public PBEBattleMoveset Moves { get; }
+	public PBEBattleMoveset Moves 
 	## <summary>The moves the Pokémon is known to have.</summary>
-	public PBEBattleMoveset KnownMoves { get; }
+	public PBEBattleMoveset KnownMoves 
 	## <summary>The nickname the Pokémon normally has.</summary>
-	public string Nickname { get; set; }
+	public string Nickname 
 	## <summary>The nickname the Pokémon is known to have.</summary>
-	public string KnownNickname { get; set; }
+	public string KnownNickname 
 	## <summary>The shininess the Pokémon normally has.</summary>
-	public bool Shiny { get; set; }
+	public bool Shiny 
 	## <summary>The shininess everyone sees the Pokémon has.</summary>
-	public bool KnownShiny { get; set; }
-	public bool Pokerus { get; set; }
+	public bool KnownShiny 
+	public bool Pokerus 
 	## <summary>The current species of the Pokémon (affected by transforming and form changing).</summary>
-	public PBESpecies Species { get; set; }
+	public PBESpecies Species 
 	## <summary>The species everyone sees the Pokémon as (affected by transforming, disguising, and form changing).</summary>
-	public PBESpecies KnownSpecies { get; set; }
+	public PBESpecies KnownSpecies 
 	## <summary>The species the Pokémon was upon entering battle.</summary>
-	public PBESpecies OriginalSpecies { get; set; }
-	public PBEForm Form { get; set; }
-	public PBEForm KnownForm { get; set; }
-	public PBEForm OriginalForm { get; set; }
-	public PBEForm RevertForm { get; set; }
-	public PBEStatus1 Status1 { get; set; }
-	public PBEStatus1 OriginalStatus1 { get; set; }
-	public PBEStatus2 Status2 { get; set; }
-	public PBEStatus2 KnownStatus2 { get; set; }
+	public PBESpecies OriginalSpecies 
+	public PBEForm Form 
+	public PBEForm KnownForm 
+	public PBEForm OriginalForm 
+	public PBEForm RevertForm 
+	public PBEStatus1 Status1 
+	public PBEStatus1 OriginalStatus1 
+	public PBEStatus2 Status2 
+	public PBEStatus2 KnownStatus2 
 	## <summary>The Pokémon's first type.</summary>
-	public PBEType Type1 { get; set; }
+	public PBEType Type1 
 	## <summary>The first type everyone believes the Pokémon has.</summary>
-	public PBEType KnownType1 { get; set; }
+	public PBEType KnownType1 
 	## <summary>The Pokémon's second type.</summary>
-	public PBEType Type2 { get; set; }
+	public PBEType Type2 
 	## <summary>The second type everyone believes the Pokémon has.</summary>
-	public PBEType KnownType2 { get; set; }
-	public float Weight { get; set; }
-	public float KnownWeight { get; set; }
+	public PBEType KnownType2 
+	public float Weight 
+	public float KnownWeight 
 
 	#endregion
 
 	#region Statuses
 
 	## <summary>The counter used for <see cref="PBEStatus1.BadlyPoisoned"/> and <see cref="PBEStatus1.Asleep"/>.</summary>
-	public byte Status1Counter { get; set; }
+	public byte Status1Counter 
 	## <summary>The amount of turns the Pokémon will sleep for before waking.</summary>
-	public byte SleepTurns { get; set; }
+	public byte SleepTurns 
 	## <summary>The counter used for <see cref="PBEStatus2.Confused"/>.</summary>
-	public byte ConfusionCounter { get; set; }
+	public byte ConfusionCounter 
 	## <summary>The amount of turns the Pokémon will be confused for before snapping out of it.</summary>
-	public byte ConfusionTurns { get; set; }
+	public byte ConfusionTurns 
 	## <summary>The Pokémon that <see cref="PBEStatus2.Infatuated"/> is bound to.</summary>
-	public PBEBattlePokemon? InfatuatedWithPokemon { get; set; }
+	public PBEBattlePokemon? InfatuatedWithPokemon 
 	## <summary>The amount of turns until <see cref="PBEStatus2.MagnetRise"/> ends.</summary>
-	public byte MagnetRiseTurns { get; set; }
+	public byte MagnetRiseTurns 
 	## <summary>The Pokémon that <see cref="PBEStatus2.LockOn"/> is bound to.</summary>
-	public PBEBattlePokemon? LockOnPokemon { get; set; }
-	public byte LockOnTurns { get; set; }
+	public PBEBattlePokemon? LockOnPokemon 
+	public byte LockOnTurns 
 	## <summary>The amount of times the Pokémon has successfully used <see cref="PBEMoveEffect.Protect"/>, <see cref="PBEMoveEffect.QuickGuard"/>, and/or <see cref="PBEMoveEffect.WideGuard"/> consecutively.</summary>
-	public int Protection_Counter { get; set; }
-	public bool Protection_Used { get; set; }
-	public PBERoostTypes RoostTypes { get; set; }
+	public int Protection_Counter 
+	public bool Protection_Used 
+	public PBERoostTypes RoostTypes 
 	## <summary>The position to return <see cref="PBEStatus2.LeechSeed"/> HP to on <see cref="SeededTeam"/>.</summary>
-	public PBEFieldPosition SeededPosition { get; set; }
+	public PBEFieldPosition SeededPosition 
 	## <summary>The team responsible for <see cref="PBEStatus2.LeechSeed"/>.</summary>
-	public PBETeam? SeededTeam { get; set; }
+	public PBETeam? SeededTeam 
 	## <summary>The amount of HP the Pokémon's <see cref="PBEStatus2.Substitute"/> has left.</summary>
-	public ushort SubstituteHP { get; set; }
-	public PBEBattleMoveset TransformBackupMoves { get; }
+	public ushort SubstituteHP 
+	public PBEBattleMoveset TransformBackupMoves 
 
 	#endregion
 
 	#region Actions
 
 	## <summary><see langword="true"/> if the Pokémon has successfully executed a move this turn.</summary>
-	public bool HasUsedMoveThisTurn { get; set; }
+	public bool HasUsedMoveThisTurn 
 	## <summary>The action the Pokémon will try to perform when the turn is run. <see langword="null"/> if the Pokémon just switched in, attempted to flee, etc.</summary>
-	public PBETurnAction? TurnAction { get; set; }
+	public PBETurnAction? TurnAction 
 	## <summary>The move the Pokémon is forced to use by multi-turn moves.</summary>
-	public PBEMove TempLockedMove { get; set; } # TODO: Tests - Does a pkmn lose its temp locked move if it runs out of pp on the move, all moves, or ever? (Some move can lower its pp while it's being used?)
+	public PBEMove TempLockedMove  # TODO: Tests - Does a pkmn lose its temp locked move if it runs out of pp on the move, all moves, or ever? (Some move can lower its pp while it's being used?)
 	## <summary>The targets the Pokémon is forced to target by multi-turn moves.</summary>
-	public PBETurnTarget TempLockedTargets { get; set; }
+	public PBETurnTarget TempLockedTargets 
 	## <summary>The move the Pokémon is forced to use by its choice item.</summary>
-	public PBEMove ChoiceLockedMove { get; set; } # TODO: Tests - Does a pkmn lose its choice locked move if it runs out of pp on the move, all moves, or ever?
+	public PBEMove ChoiceLockedMove  # TODO: Tests - Does a pkmn lose its choice locked move if it runs out of pp on the move, all moves, or ever?
 
 	#endregion
 
 	#region Special Flags
 
 	## <summary>True if the Pokémon has successfully used <see cref="PBEMoveEffect.Minimize"/> which makes it succeptible to double damage from <see cref="PBEMoveFlag.DoubleDamageMinimized"/>.</summary>
-	public bool Minimize_Used { get; set; }
+	public bool Minimize_Used 
 	## <summary>The amount of turns left until a Pokémon with <see cref="PBEAbility.SlowStart"/> loses its hinderance.</summary>
-	public byte SlowStart_HinderTurnsLeft { get; set; }
+	public byte SlowStart_HinderTurnsLeft 
 	## <summary>True if the Pokémon was present at the start of the turn, which would allow <see cref="PBEAbility.SpeedBoost"/> to activate.</summary>
-	public bool SpeedBoost_AbleToSpeedBoostThisTurn { get; set; }
+	public bool SpeedBoost_AbleToSpeedBoostThisTurn 
 
 	#endregion
 
-	public List<PBEBattlePokemon> EXPPokemon { get; } = new();
+	public List<PBEBattlePokemon> EXPPokemon  = new();
 
 	#region Constructors
 

@@ -1,14 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
-using Kermalis.PokemonBattleEngine.Data.Legality;
-using Kermalis.PokemonBattleEngine.Network;
-using Kermalis.PokemonBattleEngine.Packets;
-using Kermalis.PokemonBattleEngineClient.Views;
-using System;
-using System.Diagnostics;
-using System.Net;
-
-namespace Kermalis.PokemonBattleEngineClient.Clients;
-
 internal sealed class NetworkClientConnection : IDisposable
 {
 	private readonly PBEClient _client;

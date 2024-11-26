@@ -1,11 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
-using Kermalis.PokemonBattleEngine.DefaultData.AI;
-using Kermalis.PokemonBattleEngine.Packets;
-using Kermalis.PokemonBattleEngineClient.Views;
-using System.Threading;
-
-namespace Kermalis.PokemonBattleEngineClient.Clients;
-
 internal sealed class SinglePlayerClient : BattleClient
 {
 	public override PBEBattle Battle { get; }

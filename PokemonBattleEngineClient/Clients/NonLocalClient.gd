@@ -1,11 +1,3 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
-using Kermalis.PokemonBattleEngine.Data;
-using Kermalis.PokemonBattleEngine.Packets;
-using System.IO;
-using System.Threading;
-
-namespace Kermalis.PokemonBattleEngineClient.Clients;
-
 internal abstract class NonLocalClient : BattleClient
 {
 	protected NonLocalClient(string name) : base(name) { }
