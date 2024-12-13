@@ -10,8 +10,7 @@ class PBETrainers :
 		_trainers = trainers;
 
 
-public sealed partial class PBETrainer
-{
+class PBETrainer:
 	public PBEBattle Battle { get; }
 	public PBETeam Team { get; }
 	public PBEList<PBEBattlePokemon> Party { get; }
@@ -172,11 +171,11 @@ public sealed partial class PBETrainer
 		}
 		throw new InvalidOperationException();
 	}
-}
+
 
 
 #
-class PBETrainer:
+#class PBETrainer:
 	
 	public bool AreActionsValid([NotNullWhen(false)] out string? invalidReason, params PBETurnAction[] actions)
 	{

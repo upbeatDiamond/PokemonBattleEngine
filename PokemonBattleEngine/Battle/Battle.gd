@@ -1,7 +1,7 @@
 ### Ideally, this would hold the global/static functions
 
 #
-class PBEBattle:
+class PBEBattle1: ## Merge Battle into this.
 
 	static func AreActionsValid(trainer:PBETrainer, actions: Array[PBETurnAction], invalidReason:String) -> bool:
 		if (trainer.Battle._battleState != PBEBattleState.WaitingForActions):
@@ -9,19 +9,19 @@ class PBEBattle:
 		if (trainer.ActionsRequired.Count == 0):
 			invalidReason = "Actions were already submitted";
 			return false;
-		if (actions.Count != trainer.ActionsRequired.Count):
+		if (actions.size() != trainer.ActionsRequired.size()):
 			invalidReason = str("Invalid amount of actions submitted; required amount is ", trainer.ActionsRequired.Count)
 			return false;
 
-		var verified : Array[PBEBattlePokemon] = []; verified.resize(trainer.ActionsRequired.Count); #new List<PBEBattlePokemon>(trainer.ActionsRequired.Count);
-		var standBy : Array[PBEBattlePokemon] = []; standBy.resize(trainer.ActionsRequired.Count); # = new List<PBEBattlePokemon>(trainer.ActionsRequired.Count);
+		var verified : Array[PBEBattlePokemon] = []; verified.resize(trainer.ActionsRequired.size()); #new List<PBEBattlePokemon>(trainer.ActionsRequired.Count);
+		var standBy : Array[PBEBattlePokemon] = []; standBy.resize(trainer.ActionsRequired.size()); # = new List<PBEBattlePokemon>(trainer.ActionsRequired.Count);
 		var item : Dictionary = {}; #s = new Dictionary<PBEItem, int>(trainer.ActionsRequired.Count);
 		for action in actions: #PBETurnAction
 			if (!trainer.TryGetPokemon(action.PokemonId, pkmn)):
 				invalidReason = str("Invalid Pokémon ID (", action.PokemonId, ")")
 				return false;
 			if (!trainer.ActionsRequired.Contains(pkmn)):
-				invalidReason = $"Pokémon {action.PokemonId} not looking for actions";
+				invalidReason = str("Pokémon ", action.PokemonId , " not looking for actions")
 				return false;
 			if (verified.Contains(pkmn)):
 				invalidReason = $"Pokémon {action.PokemonId} was multiple actions";
@@ -145,105 +145,72 @@ class PBEBattle:
 		if (switches.Count != trainer.SwitchInsRequired):
 			invalidReason = $"Invalid amount of switches submitted; required amount is {trainer.SwitchInsRequired}";
 			return false;
-		var verified = new List<PBEBattlePokemon>(trainer.SwitchInsRequired);
+		var verified = [] #new List<PBEBattlePokemon>(trainer.SwitchInsRequired);
 		for s in switches:
 			if (s.Position == PBEFieldPosition.None || s.Position >= PBEFieldPosition.MAX || !trainer.OwnsSpot(s.Position)):
 				invalidReason = $"Invalid position ({s.PokemonId})";
 				return false;
-			if (!trainer.TryGetPokemon(s.PokemonId, out PBEBattlePokemon? pkmn))
-			{
+			if (!trainer.TryGetPokemon(s.PokemonId, pkmn)):
 				invalidReason = $"Invalid Pokémon ID ({s.PokemonId})";
 				return false;
-			}
-			if (pkmn.HP == 0)
-			{
+			if (pkmn.HP == 0):
 				invalidReason = $"Pokémon {s.PokemonId} is fainted";
 				return false;
-			}
-			if (pkmn.PBEIgnore)
-			{
+			if (pkmn.PBEIgnore):
 				invalidReason = $"Pokémon {s.PokemonId} cannot battle";
 				return false;
-			}
-			if (pkmn.FieldPosition != PBEFieldPosition.None)
-			{
+			if (pkmn.FieldPosition != PBEFieldPosition.None):
 				invalidReason = $"Pokémon {s.PokemonId} is already on the field";
 				return false;
-			}
-			if (verified.Contains(pkmn))
-			{
+			if (verified.Contains(pkmn)):
 				invalidReason = $"Pokémon {s.PokemonId} was asked to be switched in multiple times";
 				return false;
-			}
-			verified.Add(pkmn);
-		}
+			verified.Add(pkmn)
 		invalidReason = null;
 		return true;
-	}
-	internal static bool SelectSwitchesIfValid(PBETrainer trainer, IReadOnlyCollection<PBESwitchIn> switches, [NotNullWhen(false)] out string? invalidReason)
-	{
-		if (!AreSwitchesValid(trainer, switches, out invalidReason))
-		{
-			return false;
-		}
-		trainer.SwitchInsRequired = 0;
-		foreach (PBESwitchIn s in switches)
-		{
-			trainer.SwitchInQueue.Add((trainer.GetPokemon(s.PokemonId), s.Position));
-		}
-		if (trainer.Battle.Trainers.All(t => t.SwitchInsRequired == 0))
-		{
-			trainer.Battle.BattleState = PBEBattleState.ReadyToRunSwitches;
-		}
-		return true;
-	}
 
-	internal static bool IsFleeValid(PBETrainer trainer, [NotNullWhen(false)] out string? invalidReason)
-	{
-		if (trainer.Battle.BattleType != PBEBattleType.Wild)
-		{
+
+	static func SelectSwitchesIfValid(trainer:PBETrainer, switches:Array[PBESwitchIn], invalidReason:String) -> bool:
+		if (!AreSwitchesValid(trainer, switches, invalidReason)):
+			return false;
+		trainer.SwitchInsRequired = 0;
+		for s in switches:
+			trainer.SwitchInQueue.Add(trainer.GetPokemon(s.PokemonId), s.Position)
+		if (trainer.Battle.Trainers.All(func(t): return t.SwitchInsRequired == 0)):
+			trainer.Battle.BattleState = PBEBattleState.ReadyToRunSwitches;
+		return true;
+
+	static func IsFleeValid(trainer:PBETrainer, invalidReason:String) -> bool:
+		if (trainer.Battle.BattleType != PBEBattleType.Wild):
 			pass #throw new InvalidOperationException($"{nameof(BattleType)} must be {PBEBattleType.Wild} to flee.");
-		}
-		switch (trainer.Battle._battleState)
-		{
-			case PBEBattleState.WaitingForActions:
-			{
-				if (trainer.ActionsRequired.Count == 0)
-				{
+		match (trainer.Battle._battleState):
+			PBEBattleState.WaitingForActions:
+				if (trainer.ActionsRequired.Count == 0):
 					invalidReason = "Actions were already submitted";
 					return false;
-				}
-				PBEBattlePokemon pkmn = trainer.ActiveBattlersOrdered.First();
-				if (pkmn.TempLockedMove != PBEMove.None)
-				{
+				var pkmn : PBEBattlePokemon = trainer.ActiveBattlersOrdered.First();
+				if (pkmn.TempLockedMove != PBEMove.None):
 					invalidReason = $"Pokémon {pkmn.Id} must use {pkmn.TempLockedMove}";
 					return false;
-				}
-				break;
-			}
-			case PBEBattleState.WaitingForSwitchIns:
-			{
-				if (trainer.SwitchInsRequired == 0)
-				{
+			PBEBattleState.WaitingForSwitchIns:
+				if (trainer.SwitchInsRequired == 0):
 					invalidReason = "Switches were already submitted";
 					return false;
-				}
-				break;
-			}
 			_: pass #throw new InvalidOperationException($"{nameof(BattleState)} must be {PBEBattleState.WaitingForActions} or {PBEBattleState.WaitingForSwitchIns} to flee.");
 		invalidReason = null;
 		return true;
-	
-	static func SelectFleeIfValid(PBETrainer trainer, [NotNullWhen(false)] out string? invalidReason) -> bool:
-		if (!IsFleeValid(trainer, out invalidReason)):
+
+
+	static func SelectFleeIfValid(trainer:PBETrainer, invalidReason:String) -> bool:
+		if (!IsFleeValid(trainer, invalidReason)):
 			return false;
 		trainer.RequestedFlee = true;
 		if (trainer.Battle._battleState == PBEBattleState.WaitingForActions):
 			trainer.ActionsRequired.Clear();
-			if (trainer.Battle.Trainers.All(t => t.ActionsRequired.Count == 0)):
+			if (trainer.Battle.Trainers.All(func(t): return t.ActionsRequired.Count == 0)):
 				trainer.Battle.BattleState = PBEBattleState.ReadyToRunTurn;
 		else: # WaitingForSwitches
 			trainer.SwitchInsRequired = 0;
-			if (trainer.Battle.Trainers.All(t => t.SwitchInsRequired == 0)):
+			if (trainer.Battle.Trainers.All(func(t): return t.SwitchInsRequired == 0)):
 				trainer.Battle.BattleState = PBEBattleState.ReadyToRunSwitches;
 		return true;

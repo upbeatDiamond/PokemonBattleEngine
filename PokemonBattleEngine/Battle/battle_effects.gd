@@ -634,13 +634,13 @@ func DoTurnEndedEffects()
 	}
 }
 
-public bool ShouldDoWeatherEffects()
+func ShouldDoWeatherEffects() -> bool:
 {
 	# If HP is needed to be above 0, use HPPercentage so clients can continue to use this
 	# However, I see no instance of this getting called where an ActiveBattler has 0 hp
 	return ActiveBattlers.FindIndex(p => p.Ability == PBEAbility.AirLock || p.Ability == PBEAbility.CloudNine) == -1;
 }
-public bool WillLeafGuardActivate()
+func WillLeafGuardActivate() -> bool:
 {
 	return ShouldDoWeatherEffects() && Weather == PBEWeather.HarshSunlight;
 }
@@ -796,7 +796,7 @@ top:
 	}
 }
 
-private static float PokedexCountTable(int count, float g600, float g450, float g300, float g150, float g30, float ge0)
+static PokedexCountTable(int count, float g600, float g450, float g300, float g150, float g30, float ge0) -> float:
 {
 	if (count > 600)
 	{
