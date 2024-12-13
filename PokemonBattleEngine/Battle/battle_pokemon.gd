@@ -14,28 +14,28 @@ class PBEBattlePokemon:# : IPBEPokemonKnownTypes, IPBEPokemonTypes, IPBESpeciesF
 	#region Basic Properties
 
 	## <summary>The Pokémon's current HP.</summary>
-	public ushort HP 
+	var HP : int
 	## <summary>The Pokémon's maximum HP.</summary>
-	public ushort MaxHP 
+	var MaxHP : int
 	## <summary>The Pokémon's current HP as a percentage.</summary>
-	public float HPPercentage 
+	var HPPercentage : float
 	## <summary>The Pokémon's attack stat.</summary>
-	public ushort Attack 
-	public sbyte AttackChange 
+	var Attack : int
+	var AttackChange : int
 	## <summary>The Pokémon's defense stat.</summary>
-	public ushort Defense 
-	public sbyte DefenseChange 
+	var Defense : int
+	var DefenseChange : int
 	## <summary>The Pokémon's special attack stat.</summary>
-	public ushort SpAttack 
-	public sbyte SpAttackChange 
+	var SpAttack : int
+	var SpAttackChange : int
 	## <summary>The Pokémon's special defense stat.</summary>
-	public ushort SpDefense 
-	public sbyte SpDefenseChange 
+	var SpDefense : int
+	var SpDefenseChange : int
 	## <summary>The Pokémon's speed stat.</summary>
-	public ushort Speed 
-	public sbyte SpeedChange 
-	public sbyte AccuracyChange 
-	public sbyte EvasionChange 
+	var Speed : int
+	var SpeedChange : int
+	var AccuracyChange : int
+	var EvasionChange : int
 	public PBEReadOnlyStatCollection? OriginalEffortValues 
 	public PBEStatCollection? EffortValues 
 	public PBEReadOnlyStatCollection? IndividualValues 
@@ -119,31 +119,31 @@ class PBEBattlePokemon:# : IPBEPokemonKnownTypes, IPBEPokemonTypes, IPBESpeciesF
 	#region Statuses
 
 	## <summary>The counter used for <see cref="PBEStatus1.BadlyPoisoned"/> and <see cref="PBEStatus1.Asleep"/>.</summary>
-	public byte Status1Counter 
+	var Status1Counter : int
 	## <summary>The amount of turns the Pokémon will sleep for before waking.</summary>
-	public byte SleepTurns 
+	var SleepTurns : int
 	## <summary>The counter used for <see cref="PBEStatus2.Confused"/>.</summary>
-	public byte ConfusionCounter 
+	var ConfusionCounter : int 
 	## <summary>The amount of turns the Pokémon will be confused for before snapping out of it.</summary>
-	public byte ConfusionTurns 
+	var ConfusionTurns : int 
 	## <summary>The Pokémon that <see cref="PBEStatus2.Infatuated"/> is bound to.</summary>
 	public PBEBattlePokemon? InfatuatedWithPokemon 
 	## <summary>The amount of turns until <see cref="PBEStatus2.MagnetRise"/> ends.</summary>
-	public byte MagnetRiseTurns 
+	var MagnetRiseTurns : int 
 	## <summary>The Pokémon that <see cref="PBEStatus2.LockOn"/> is bound to.</summary>
 	public PBEBattlePokemon? LockOnPokemon 
-	public byte LockOnTurns 
+	var LockOnTurns : int 
 	## <summary>The amount of times the Pokémon has successfully used <see cref="PBEMoveEffect.Protect"/>, <see cref="PBEMoveEffect.QuickGuard"/>, and/or <see cref="PBEMoveEffect.WideGuard"/> consecutively.</summary>
-	public int Protection_Counter 
-	public bool Protection_Used 
+	var Protection_Counter : int 
+	var Protection_Used : bool
 	public PBERoostTypes RoostTypes 
 	## <summary>The position to return <see cref="PBEStatus2.LeechSeed"/> HP to on <see cref="SeededTeam"/>.</summary>
-	public PBEFieldPosition SeededPosition 
+	var SeededPosition : PBEEnums.PBEFieldPosition
 	## <summary>The team responsible for <see cref="PBEStatus2.LeechSeed"/>.</summary>
-	public PBETeam? SeededTeam 
+	var SeededTeam : PBETeam
 	## <summary>The amount of HP the Pokémon's <see cref="PBEStatus2.Substitute"/> has left.</summary>
-	public ushort SubstituteHP 
-	public PBEBattleMoveset TransformBackupMoves 
+	var SubstituteHP : int
+	var TransformBackupMoves : PBEBattleMoveset 
 
 	#endregion
 
@@ -1276,148 +1276,148 @@ class PBEBattlePokemon:# : IPBEPokemonKnownTypes, IPBEPokemonTypes, IPBESpeciesF
 		}
 		return null;
 	}
-
-	## <summary>Will only be accurate for the host</summary>
-	public override string ToString()
-	{
-		var sb = new StringBuilder();
-		string formStr = PBEDataUtils.HasForms(Species, false) ? $" ({PBEDataProvider.Instance.GetFormName(this).English})" : string.Empty;
-		sb.AppendLine($"{Nickname}/{PBEDataProvider.Instance.GetSpeciesName(Species).English}{formStr} {Gender.ToSymbol()} Lv.{Level}");
-		sb.AppendLine($"HP: {HP}/{MaxHP} ({HPPercentage:P2})");
-		sb.Append($"Types: {PBEDataProvider.Instance.GetTypeName(Type1).English}");
-		if (Type2 != PBEType.None)
-		{
-			sb.Append($"/{PBEDataProvider.Instance.GetTypeName(Type2).English}");
-		}
-		sb.AppendLine();
-		sb.Append($"Known types: {PBEDataProvider.Instance.GetTypeName(KnownType1).English}");
-		if (KnownType2 != PBEType.None)
-		{
-			sb.Append($"/{PBEDataProvider.Instance.GetTypeName(KnownType2).English}");
-		}
-		sb.AppendLine();
-		sb.AppendLine($"Position: {Team.CombinedName}'s {FieldPosition}");
-		sb.AppendLine($"Status1: {Status1}");
-		if (Status1 == PBEStatus1.Asleep)
-		{
-			sb.AppendLine($"Asleep turns: {Status1Counter}/{SleepTurns}");
-		}
-		else if (Status1 == PBEStatus1.BadlyPoisoned)
-		{
-			sb.AppendLine($"Toxic counter: {Status1Counter}");
-		}
-		sb.AppendLine($"Status2: {Status2}");
-		if (Status2.HasFlag(PBEStatus2.Confused))
-		{
-			sb.AppendLine($"Confusion turns: {ConfusionCounter}/{ConfusionTurns}");
-		}
-		if (Status2.HasFlag(PBEStatus2.Disguised))
-		{
-			formStr = PBEDataUtils.HasForms(KnownSpecies, false) ? $" ({PBEDataProvider.Instance.GetFormName(KnownSpecies, KnownForm).English})" : string.Empty;
-			sb.AppendLine($"Disguised as: {KnownNickname}/{PBEDataProvider.Instance.GetSpeciesName(KnownSpecies).English}{formStr} {KnownGender.ToSymbol()}");
-		}
-		if (Battle.BattleFormat != PBEBattleFormat.Single)
-		{
-			if (Status2.HasFlag(PBEStatus2.Infatuated))
-			{
-				sb.AppendLine($"Infatuated with: {InfatuatedWithPokemon!.Trainer.Name}'s {InfatuatedWithPokemon.Nickname}");
-			}
-			if (Status2.HasFlag(PBEStatus2.LeechSeed))
-			{
-				sb.AppendLine($"Seeded position: {SeededTeam!.CombinedName}'s {SeededPosition}");
-			}
-			if (Status2.HasFlag(PBEStatus2.LockOn))
-			{
-				sb.AppendLine($"Taking aim at: {LockOnPokemon!.Trainer.Name}'s {LockOnPokemon.Nickname}");
-			}
-		}
-		if (Status2.HasFlag(PBEStatus2.Substitute))
-		{
-			sb.AppendLine($"Substitute HP: {SubstituteHP}");
-		}
-		sb.AppendLine($"Stats: [A] {Attack}, [D] {Defense}, [SA] {SpAttack}, [SD] {SpDefense}, [S] {Speed}, [W] {Weight:0.0}");
-		PBEStat[] statChanges = GetChangedStats();
-		if (statChanges.Length > 0)
-		{
-			var statStrs = new List<string>(7);
-			if (Array.IndexOf(statChanges, PBEStat.Attack) != -1)
-			{
-				statStrs.Add($"[A] x{PBEBattle.GetStatChangeModifier(AttackChange, false):0.00}");
-			}
-			if (Array.IndexOf(statChanges, PBEStat.Defense) != -1)
-			{
-				statStrs.Add($"[D] x{PBEBattle.GetStatChangeModifier(DefenseChange, false):0.00}");
-			}
-			if (Array.IndexOf(statChanges, PBEStat.SpAttack) != -1)
-			{
-				statStrs.Add($"[SA] x{PBEBattle.GetStatChangeModifier(SpAttackChange, false):0.00}");
-			}
-			if (Array.IndexOf(statChanges, PBEStat.SpDefense) != -1)
-			{
-				statStrs.Add($"[SD] x{PBEBattle.GetStatChangeModifier(SpDefenseChange, false):0.00}");
-			}
-			if (Array.IndexOf(statChanges, PBEStat.Speed) != -1)
-			{
-				statStrs.Add($"[S] x{PBEBattle.GetStatChangeModifier(SpeedChange, false):0.00}");
-			}
-			if (Array.IndexOf(statChanges, PBEStat.Accuracy) != -1)
-			{
-				statStrs.Add($"[AC] x{PBEBattle.GetStatChangeModifier(AccuracyChange, true):0.00}");
-			}
-			if (Array.IndexOf(statChanges, PBEStat.Evasion) != -1)
-			{
-				statStrs.Add($"[E] x{PBEBattle.GetStatChangeModifier(EvasionChange, true):0.00}");
-			}
-			sb.AppendLine($"Stat changes: {string.Join(", ", statStrs)}");
-		}
-		sb.AppendLine($"Ability: {PBEDataProvider.Instance.GetAbilityName(Ability).English}");
-		sb.AppendLine($"Known ability: {(KnownAbility == PBEAbility.MAX ? "???" : PBEDataProvider.Instance.GetAbilityName(KnownAbility).English)}");
-		sb.AppendLine($"Item: {PBEDataProvider.Instance.GetItemName(Item).English}");
-		sb.AppendLine($"Known item: {(KnownItem == (PBEItem)ushort.MaxValue ? "???" : PBEDataProvider.Instance.GetItemName(KnownItem).English)}");
-		if (Moves.Contains(PBEMoveEffect.Frustration) || Moves.Contains(PBEMoveEffect.Return))
-		{
-			sb.AppendLine($"Friendship: {Friendship} ({Friendship / byte.MaxValue:P2})");
-		}
-		if (Moves.Contains(PBEMoveEffect.HiddenPower))
-		{
-			PBEReadOnlyStatCollection ivs = IndividualValues!;
-			sb.AppendLine($"{PBEDataProvider.Instance.GetMoveName(PBEMove.HiddenPower).English}: {PBEDataProvider.Instance.GetTypeName(ivs.GetHiddenPowerType()).English}|{ivs.GetHiddenPowerBasePower(Battle.Settings)}");
-		}
-		sb.Append("Moves: ");
-		for (int i = 0; i < Battle.Settings.NumMoves; i++)
-		{
-			PBEBattleMoveset.PBEBattleMovesetSlot slot = Moves[i];
-			PBEMove move = slot.Move;
-			if (i > 0)
-			{
-				sb.Append(", ");
-			}
-			sb.Append(PBEDataProvider.Instance.GetMoveName(slot.Move).English);
-			if (move != PBEMove.None)
-			{
-				sb.Append($" ({slot.PP}/{slot.MaxPP})");
-			}
-		}
-		sb.AppendLine();
-		sb.Append("Known moves: ");
-		for (int i = 0; i < Battle.Settings.NumMoves; i++)
-		{
-			PBEBattleMoveset.PBEBattleMovesetSlot slot = KnownMoves[i];
-			PBEMove move = slot.Move;
-			int pp = slot.PP;
-			int maxPP = slot.MaxPP;
-			if (i > 0)
-			{
-				sb.Append(", ");
-			}
-			sb.Append(move == PBEMove.MAX ? "???" : PBEDataProvider.Instance.GetMoveName(move).English);
-			if (move != PBEMove.None && move != PBEMove.MAX)
-			{
-				sb.Append($" ({pp}{(maxPP == 0 ? ")" : $"/{maxPP})")}");
-			}
-		}
-		sb.AppendLine();
-		sb.Append($"Usable moves: {string.Join(", ", GetUsableMoves().Select(m => PBEDataProvider.Instance.GetMoveName(m).English))}");
-		return sb.ToString();
-	}
-}
+#
+	### <summary>Will only be accurate for the host</summary>
+	#public override string ToString()
+	#{
+		#var sb = new StringBuilder();
+		#string formStr = PBEDataUtils.HasForms(Species, false) ? $" ({PBEDataProvider.Instance.GetFormName(this).English})" : string.Empty;
+		#sb.AppendLine($"{Nickname}/{PBEDataProvider.Instance.GetSpeciesName(Species).English}{formStr} {Gender.ToSymbol()} Lv.{Level}");
+		#sb.AppendLine($"HP: {HP}/{MaxHP} ({HPPercentage:P2})");
+		#sb.Append($"Types: {PBEDataProvider.Instance.GetTypeName(Type1).English}");
+		#if (Type2 != PBEType.None)
+		#{
+			#sb.Append($"/{PBEDataProvider.Instance.GetTypeName(Type2).English}");
+		#}
+		#sb.AppendLine();
+		#sb.Append($"Known types: {PBEDataProvider.Instance.GetTypeName(KnownType1).English}");
+		#if (KnownType2 != PBEType.None)
+		#{
+			#sb.Append($"/{PBEDataProvider.Instance.GetTypeName(KnownType2).English}");
+		#}
+		#sb.AppendLine();
+		#sb.AppendLine($"Position: {Team.CombinedName}'s {FieldPosition}");
+		#sb.AppendLine($"Status1: {Status1}");
+		#if (Status1 == PBEStatus1.Asleep)
+		#{
+			#sb.AppendLine($"Asleep turns: {Status1Counter}/{SleepTurns}");
+		#}
+		#else if (Status1 == PBEStatus1.BadlyPoisoned)
+		#{
+			#sb.AppendLine($"Toxic counter: {Status1Counter}");
+		#}
+		#sb.AppendLine($"Status2: {Status2}");
+		#if (Status2.HasFlag(PBEStatus2.Confused))
+		#{
+			#sb.AppendLine($"Confusion turns: {ConfusionCounter}/{ConfusionTurns}");
+		#}
+		#if (Status2.HasFlag(PBEStatus2.Disguised))
+		#{
+			#formStr = PBEDataUtils.HasForms(KnownSpecies, false) ? $" ({PBEDataProvider.Instance.GetFormName(KnownSpecies, KnownForm).English})" : string.Empty;
+			#sb.AppendLine($"Disguised as: {KnownNickname}/{PBEDataProvider.Instance.GetSpeciesName(KnownSpecies).English}{formStr} {KnownGender.ToSymbol()}");
+		#}
+		#if (Battle.BattleFormat != PBEBattleFormat.Single)
+		#{
+			#if (Status2.HasFlag(PBEStatus2.Infatuated))
+			#{
+				#sb.AppendLine($"Infatuated with: {InfatuatedWithPokemon!.Trainer.Name}'s {InfatuatedWithPokemon.Nickname}");
+			#}
+			#if (Status2.HasFlag(PBEStatus2.LeechSeed))
+			#{
+				#sb.AppendLine($"Seeded position: {SeededTeam!.CombinedName}'s {SeededPosition}");
+			#}
+			#if (Status2.HasFlag(PBEStatus2.LockOn))
+			#{
+				#sb.AppendLine($"Taking aim at: {LockOnPokemon!.Trainer.Name}'s {LockOnPokemon.Nickname}");
+			#}
+		#}
+		#if (Status2.HasFlag(PBEStatus2.Substitute))
+		#{
+			#sb.AppendLine($"Substitute HP: {SubstituteHP}");
+		#}
+		#sb.AppendLine($"Stats: [A] {Attack}, [D] {Defense}, [SA] {SpAttack}, [SD] {SpDefense}, [S] {Speed}, [W] {Weight:0.0}");
+		#PBEStat[] statChanges = GetChangedStats();
+		#if (statChanges.Length > 0)
+		#{
+			#var statStrs = new List<string>(7);
+			#if (Array.IndexOf(statChanges, PBEStat.Attack) != -1)
+			#{
+				#statStrs.Add($"[A] x{PBEBattle.GetStatChangeModifier(AttackChange, false):0.00}");
+			#}
+			#if (Array.IndexOf(statChanges, PBEStat.Defense) != -1)
+			#{
+				#statStrs.Add($"[D] x{PBEBattle.GetStatChangeModifier(DefenseChange, false):0.00}");
+			#}
+			#if (Array.IndexOf(statChanges, PBEStat.SpAttack) != -1)
+			#{
+				#statStrs.Add($"[SA] x{PBEBattle.GetStatChangeModifier(SpAttackChange, false):0.00}");
+			#}
+			#if (Array.IndexOf(statChanges, PBEStat.SpDefense) != -1)
+			#{
+				#statStrs.Add($"[SD] x{PBEBattle.GetStatChangeModifier(SpDefenseChange, false):0.00}");
+			#}
+			#if (Array.IndexOf(statChanges, PBEStat.Speed) != -1)
+			#{
+				#statStrs.Add($"[S] x{PBEBattle.GetStatChangeModifier(SpeedChange, false):0.00}");
+			#}
+			#if (Array.IndexOf(statChanges, PBEStat.Accuracy) != -1)
+			#{
+				#statStrs.Add($"[AC] x{PBEBattle.GetStatChangeModifier(AccuracyChange, true):0.00}");
+			#}
+			#if (Array.IndexOf(statChanges, PBEStat.Evasion) != -1)
+			#{
+				#statStrs.Add($"[E] x{PBEBattle.GetStatChangeModifier(EvasionChange, true):0.00}");
+			#}
+			#sb.AppendLine($"Stat changes: {string.Join(", ", statStrs)}");
+		#}
+		#sb.AppendLine($"Ability: {PBEDataProvider.Instance.GetAbilityName(Ability).English}");
+		#sb.AppendLine($"Known ability: {(KnownAbility == PBEAbility.MAX ? "???" : PBEDataProvider.Instance.GetAbilityName(KnownAbility).English)}");
+		#sb.AppendLine($"Item: {PBEDataProvider.Instance.GetItemName(Item).English}");
+		#sb.AppendLine($"Known item: {(KnownItem == (PBEItem)ushort.MaxValue ? "???" : PBEDataProvider.Instance.GetItemName(KnownItem).English)}");
+		#if (Moves.Contains(PBEMoveEffect.Frustration) || Moves.Contains(PBEMoveEffect.Return))
+		#{
+			#sb.AppendLine($"Friendship: {Friendship} ({Friendship / byte.MaxValue:P2})");
+		#}
+		#if (Moves.Contains(PBEMoveEffect.HiddenPower))
+		#{
+			#PBEReadOnlyStatCollection ivs = IndividualValues!;
+			#sb.AppendLine($"{PBEDataProvider.Instance.GetMoveName(PBEMove.HiddenPower).English}: {PBEDataProvider.Instance.GetTypeName(ivs.GetHiddenPowerType()).English}|{ivs.GetHiddenPowerBasePower(Battle.Settings)}");
+		#}
+		#sb.Append("Moves: ");
+		#for (int i = 0; i < Battle.Settings.NumMoves; i++)
+		#{
+			#PBEBattleMoveset.PBEBattleMovesetSlot slot = Moves[i];
+			#PBEMove move = slot.Move;
+			#if (i > 0)
+			#{
+				#sb.Append(", ");
+			#}
+			#sb.Append(PBEDataProvider.Instance.GetMoveName(slot.Move).English);
+			#if (move != PBEMove.None)
+			#{
+				#sb.Append($" ({slot.PP}/{slot.MaxPP})");
+			#}
+		#}
+		#sb.AppendLine();
+		#sb.Append("Known moves: ");
+		#for (int i = 0; i < Battle.Settings.NumMoves; i++)
+		#{
+			#PBEBattleMoveset.PBEBattleMovesetSlot slot = KnownMoves[i];
+			#PBEMove move = slot.Move;
+			#int pp = slot.PP;
+			#int maxPP = slot.MaxPP;
+			#if (i > 0)
+			#{
+				#sb.Append(", ");
+			#}
+			#sb.Append(move == PBEMove.MAX ? "???" : PBEDataProvider.Instance.GetMoveName(move).English);
+			#if (move != PBEMove.None && move != PBEMove.MAX)
+			#{
+				#sb.Append($" ({pp}{(maxPP == 0 ? ")" : $"/{maxPP})")}");
+			#}
+		#}
+		#sb.AppendLine();
+		#sb.Append($"Usable moves: {string.Join(", ", GetUsableMoves().Select(m => PBEDataProvider.Instance.GetMoveName(m).English))}");
+		#return sb.ToString();
+	#}
+#}

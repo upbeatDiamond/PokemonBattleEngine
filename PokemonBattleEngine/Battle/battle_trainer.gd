@@ -1,24 +1,15 @@
-public sealed class PBETrainers : IReadOnlyList<PBETrainer>
-{
-	private readonly List<PBETrainer> _trainers;
-
-	public int Count => _trainers.Count;
-	public PBETrainer this[int index] => _trainers[index];
-
-	internal PBETrainers(List<PBETrainer> trainers)
-	{
+class PBETrainers :
+	var _trainers : Array = [];
+	var Count : int :
+		set(value):
+			_trainers.resize(value)
+		get:
+			return _trainers.size()
+	
+	func _init(trainers:Array=[]):
 		_trainers = trainers;
-	}
 
-	public IEnumerator<PBETrainer> GetEnumerator()
-	{
-		return _trainers.GetEnumerator();
-	}
-	IEnumerator IEnumerable.GetEnumerator()
-	{
-		return _trainers.GetEnumerator();
-	}
-}
+
 public sealed partial class PBETrainer
 {
 	public PBEBattle Battle { get; }
@@ -182,3 +173,50 @@ public sealed partial class PBETrainer
 		throw new InvalidOperationException();
 	}
 }
+
+
+#
+class PBETrainer:
+	
+	public bool AreActionsValid([NotNullWhen(false)] out string? invalidReason, params PBETurnAction[] actions)
+	{
+		return PBEBattle.AreActionsValid(this, actions, out invalidReason);
+	}
+	public bool AreActionsValid(IReadOnlyCollection<PBETurnAction> actions, [NotNullWhen(false)] out string? invalidReason)
+	{
+		return PBEBattle.AreActionsValid(this, actions, out invalidReason);
+	}
+	public bool SelectActionsIfValid([NotNullWhen(false)] out string? invalidReason, params PBETurnAction[] actions)
+	{
+		return PBEBattle.SelectActionsIfValid(this, actions, out invalidReason);
+	}
+	public bool SelectActionsIfValid(IReadOnlyCollection<PBETurnAction> actions, [NotNullWhen(false)] out string? invalidReason)
+	{
+		return PBEBattle.SelectActionsIfValid(this, actions, out invalidReason);
+	}
+
+	public bool AreSwitchesValid([NotNullWhen(false)] out string? invalidReason, params PBESwitchIn[] switches)
+	{
+		return PBEBattle.AreSwitchesValid(this, switches, out invalidReason);
+	}
+	public bool AreSwitchesValid(IReadOnlyCollection<PBESwitchIn> switches, [NotNullWhen(false)] out string? invalidReason)
+	{
+		return PBEBattle.AreSwitchesValid(this, switches, out invalidReason);
+	}
+	public bool SelectSwitchesIfValid([NotNullWhen(false)] out string? invalidReason, params PBESwitchIn[] switches)
+	{
+		return PBEBattle.SelectSwitchesIfValid(this, switches, out invalidReason);
+	}
+	public bool SelectSwitchesIfValid(IReadOnlyCollection<PBESwitchIn> switches, [NotNullWhen(false)] out string? invalidReason)
+	{
+		return PBEBattle.SelectSwitchesIfValid(this, switches, out invalidReason);
+	}
+
+	public bool IsFleeValid([NotNullWhen(false)] out string? invalidReason)
+	{
+		return PBEBattle.IsFleeValid(this, out invalidReason);
+	}
+	public bool SelectFleeIfValid([NotNullWhen(false)] out string? invalidReason)
+	{
+		return PBEBattle.SelectFleeIfValid(this, out invalidReason);
+	}
