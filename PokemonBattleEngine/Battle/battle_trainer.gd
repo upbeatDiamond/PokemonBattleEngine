@@ -11,68 +11,53 @@ class PBETrainers :
 
 
 class PBETrainer:
-	public PBEBattle Battle { get; }
-	public PBETeam Team { get; }
-	public PBEList<PBEBattlePokemon> Party { get; }
-	public string Name { get; }
-	public bool GainsEXP { get; }
-	public PBEBattleInventory Inventory { get; }
-	public byte Id { get; }
-	public bool IsWild => Team.IsWild;
+	var Battle : PBEBattle #{ get; }
+	var PBETeam Team  #{ get; }
+	var PBEList<PBEBattlePokemon> Party  #{ get; }
+	var string Name  #{ get; }
+	var bool GainsEXP  #{ get; }
+	var PBEBattleInventory Inventory  #{ get; }
+	var byte Id  #{ get; }
+	var bool IsWild => Team.IsWild;
 
-	public List<PBEBattlePokemon> ActiveBattlers => Battle.ActiveBattlers.FindAll(p => p.Trainer == this);
-	public IEnumerable<PBEBattlePokemon> ActiveBattlersOrdered => ActiveBattlers.OrderBy(p => p.FieldPosition);
-	public int NumConsciousPkmn => Party.Count(p => p.CanBattle);
-	public int NumPkmnOnField => Party.Count(p => p.FieldPosition != PBEFieldPosition.None);
+	var List<PBEBattlePokemon> ActiveBattlers => Battle.ActiveBattlers.FindAll(p => p.Trainer == this);
+	var IEnumerable<PBEBattlePokemon> ActiveBattlersOrdered => ActiveBattlers.OrderBy(p => p.FieldPosition);
+	var int NumConsciousPkmn => Party.Count(p => p.CanBattle);
+	var int NumPkmnOnField => Party.Count(p => p.FieldPosition != PBEFieldPosition.None);
 
-	public bool RequestedFlee { get; set; }
-	public List<PBEBattlePokemon> ActionsRequired { get; } = new(3); // PBEBattleState.WaitingForActions
-	public byte SwitchInsRequired { get; set; } // PBEBattleState.WaitingForSwitchIns
-	public List<(PBEBattlePokemon Pkmn, PBEFieldPosition Pos)> SwitchInQueue { get; } = new(3); // PBEBattleState.WaitingForSwitchIns
+	var bool RequestedFlee { get; set; }
+	var List<PBEBattlePokemon> ActionsRequired { get; } = new(3); # PBEBattleState.WaitingForActions
+	var byte SwitchInsRequired { get; set; } # PBEBattleState.WaitingForSwitchIns
+	var List<(PBEBattlePokemon Pkmn, PBEFieldPosition Pos)> SwitchInQueue { get; } = new(3); # PBEBattleState.WaitingForSwitchIns
 
-	// Trainer battle / wild battle
-	private PBETrainer(PBETeam team, PBETrainerInfoBase ti, string name, ReadOnlyCollection<(PBEItem Item, uint Quantity)>? inventory, List<PBETrainer> trainers)
-	{
+	# Trainer battle / wild battle
+	func PBETrainer(PBETeam team, PBETrainerInfoBase ti, string name, ReadOnlyCollection<(PBEItem Item, uint Quantity)>? inventory, List<PBETrainer> trainers)
 		Battle = team.Battle;
 		Team = team;
 		Id = (byte)trainers.Count;
 		Name = name;
-		if (inventory is null || inventory.Count == 0) // Wild trainer
-		{
+		if (inventory is null or inventory.Count == 0): # Wild trainer
 			Inventory = PBEBattleInventory.Empty();
-		}
-		else
-		{
+		else:
 			Inventory = new PBEBattleInventory(inventory);
-		}
 		ReadOnlyCollection<IPBEPokemon> tiParty = ti.Party;
 		Party = new PBEList<PBEBattlePokemon>(tiParty.Count);
-		for (byte i = 0; i < tiParty.Count; i++)
-		{
+		for (byte i = 0; i < tiParty.Count; i++):
 			IPBEPokemon pkmn = tiParty[i];
-			if (pkmn is IPBEPartyPokemon partyPkmn)
-			{
+			if (pkmn is IPBEPartyPokemon partyPkmn):
 				_ = new PBEBattlePokemon(this, i, partyPkmn);
-			}
-			else
-			{
+			else:
 				_ = new PBEBattlePokemon(this, i, pkmn);
-			}
-		}
 		trainers.Add(this);
-	}
-	// Trainer battle
+	# Trainer battle
 	internal PBETrainer(PBETeam team, PBETrainerInfo ti, List<PBETrainer> trainers)
 		: this(team, ti, ti.Name, ti.Inventory, trainers)
-	{
 		GainsEXP = ti.GainsEXP;
-	}
-	// Wild battle
+	# Wild battle
 	internal PBETrainer(PBETeam team, PBEWildInfo wi, List<PBETrainer> trainers)
 		: this(team, wi, "The wild Pokémon", null, trainers) { }
-	// Remote battle
-	internal PBETrainer(PBETeam team, PBEBattlePacket.PBETeamInfo.PBETrainerInfo info, List<PBETrainer> trainers)
-	{
+	# Remote battle
+	internal PBETrainer(PBETeam team, PBEBattlePacket.PBETeamInfo.PBETrainerInfo info, List<PBETrainer> trainers):
 		Battle = team.Battle;
 		Team = team;
 		Id = info.Id;
