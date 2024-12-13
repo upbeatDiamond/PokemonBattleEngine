@@ -1,4 +1,4 @@
-﻿using Kermalis.EndianBinaryIO;
+using Kermalis.EndianBinaryIO;
 using Kermalis.PokemonBattleEngine.Battle;
 using System;
 using System.ComponentModel;
@@ -1491,4 +1491,3 @@ public sealed class PBESettings : INotifyPropertyChanged
 	}
 }
 #pragma warning restore CS0618 // Type or member is obsolete
-

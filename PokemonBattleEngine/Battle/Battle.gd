@@ -3,7 +3,7 @@
 #
 class PBEBattle1: ## Merge Battle into this.
 	
-	var amtUsed := 0
+	#var amtUsed := 0
 
 	static func AreActionsValid(trainer:PBETrainer, actions: Array[PBETurnAction], invalidReason:String) -> bool:
 		if (trainer.Battle._battleState != PBEBattleState.WaitingForActions):
@@ -220,8 +220,7 @@ class PBEBattle1: ## Merge Battle into this.
 
 # This constant looping order that's present in hitting as well as turn ended effects is very weird and unnecessary, but I mimic it for accuracy
 # That's why this file exists in favor of the order I had before
-public sealed partial class PBEBattle
-{
+#public sealed partial class PBEBattle
 	
 	# TODO: TripleKick miss logic
 	private void Hit_GetVictims(PBEBattlePokemon user, PBEBattlePokemon[] targets, IPBEMoveData mData, PBEType moveType, out List<PBEAttackVictim> victims,
@@ -276,43 +275,32 @@ public sealed partial class PBEBattle
 		doNormal(allies);
 		doSub(subFoes);
 		doNormal(foes);
-	}
+	
+	
 	private void Hit_DoCrit(List<PBEAttackVictim> victims)
-	{
 		foreach (PBEAttackVictim victim in victims)
-		{
 			if (victim.Crit)
 			{
 				BroadcastMoveCrit(victim.Pkmn);
-			}
-		}
-	}
-	private void Hit_DoMoveResult(PBEBattlePokemon user, List<PBEAttackVictim> victims)
-	{
+	
+	
+	private void Hit_DoMoveResult(PBEBattlePokemon user, List<PBEAttackVictim> victims):
 		foreach (PBEAttackVictim victim in victims)
-		{
 			PBEResult result = victim.Result;
-			if (result != PBEResult.Success)
-			{
+			if (result != PBEResult.Success):
 				BroadcastMoveResult(user, victim.Pkmn, result);
-			}
-		}
-	}
-	private void Hit_FaintCheck(List<PBEAttackVictim> victims)
-	{
+	
+	
+	private void Hit_FaintCheck(List<PBEAttackVictim> victims):
 		foreach (PBEAttackVictim victim in victims)
-		{
 			FaintCheck(victim.Pkmn);
-		}
-	}
 
 	private void BasicHit(PBEBattlePokemon user, PBEBattlePokemon[] targets, IPBEMoveData mData,
-		Func<PBEBattlePokemon, PBEResult>? failFunc = null,
-		Action<PBEBattlePokemon>? beforeDoingDamage = null,
-		Action<PBEBattlePokemon, ushort>? beforePostHit = null,
-		Action<PBEBattlePokemon>? afterPostHit = null,
-		Func<int, int?>? recoilFunc = null)
-	{
+			Func<PBEBattlePokemon, PBEResult>? failFunc = null,
+			Action<PBEBattlePokemon>? beforeDoingDamage = null,
+			Action<PBEBattlePokemon, ushort>? beforePostHit = null,
+			Action<PBEBattlePokemon>? afterPostHit = null,
+			Func<int, int?>? recoilFunc = null):
 		# Targets array is [FoeLeft, FoeCenter, FoeRight, AllyLeft, AllyCenter, AllyRight]
 		# User can faint or heal with a berry at LiquidOoze, IronBarbs/RockyHelmet, and also at Recoil/LifeOrb
 		# -------------Official order-------------
@@ -325,15 +313,14 @@ public sealed partial class PBEBattle
 		# DreamEater checks for sleep before gem activates
 		# SuckerPunch fails
 		Hit_GetVictims(user, targets, mData, moveType, out List<PBEAttackVictim> victims, failFunc: failFunc);
-		if (victims.Count == 0)
-		{
+		if (victims.Count == 0):
 			return;
-		}
 		float basePower = CalculateBasePower(user, targets, mData, moveType); # Gem activates here
 		float initDamageMultiplier = victims.Count > 1 ? 0.75f : 1;
 		int totalDamageDealt = 0;
-		void CalcDamage(PBEAttackVictim victim)
-		{
+		
+		
+		func CalcDamage(PBEAttackVictim victim):
 			PBEBattlePokemon target = victim.Pkmn;
 			PBEResult result = victim.Result;
 			float damageMultiplier = initDamageMultiplier * victim.TypeEffectiveness;
@@ -347,30 +334,22 @@ public sealed partial class PBEBattle
 			victim.Damage = DealDamage(user, target, damage, ignoreSubstitute: false, ignoreSturdy: false);
 			totalDamageDealt += victim.Damage;
 			victim.Crit = crit;
-		}
-		void DoSub(List<PBEAttackVictim> subs)
-		{
-			foreach (PBEAttackVictim victim in subs)
-			{
+		
+		
+		func DoSub(List<PBEAttackVictim> subs):
+			for (PBEAttackVictim victim in subs):
 				CalcDamage(victim);
 				PBEBattlePokemon target = victim.Pkmn;
 				PBEResult result = victim.Result;
-				if (result != PBEResult.Success)
-				{
+				if (result != PBEResult.Success):
 					BroadcastMoveResult(user, target, result);
-				}
-				if (victim.Crit)
-				{
+				if (victim.Crit):
 					BroadcastMoveCrit(target);
-				}
-				if (target.SubstituteHP == 0)
-				{
+				if (target.SubstituteHP == 0):
 					BroadcastStatus2(target, user, PBEStatus2.Substitute, PBEStatusAction.Ended);
-				}
-			}
-		}
-		void DoNormal(List<PBEAttackVictim> normals)
-		{
+		
+		
+		func DoNormal(List<PBEAttackVictim> normals):
 			foreach (PBEAttackVictim victim in normals)
 			{
 				CalcDamage(victim);
@@ -390,11 +369,12 @@ public sealed partial class PBEBattle
 				afterPostHit?.Invoke(target); # Verified: These happen before Recoil/LifeOrb
 			}
 			Hit_FaintCheck(normals);
-		}
-
+		
+		
 		Hit_HitTargets(user.Team, DoSub, DoNormal, victims, out List<PBEAttackVictim> allies, out List<PBEAttackVictim> foes);
 		DoPostAttackedEffects(user, allies, foes, true, recoilDamage: recoilFunc?.Invoke(totalDamageDealt), colorChangeType: moveType);
 	}
+	
 	# None of these moves are multi-target
 	private void FixedDamageHit(PBEBattlePokemon user, PBEBattlePokemon[] targets, IPBEMoveData mData, Func<PBEBattlePokemon, int> damageFunc,
 		Func<PBEBattlePokemon, PBEResult>? failFunc = null,
@@ -523,8 +503,7 @@ public sealed partial class PBEBattle
 	}
 }
 
-public sealed partial class PBEBattle
-{
+#public sealed partial class PBEBattle
 	## <summary>Gets the influence a stat change has on a stat.</summary>
 	## <param name="change">The stat change.</param>
 	## <param name="forMissing">True if the stat is <see cref="PBEStat.Accuracy"/> or <see cref="PBEStat.Evasion"/>.</param>
@@ -613,889 +592,6 @@ public sealed partial class PBEBattle
 		return healAmt;
 	}
 
-	private float CalculateBasePower(PBEBattlePokemon user, PBEBattlePokemon[] targets, IPBEMoveData mData, PBEType moveType)
-	{
-		float basePower;
-
-		#region Get move's base power
-		switch (mData.Effect)
-		{
-			case PBEMoveEffect.CrushGrip:
-			{
-				basePower = Math.Max(1, targets.Select(t => (float)mData.Power * t.HP / t.MaxHP).Average());
-				break;
-			}
-			case PBEMoveEffect.Eruption:
-			{
-				basePower = Math.Max(1, mData.Power * user.HP / user.MaxHP);
-				break;
-			}
-			case PBEMoveEffect.Flail:
-			{
-				int val = 48 * user.HP / user.MaxHP;
-				if (val < 2)
-				{
-					basePower = 200;
-				}
-				else if (val < 4)
-				{
-					basePower = 150;
-				}
-				else if (val < 8)
-				{
-					basePower = 100;
-				}
-				else if (val < 16)
-				{
-					basePower = 80;
-				}
-				else if (val < 32)
-				{
-					basePower = 40;
-				}
-				else
-				{
-					basePower = 20;
-				}
-				break;
-			}
-			case PBEMoveEffect.Frustration:
-			{
-				basePower = Math.Max(1, (byte.MaxValue - user.Friendship) / 2.5f);
-				break;
-			}
-			case PBEMoveEffect.GrassKnot:
-			{
-				basePower = targets.Select(t =>
-				{
-					if (t.Weight >= 200.0f)
-					{
-						return 120f;
-					}
-					else if (t.Weight >= 100.0f)
-					{
-						return 100f;
-					}
-					else if (t.Weight >= 50.0f)
-					{
-						return 80f;
-					}
-					else if (t.Weight >= 25.0f)
-					{
-						return 60f;
-					}
-					else if (t.Weight >= 10.0f)
-					{
-						return 40f;
-					}
-					return 20f;
-				}).Average();
-				break;
-			}
-			case PBEMoveEffect.HeatCrash:
-			{
-				basePower = targets.Select(t =>
-				{
-					float relative = user.Weight / t.Weight;
-					if (relative < 2)
-					{
-						return 40f;
-					}
-					else if (relative < 3)
-					{
-						return 60f;
-					}
-					else if (relative < 4)
-					{
-						return 80f;
-					}
-					else if (relative < 5)
-					{
-						return 100f;
-					}
-					return 120f;
-				}).Average();
-				break;
-			}
-			case PBEMoveEffect.HiddenPower:
-			{
-				basePower = user.IndividualValues!.GetHiddenPowerBasePower(Settings);
-				break;
-			}
-			case PBEMoveEffect.Magnitude:
-			{
-				int val = _rand.RandomInt(0, 99);
-				byte magnitude;
-				if (val < 5) # Magnitude 4 - 5%
-				{
-					magnitude = 4;
-					basePower = 10;
-				}
-				else if (val < 15) # Magnitude 5 - 10%
-				{
-					magnitude = 5;
-					basePower = 30;
-				}
-				else if (val < 35) # Magnitude 6 - 20%
-				{
-					magnitude = 6;
-					basePower = 50;
-				}
-				else if (val < 65) # Magnitude 7 - 30%
-				{
-					magnitude = 7;
-					basePower = 70;
-				}
-				else if (val < 85) # Magnitude 8 - 20%
-				{
-					magnitude = 8;
-					basePower = 90;
-				}
-				else if (val < 95) # Magnitude 9 - 10%
-				{
-					magnitude = 9;
-					basePower = 110;
-				}
-				else # Magnitude 10 - 5%
-				{
-					magnitude = 10;
-					basePower = 150;
-				}
-				BroadcastMagnitude(magnitude);
-				break;
-			}
-			case PBEMoveEffect.Punishment:
-			{
-				basePower = Math.Max(1, Math.Min(200, targets.Select(t => mData.Power + (20f * t.GetPositiveStatTotal())).Average()));
-				break;
-			}
-			case PBEMoveEffect.Return:
-			{
-				basePower = Math.Max(1, user.Friendship / 2.5f);
-				break;
-			}
-			case PBEMoveEffect.StoredPower:
-			{
-				basePower = mData.Power + (20 * user.GetPositiveStatTotal());
-				break;
-			}
-			default:
-			{
-				basePower = Math.Max(1, (int)mData.Power);
-				break;
-			}
-		}
-		#endregion
-
-		# Technician goes before any other power boosts
-		if (user.Ability == PBEAbility.Technician && basePower <= 60)
-		{
-			basePower *= 1.5f;
-		}
-
-		#region Item-specific power boosts
-		switch (moveType)
-		{
-			case PBEType.Bug:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.InsectPlate:
-					case PBEItem.SilverPowder:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.BugGem:
-					{
-						BroadcastItem(user, user, PBEItem.BugGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Dark:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.BlackGlasses:
-					case PBEItem.DreadPlate:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.DarkGem:
-					{
-						BroadcastItem(user, user, PBEItem.DarkGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Dragon:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.AdamantOrb:
-					{
-						if (user.OriginalSpecies == PBESpecies.Dialga)
-						{
-							basePower *= 1.2f;
-						}
-						break;
-					}
-					case PBEItem.DracoPlate:
-					case PBEItem.DragonFang:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.GriseousOrb:
-					{
-						if (user.OriginalSpecies == PBESpecies.Giratina && user.RevertForm == PBEForm.Giratina_Origin)
-						{
-							basePower *= 1.2f;
-						}
-						break;
-					}
-					case PBEItem.LustrousOrb:
-					{
-						if (user.OriginalSpecies == PBESpecies.Palkia)
-						{
-							basePower *= 1.2f;
-						}
-						break;
-					}
-					case PBEItem.DragonGem:
-					{
-						BroadcastItem(user, user, PBEItem.DragonGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Electric:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.Magnet:
-					case PBEItem.ZapPlate:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.ElectricGem:
-					{
-						BroadcastItem(user, user, PBEItem.ElectricGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Fighting:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.BlackBelt:
-					case PBEItem.FistPlate:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.FightingGem:
-					{
-						BroadcastItem(user, user, PBEItem.FightingGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Fire:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.Charcoal:
-					case PBEItem.FlamePlate:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.FireGem:
-					{
-						BroadcastItem(user, user, PBEItem.FireGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Flying:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.SharpBeak:
-					case PBEItem.SkyPlate:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.FlyingGem:
-					{
-						BroadcastItem(user, user, PBEItem.FlyingGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Ghost:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.GriseousOrb:
-					{
-						if (user.OriginalSpecies == PBESpecies.Giratina && user.RevertForm == PBEForm.Giratina_Origin)
-						{
-							basePower *= 1.2f;
-						}
-						break;
-					}
-					case PBEItem.SpellTag:
-					case PBEItem.SpookyPlate:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.GhostGem:
-					{
-						BroadcastItem(user, user, PBEItem.GhostGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Grass:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.MeadowPlate:
-					case PBEItem.MiracleSeed:
-					case PBEItem.RoseIncense:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.GrassGem:
-					{
-						BroadcastItem(user, user, PBEItem.GrassGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Ground:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.EarthPlate:
-					case PBEItem.SoftSand:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.GroundGem:
-					{
-						BroadcastItem(user, user, PBEItem.GroundGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Ice:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.IciclePlate:
-					case PBEItem.NeverMeltIce:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.IceGem:
-					{
-						BroadcastItem(user, user, PBEItem.IceGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.None:
-			{
-				break;
-			}
-			case PBEType.Normal:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.SilkScarf:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.NormalGem:
-					{
-						BroadcastItem(user, user, PBEItem.NormalGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Poison:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.PoisonBarb:
-					case PBEItem.ToxicPlate:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.PoisonGem:
-					{
-						BroadcastItem(user, user, PBEItem.PoisonGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Psychic:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.MindPlate:
-					case PBEItem.OddIncense:
-					case PBEItem.TwistedSpoon:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.PsychicGem:
-					{
-						BroadcastItem(user, user, PBEItem.PsychicGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Rock:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.HardStone:
-					case PBEItem.RockIncense:
-					case PBEItem.StonePlate:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.RockGem:
-					{
-						BroadcastItem(user, user, PBEItem.RockGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Steel:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.AdamantOrb:
-					{
-						if (user.OriginalSpecies == PBESpecies.Dialga)
-						{
-							basePower *= 1.2f;
-						}
-						break;
-					}
-					case PBEItem.IronPlate:
-					case PBEItem.MetalCoat:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.SteelGem:
-					{
-						BroadcastItem(user, user, PBEItem.SteelGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			case PBEType.Water:
-			{
-				switch (user.Item)
-				{
-					case PBEItem.LustrousOrb:
-					{
-						if (user.OriginalSpecies == PBESpecies.Palkia)
-						{
-							basePower *= 1.2f;
-						}
-						break;
-					}
-					case PBEItem.MysticWater:
-					case PBEItem.SeaIncense:
-					case PBEItem.SplashPlate:
-					case PBEItem.WaveIncense:
-					{
-						basePower *= 1.2f;
-						break;
-					}
-					case PBEItem.WaterGem:
-					{
-						BroadcastItem(user, user, PBEItem.WaterGem, PBEItemAction.Consumed);
-						basePower *= 1.5f;
-						break;
-					}
-				}
-				break;
-			}
-			default: throw new ArgumentOutOfRangeException(nameof(moveType));
-		}
-		#endregion
-
-		#region Move-specific power boosts
-		switch (mData.Effect)
-		{
-			case PBEMoveEffect.Acrobatics:
-			{
-				if (user.Item == PBEItem.None)
-				{
-					basePower *= 2.0f;
-				}
-				break;
-			}
-			case PBEMoveEffect.Brine:
-			{
-				if (Array.FindIndex(targets, t => t.HP <= t.HP / 2) != -1)
-				{
-					basePower *= 2.0f;
-				}
-				break;
-			}
-			case PBEMoveEffect.Facade:
-			{
-				if (user.Status1 == PBEStatus1.Burned || user.Status1 == PBEStatus1.Paralyzed || user.Status1 == PBEStatus1.Poisoned || user.Status1 == PBEStatus1.BadlyPoisoned)
-				{
-					basePower *= 2.0f;
-				}
-				break;
-			}
-			case PBEMoveEffect.Hex:
-			{
-				if (Array.FindIndex(targets, t => t.Status1 != PBEStatus1.None) != -1)
-				{
-					basePower *= 2.0f;
-				}
-				break;
-			}
-			case PBEMoveEffect.Payback:
-			{
-				if (Array.FindIndex(targets, t => t.HasUsedMoveThisTurn) != -1)
-				{
-					basePower *= 2.0f;
-				}
-				break;
-			}
-			case PBEMoveEffect.Retaliate:
-			{
-				if (user.Team.MonFaintedLastTurn)
-				{
-					basePower *= 2.0f;
-				}
-				break;
-			}
-			case PBEMoveEffect.SmellingSalt:
-			{
-				if (Array.FindIndex(targets, t => t.Status1 == PBEStatus1.Paralyzed) != -1)
-				{
-					basePower *= 2.0f;
-				}
-				break;
-			}
-			case PBEMoveEffect.Venoshock:
-			{
-				if (Array.FindIndex(targets, t => t.Status1 == PBEStatus1.Poisoned || t.Status1 == PBEStatus1.BadlyPoisoned) != -1)
-				{
-					basePower *= 2.0f;
-				}
-				break;
-			}
-			case PBEMoveEffect.WakeUpSlap:
-			{
-				if (Array.FindIndex(targets, t => t.Status1 == PBEStatus1.Asleep) != -1)
-				{
-					basePower *= 2.0f;
-				}
-				break;
-			}
-			case PBEMoveEffect.WeatherBall:
-			{
-				if (ShouldDoWeatherEffects() && Weather != PBEWeather.None)
-				{
-					basePower *= 2.0f;
-				}
-				break;
-			}
-		}
-		#endregion
-
-		#region Weather-specific power boosts
-		if (ShouldDoWeatherEffects())
-		{
-			switch (Weather)
-			{
-				case PBEWeather.HarshSunlight:
-				{
-					if (moveType == PBEType.Fire)
-					{
-						basePower *= 1.5f;
-					}
-					else if (moveType == PBEType.Water)
-					{
-						basePower *= 0.5f;
-					}
-					break;
-				}
-				case PBEWeather.Rain:
-				{
-					if (moveType == PBEType.Water)
-					{
-						basePower *= 1.5f;
-					}
-					else if (moveType == PBEType.Fire)
-					{
-						basePower *= 0.5f;
-					}
-					break;
-				}
-				case PBEWeather.Sandstorm:
-				{
-					if (user.Ability == PBEAbility.SandForce && (moveType == PBEType.Rock || moveType == PBEType.Ground || moveType == PBEType.Steel))
-					{
-						basePower *= 1.3f;
-					}
-					break;
-				}
-			}
-		}
-		#endregion
-
-		#region Other power boosts
-		if (user.Status2.HasFlag(PBEStatus2.HelpingHand))
-		{
-			basePower *= 1.5f;
-		}
-		if (user.Ability == PBEAbility.FlareBoost && mData.Category == PBEMoveCategory.Special && user.Status1 == PBEStatus1.Burned)
-		{
-			basePower *= 1.5f;
-		}
-		if (user.Ability == PBEAbility.ToxicBoost && mData.Category == PBEMoveCategory.Physical && (user.Status1 == PBEStatus1.Poisoned || user.Status1 == PBEStatus1.BadlyPoisoned))
-		{
-			basePower *= 1.5f;
-		}
-		if (user.Item == PBEItem.LifeOrb)
-		{
-			basePower *= 1.3f;
-		}
-		if (user.Ability == PBEAbility.IronFist && mData.Flags.HasFlag(PBEMoveFlag.AffectedByIronFist))
-		{
-			basePower *= 1.2f;
-		}
-		if (user.Ability == PBEAbility.Reckless && mData.Flags.HasFlag(PBEMoveFlag.AffectedByReckless))
-		{
-			basePower *= 1.2f;
-		}
-		if (user.Item == PBEItem.MuscleBand && mData.Category == PBEMoveCategory.Physical)
-		{
-			basePower *= 1.1f;
-		}
-		if (user.Item == PBEItem.WiseGlasses && mData.Category == PBEMoveCategory.Special)
-		{
-			basePower *= 1.1f;
-		}
-		#endregion
-
-		return basePower;
-	}
-	private float CalculateDamageMultiplier(PBEBattlePokemon user, PBEBattlePokemon target, IPBEMoveData mData, PBEType moveType, PBEResult moveResult, bool criticalHit)
-	{
-		float damageMultiplier = 1;
-		if (target.Status2.HasFlag(PBEStatus2.Airborne) && mData.Flags.HasFlag(PBEMoveFlag.DoubleDamageAirborne))
-		{
-			damageMultiplier *= 2.0f;
-		}
-		if (target.Minimize_Used && mData.Flags.HasFlag(PBEMoveFlag.DoubleDamageMinimized))
-		{
-			damageMultiplier *= 2.0f;
-		}
-		if (target.Status2.HasFlag(PBEStatus2.Underground) && mData.Flags.HasFlag(PBEMoveFlag.DoubleDamageUnderground))
-		{
-			damageMultiplier *= 2.0f;
-		}
-		if (target.Status2.HasFlag(PBEStatus2.Underwater) && mData.Flags.HasFlag(PBEMoveFlag.DoubleDamageUnderwater))
-		{
-			damageMultiplier *= 2.0f;
-		}
-
-		if (criticalHit)
-		{
-			damageMultiplier *= Settings.CritMultiplier;
-			if (user.Ability == PBEAbility.Sniper)
-			{
-				damageMultiplier *= 1.5f;
-			}
-		}
-		else if (user.Ability != PBEAbility.Infiltrator)
-		{
-			if ((target.Team.TeamStatus.HasFlag(PBETeamStatus.Reflect) && mData.Category == PBEMoveCategory.Physical)
-				|| (target.Team.TeamStatus.HasFlag(PBETeamStatus.LightScreen) && mData.Category == PBEMoveCategory.Special))
-			{
-				if (target.Team.NumPkmnOnField == 1)
-				{
-					damageMultiplier *= 0.5f;
-				}
-				else
-				{
-					damageMultiplier *= 0.66f;
-				}
-			}
-		}
-
-		switch (moveResult)
-		{
-			case PBEResult.NotVeryEffective_Type:
-			{
-				if (user.Ability == PBEAbility.TintedLens)
-				{
-					damageMultiplier *= 2.0f;
-				}
-				break;
-			}
-			case PBEResult.SuperEffective_Type:
-			{
-				if ((target.Ability == PBEAbility.Filter || target.Ability == PBEAbility.SolidRock) && !user.HasCancellingAbility())
-				{
-					damageMultiplier *= 0.75f;
-				}
-				if (user.Item == PBEItem.ExpertBelt)
-				{
-					damageMultiplier *= 1.2f;
-				}
-				break;
-			}
-		}
-		if (user.ReceivesSTAB(moveType))
-		{
-			if (user.Ability == PBEAbility.Adaptability)
-			{
-				damageMultiplier *= 2.0f;
-			}
-			else
-			{
-				damageMultiplier *= 1.5f;
-			}
-		}
-		if (mData.Category == PBEMoveCategory.Physical && user.Status1 == PBEStatus1.Burned && user.Ability != PBEAbility.Guts)
-		{
-			damageMultiplier *= 0.5f;
-		}
-		if (moveType == PBEType.Fire && target.Ability == PBEAbility.Heatproof && !user.HasCancellingAbility())
-		{
-			damageMultiplier *= 0.5f;
-		}
-
-		return damageMultiplier;
-	}
-
-	private float CalculateAttack(PBEBattlePokemon user, PBEBattlePokemon target, PBEType moveType, float initialAttack)
-	{
-		float attack = initialAttack;
-
-		if (user.Ability == PBEAbility.HugePower || user.Ability == PBEAbility.PurePower)
-		{
-			attack *= 2.0f;
-		}
-		if (user.Item == PBEItem.ThickClub && (user.OriginalSpecies == PBESpecies.Cubone || user.OriginalSpecies == PBESpecies.Marowak))
-		{
-			attack *= 2.0f;
-		}
-		if (user.Item == PBEItem.LightBall && user.OriginalSpecies == PBESpecies.Pikachu)
-		{
-			attack *= 2.0f;
-		}
-		if (moveType == PBEType.Bug && user.Ability == PBEAbility.Swarm && user.HP <= user.MaxHP / 3)
-		{
-			attack *= 1.5f;
-		}
-		if (moveType == PBEType.Fire && user.Ability == PBEAbility.Blaze && user.HP <= user.MaxHP / 3)
-		{
-			attack *= 1.5f;
-		}
-		if (moveType == PBEType.Grass && user.Ability == PBEAbility.Overgrow && user.HP <= user.MaxHP / 3)
-		{
-			attack *= 1.5f;
-		}
-		if (moveType == PBEType.Water && user.Ability == PBEAbility.Torrent && user.HP <= user.MaxHP / 3)
-		{
-			attack *= 1.5f;
-		}
-		if (user.Ability == PBEAbility.Hustle)
-		{
-			attack *= 1.5f;
-		}
-		if (user.Ability == PBEAbility.Guts && user.Status1 != PBEStatus1.None)
-		{
-			attack *= 1.5f;
-		}
-		if (user.Item == PBEItem.ChoiceBand)
-		{
-			attack *= 1.5f;
-		}
-		if (!user.HasCancellingAbility() && ShouldDoWeatherEffects() && Weather == PBEWeather.HarshSunlight && user.Team.ActiveBattlers.FindIndex(p => p.Ability == PBEAbility.FlowerGift) != -1)
-		{
-			attack *= 1.5f;
-		}
-		if ((moveType == PBEType.Fire || moveType == PBEType.Ice) && target.Ability == PBEAbility.ThickFat && !user.HasCancellingAbility())
-		{
-			attack *= 0.5f;
-		}
-		if (user.Ability == PBEAbility.Defeatist && user.HP <= user.MaxHP / 2)
-		{
-			attack *= 0.5f;
-		}
-		if (user.Ability == PBEAbility.SlowStart && user.SlowStart_HinderTurnsLeft > 0)
-		{
-			attack *= 0.5f;
-		}
-
-		return attack;
-	}
 	private static float CalculateDefense(PBEBattlePokemon user, PBEBattlePokemon target, float initialDefense)
 	{
 		float defense = initialDefense;
@@ -1619,61 +715,9 @@ public sealed partial class PBEBattle
 		float d = CalculateDefense(pkmn, pkmn, pkmn.Defense * m);
 		return CalculateDamage(pkmn, a, d, 40);
 	}
-	private int CalculateDamage(PBEBattlePokemon user, PBEBattlePokemon target, IPBEMoveData mData, PBEType moveType, float basePower, bool criticalHit)
-	{
-		PBEBattlePokemon aPkmn;
-		PBEMoveCategory aCat = mData.Category, dCat;
-		switch (mData.Effect)
-		{
-			case PBEMoveEffect.FoulPlay:
-			{
-				aPkmn = target;
-				dCat = aCat;
-				break;
-			}
-			case PBEMoveEffect.Psyshock:
-			{
-				aPkmn = user;
-				dCat = PBEMoveCategory.Physical;
-				break;
-			}
-			default:
-			{
-				aPkmn = user;
-				dCat = aCat;
-				break;
-			}
-		}
 
-		bool ignoreA = user != target && target.Ability == PBEAbility.Unaware && !user.HasCancellingAbility();
-		bool ignoreD = user != target && (mData.Effect == PBEMoveEffect.ChipAway || user.Ability == PBEAbility.Unaware);
-		float a, d;
-		if (aCat == PBEMoveCategory.Physical)
-		{
-			float m = ignoreA ? 1 : GetStatChangeModifier(criticalHit ? Math.Max((sbyte)0, aPkmn.AttackChange) : aPkmn.AttackChange, false);
-			a = CalculateAttack(user, target, moveType, aPkmn.Attack * m);
-		}
-		else
-		{
-			float m = ignoreA ? 1 : GetStatChangeModifier(criticalHit ? Math.Max((sbyte)0, aPkmn.SpAttackChange) : aPkmn.SpAttackChange, false);
-			a = CalculateSpAttack(user, target, moveType, aPkmn.SpAttack * m);
-		}
-		if (dCat == PBEMoveCategory.Physical)
-		{
-			float m = ignoreD ? 1 : GetStatChangeModifier(criticalHit ? Math.Min((sbyte)0, target.DefenseChange) : target.DefenseChange, false);
-			d = CalculateDefense(user, target, target.Defense * m);
-		}
-		else
-		{
-			float m = ignoreD ? 1 : GetStatChangeModifier(criticalHit ? Math.Min((sbyte)0, target.SpDefenseChange) : target.SpDefenseChange, false);
-			d = CalculateSpDefense(user, target, target.SpDefense * m);
-		}
 
-		return CalculateDamage(user, a, d, basePower);
-	}
-}
-
-public sealed partial class PBEBattle
+#public sealed partial class PBEBattle
 {
 	public delegate void BattleEvent(PBEBattle battle, IPBEPacket packet);
 	public event BattleEvent? OnNewEvent;
@@ -1699,12 +743,12 @@ public sealed partial class PBEBattle
 	}
 	private void BroadcastBattleStatus(PBEBattleStatus battleStatus, PBEBattleStatusAction battleStatusAction)
 	{
-		switch (battleStatusAction)
+		match (battleStatusAction)
 		{
-			case PBEBattleStatusAction.Added: BattleStatus |= battleStatus; break;
-			case PBEBattleStatusAction.Cleared:
-			case PBEBattleStatusAction.Ended: BattleStatus &= ~battleStatus; break;
-			default: throw new ArgumentOutOfRangeException(nameof(battleStatusAction));
+			PBEBattleStatusAction.Added: BattleStatus |= battleStatus; break;
+			PBEBattleStatusAction.Cleared:
+			PBEBattleStatusAction.Ended: BattleStatus &= ~battleStatus; break;
+			_: throw new ArgumentOutOfRangeException(nameof(battleStatusAction));
 		}
 		Broadcast(new PBEBattleStatusPacket(battleStatus, battleStatusAction));
 	}
@@ -1726,15 +770,15 @@ public sealed partial class PBEBattle
 	}
 	private void BroadcastItem(PBEBattlePokemon itemHolder, PBEBattlePokemon pokemon2, PBEItem item, PBEItemAction itemAction)
 	{
-		switch (itemAction)
+		match (itemAction)
 		{
-			case PBEItemAction.Consumed:
+			PBEItemAction.Consumed:
 			{
 				itemHolder.Item = PBEItem.None;
 				itemHolder.KnownItem = PBEItem.None;
 				break;
 			}
-			default:
+			_:
 			{
 				itemHolder.Item = item;
 				itemHolder.KnownItem = item;
@@ -1920,26 +964,26 @@ public sealed partial class PBEBattle
 	}
 	private void BroadcastStatus2(PBEBattlePokemon status2Receiver, PBEBattlePokemon pokemon2, PBEStatus2 status2, PBEStatusAction statusAction)
 	{
-		switch (statusAction)
+		match (statusAction)
 		{
-			case PBEStatusAction.Added:
-			case PBEStatusAction.Announced:
-			case PBEStatusAction.CausedImmobility:
-			case PBEStatusAction.Damage: status2Receiver.Status2 |= status2; status2Receiver.KnownStatus2 |= status2; break;
-			case PBEStatusAction.Cleared:
-			case PBEStatusAction.Ended: status2Receiver.Status2 &= ~status2; status2Receiver.KnownStatus2 &= ~status2; break;
-			default: throw new ArgumentOutOfRangeException(nameof(statusAction));
+			PBEStatusAction.Added:
+			PBEStatusAction.Announced:
+			PBEStatusAction.CausedImmobility:
+			PBEStatusAction.Damage: status2Receiver.Status2 |= status2; status2Receiver.KnownStatus2 |= status2; break;
+			PBEStatusAction.Cleared:
+			PBEStatusAction.Ended: status2Receiver.Status2 &= ~status2; status2Receiver.KnownStatus2 &= ~status2; break;
+			_: throw new ArgumentOutOfRangeException(nameof(statusAction));
 		}
 		Broadcast(new PBEStatus2Packet(status2Receiver, pokemon2, status2, statusAction));
 	}
 	private void BroadcastTeamStatus(PBETeam team, PBETeamStatus teamStatus, PBETeamStatusAction teamStatusAction)
 	{
-		switch (teamStatusAction)
+		match (teamStatusAction)
 		{
-			case PBETeamStatusAction.Added: team.TeamStatus |= teamStatus; break;
-			case PBETeamStatusAction.Cleared:
-			case PBETeamStatusAction.Ended: team.TeamStatus &= ~teamStatus; break;
-			default: throw new ArgumentOutOfRangeException(nameof(teamStatusAction));
+			PBETeamStatusAction.Added: team.TeamStatus |= teamStatus; break;
+			PBETeamStatusAction.Cleared:
+			PBETeamStatusAction.Ended: team.TeamStatus &= ~teamStatus; break;
+			_: throw new ArgumentOutOfRangeException(nameof(teamStatusAction));
 		}
 		Broadcast(new PBETeamStatusPacket(team, teamStatus, teamStatusAction));
 	}
@@ -2059,299 +1103,299 @@ public sealed partial class PBEBattle
 			return string.Format("{0} {1} {2:P2} of its HP!", GetPkmnName(pokemon, true), percentageChange <= 0 ? "lost" : "restored", absPercentageChange);
 		}
 
-		switch (packet)
+		match (packet)
 		{
-			case PBEAbilityPacket ap:
+			PBEAbilityPacket ap:
 			{
 				PBEBattlePokemon abilityOwner = ap.AbilityOwnerTrainer.GetPokemon(ap.AbilityOwner);
 				PBEBattlePokemon pokemon2 = ap.AbilityOwnerTrainer.GetPokemon(ap.Pokemon2);
 				bool abilityOwnerCaps = true,
 							pokemon2Caps = true;
 				string message;
-				switch (ap.Ability)
+				match (ap.Ability)
 				{
-					case PBEAbility.AirLock:
-					case PBEAbility.CloudNine:
+					PBEAbility.AirLock:
+					PBEAbility.CloudNine:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Weather: message = "{0}'s {2} causes the effects of weather to disappear!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Weather: message = "{0}'s {2} causes the effects of weather to disappear!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.Anticipation:
+					PBEAbility.Anticipation:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Announced: message = "{0}'s {2} made it shudder!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Announced: message = "{0}'s {2} made it shudder!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.BadDreams:
+					PBEAbility.BadDreams:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Damage: message = "{1} is tormented by {0}'s {2}!"; abilityOwnerCaps = false; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Damage: message = "{1} is tormented by {0}'s {2}!"; abilityOwnerCaps = false; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.BigPecks:
+					PBEAbility.BigPecks:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Stats: message = $"{{0}}'s {PBEDataProvider.Instance.GetStatName(PBEStat.Defense).English} was not lowered!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Stats: message = $"{{0}}'s {PBEDataProvider.Instance.GetStatName(PBEStat.Defense).English} was not lowered!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.ClearBody:
-					case PBEAbility.WhiteSmoke:
+					PBEAbility.ClearBody:
+					PBEAbility.WhiteSmoke:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Stats: message = "{0}'s {2} prevents stat reduction!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Stats: message = "{0}'s {2} prevents stat reduction!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.ColorChange:
-					case PBEAbility.FlowerGift:
-					case PBEAbility.Forecast:
-					case PBEAbility.Imposter:
+					PBEAbility.ColorChange:
+					PBEAbility.FlowerGift:
+					PBEAbility.Forecast:
+					PBEAbility.Imposter:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.ChangedAppearance: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.ChangedAppearance: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.CuteCharm:
-					case PBEAbility.EffectSpore:
-					case PBEAbility.FlameBody:
-					case PBEAbility.Healer:
-					case PBEAbility.PoisonPoint:
-					case PBEAbility.ShedSkin:
-					case PBEAbility.Static:
+					PBEAbility.CuteCharm:
+					PBEAbility.EffectSpore:
+					PBEAbility.FlameBody:
+					PBEAbility.Healer:
+					PBEAbility.PoisonPoint:
+					PBEAbility.ShedSkin:
+					PBEAbility.Static:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.ChangedStatus: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.ChangedStatus: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.Download:
-					case PBEAbility.Intimidate:
+					PBEAbility.Download:
+					PBEAbility.Intimidate:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Stats: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Stats: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.Drizzle:
-					case PBEAbility.Drought:
-					case PBEAbility.SandStream:
-					case PBEAbility.SnowWarning:
+					PBEAbility.Drizzle:
+					PBEAbility.Drought:
+					PBEAbility.SandStream:
+					PBEAbility.SnowWarning:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Weather: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Weather: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.HyperCutter:
+					PBEAbility.HyperCutter:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Stats: message = $"{{0}}'s {PBEDataProvider.Instance.GetStatName(PBEStat.Attack).English} was not lowered!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Stats: message = $"{{0}}'s {PBEDataProvider.Instance.GetStatName(PBEStat.Attack).English} was not lowered!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.IceBody:
-					case PBEAbility.PoisonHeal:
-					case PBEAbility.RainDish:
+					PBEAbility.IceBody:
+					PBEAbility.PoisonHeal:
+					PBEAbility.RainDish:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.RestoredHP: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.RestoredHP: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.Illusion:
+					PBEAbility.Illusion:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.ChangedAppearance: goto bottom;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.ChangedAppearance: goto bottom;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 					}
-					case PBEAbility.Immunity:
-					case PBEAbility.Insomnia:
-					case PBEAbility.Limber:
-					case PBEAbility.MagmaArmor:
-					case PBEAbility.Oblivious:
-					case PBEAbility.OwnTempo:
-					case PBEAbility.VitalSpirit:
-					case PBEAbility.WaterVeil:
+					PBEAbility.Immunity:
+					PBEAbility.Insomnia:
+					PBEAbility.Limber:
+					PBEAbility.MagmaArmor:
+					PBEAbility.Oblivious:
+					PBEAbility.OwnTempo:
+					PBEAbility.VitalSpirit:
+					PBEAbility.WaterVeil:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.ChangedStatus:
-							case PBEAbilityAction.PreventedStatus: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
-						}
-						break;
-					}
-					case PBEAbility.IronBarbs:
-					case PBEAbility.Justified:
-					case PBEAbility.Levitate:
-					case PBEAbility.Mummy:
-					case PBEAbility.Rattled:
-					case PBEAbility.RoughSkin:
-					case PBEAbility.SolarPower:
-					case PBEAbility.Sturdy:
-					case PBEAbility.WeakArmor:
-					case PBEAbility.WonderGuard:
-					{
-						switch (ap.AbilityAction)
-						{
-							case PBEAbilityAction.Damage: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.ChangedStatus:
+							PBEAbilityAction.PreventedStatus: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.KeenEye:
+					PBEAbility.IronBarbs:
+					PBEAbility.Justified:
+					PBEAbility.Levitate:
+					PBEAbility.Mummy:
+					PBEAbility.Rattled:
+					PBEAbility.RoughSkin:
+					PBEAbility.SolarPower:
+					PBEAbility.Sturdy:
+					PBEAbility.WeakArmor:
+					PBEAbility.WonderGuard:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Stats: message = $"{{0}}'s {PBEDataProvider.Instance.GetStatName(PBEStat.Accuracy).English} was not lowered!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Damage: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.LeafGuard:
+					PBEAbility.KeenEye:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.PreventedStatus: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Stats: message = $"{{0}}'s {PBEDataProvider.Instance.GetStatName(PBEStat.Accuracy).English} was not lowered!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.LiquidOoze:
+					PBEAbility.LeafGuard:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Damage: message = "{1} sucked up the liquid ooze!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.PreventedStatus: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.MoldBreaker:
+					PBEAbility.LiquidOoze:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Announced: message = "{0} breaks the mold!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Damage: message = "{1} sucked up the liquid ooze!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.Moody:
-					case PBEAbility.SpeedBoost:
-					case PBEAbility.Steadfast:
+					PBEAbility.MoldBreaker:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Stats: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Announced: message = "{0} breaks the mold!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.RunAway:
+					PBEAbility.Moody:
+					PBEAbility.SpeedBoost:
+					PBEAbility.Steadfast:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Announced: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Stats: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.SlowStart:
+					PBEAbility.RunAway:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Announced: message = "{0} can't get it going!"; break;
-							case PBEAbilityAction.SlowStart_Ended: message = "{0} finally got its act together!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Announced: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.Teravolt:
+					PBEAbility.SlowStart:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Announced: message = "{0} is radiating a bursting aura!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Announced: message = "{0} can't get it going!"; break;
+							PBEAbilityAction.SlowStart_Ended: message = "{0} finally got its act together!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					case PBEAbility.Turboblaze:
+					PBEAbility.Teravolt:
 					{
-						switch (ap.AbilityAction)
+						match (ap.AbilityAction)
 						{
-							case PBEAbilityAction.Announced: message = "{0} is radiating a blazing aura!"; break;
-							default: throw new InvalidDataException(nameof(ap.AbilityAction));
+							PBEAbilityAction.Announced: message = "{0} is radiating a bursting aura!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
 						}
 						break;
 					}
-					default: throw new InvalidDataException(nameof(ap.Ability));
+					PBEAbility.Turboblaze:
+					{
+						match (ap.AbilityAction)
+						{
+							PBEAbilityAction.Announced: message = "{0} is radiating a blazing aura!"; break;
+							_: throw new InvalidDataException(nameof(ap.AbilityAction));
+						}
+						break;
+					}
+					_: throw new InvalidDataException(nameof(ap.Ability));
 				}
 				return string.Format(message, GetPkmnName(abilityOwner, abilityOwnerCaps), GetPkmnName(pokemon2, pokemon2Caps), PBEDataProvider.Instance.GetAbilityName(ap.Ability).English);
 			}
-			case PBEAbilityReplacedPacket arp:
+			PBEAbilityReplacedPacket arp:
 			{
 				PBEBattlePokemon abilityOwner = arp.AbilityOwnerTrainer.GetPokemon(arp.AbilityOwner);
 				string message;
-				switch (arp.NewAbility)
+				match (arp.NewAbility)
 				{
-					case PBEAbility.None: message = "{0}'s {1} was suppressed!"; break;
-					default: message = "{0}'s {1} was changed to {2}!"; break;
+					PBEAbility.None: message = "{0}'s {1} was suppressed!"; break;
+					_: message = "{0}'s {1} was changed to {2}!"; break;
 				}
 				return string.Format(message,
 					GetPkmnName(abilityOwner, true),
 					arp.OldAbility is null ? "Ability" : PBEDataProvider.Instance.GetAbilityName(arp.OldAbility.Value).English,
 					PBEDataProvider.Instance.GetAbilityName(arp.NewAbility).English);
 			}
-			case PBEBattleStatusPacket bsp:
+			PBEBattleStatusPacket bsp:
 			{
 				string message;
-				switch (bsp.BattleStatus)
+				match (bsp.BattleStatus)
 				{
-					case PBEBattleStatus.TrickRoom:
+					PBEBattleStatus.TrickRoom:
 					{
-						switch (bsp.BattleStatusAction)
+						match (bsp.BattleStatusAction)
 						{
-							case PBEBattleStatusAction.Added: message = "The dimensions were twisted!"; break;
-							case PBEBattleStatusAction.Cleared:
-							case PBEBattleStatusAction.Ended: message = "The twisted dimensions returned to normal!"; break;
-							default: throw new InvalidDataException(nameof(bsp.BattleStatusAction));
+							PBEBattleStatusAction.Added: message = "The dimensions were twisted!"; break;
+							PBEBattleStatusAction.Cleared:
+							PBEBattleStatusAction.Ended: message = "The twisted dimensions returned to normal!"; break;
+							_: throw new InvalidDataException(nameof(bsp.BattleStatusAction));
 						}
 						break;
 					}
-					default: throw new InvalidDataException(nameof(bsp.BattleStatus));
+					_: throw new InvalidDataException(nameof(bsp.BattleStatus));
 				}
 				return message;
 			}
-			case PBECapturePacket cp:
+			PBECapturePacket cp:
 			{
 				PBEBattlePokemon pokemon = cp.PokemonTrainer.GetPokemon(cp.Pokemon);
 				string ballEnglish = PBEDataProvider.Instance.GetItemName(cp.Ball).English;
@@ -2365,7 +1409,7 @@ public sealed partial class PBEBattle
 				}
 				return string.Format("The Pokémon broke free after {0} shake{1}!", cp.NumShakes, cp.NumShakes == 1 ? string.Empty : "s");
 			}
-			case PBEFleeFailedPacket ffp:
+			PBEFleeFailedPacket ffp:
 			{
 				string name;
 				if (ffp.Pokemon == PBEFieldPosition.None)
@@ -2379,185 +1423,185 @@ public sealed partial class PBEBattle
 				}
 				return string.Format("{0} could not get away!", name);
 			}
-			case PBEHazePacket _:
+			PBEHazePacket _:
 			{
 				return "All stat changes were eliminated!";
 			}
-			case PBEItemPacket ip:
+			PBEItemPacket ip:
 			{
 				PBEBattlePokemon itemHolder = ip.ItemHolderTrainer.GetPokemon(ip.ItemHolder);
 				PBEBattlePokemon pokemon2 = ip.Pokemon2Trainer.GetPokemon(ip.Pokemon2);
 				bool itemHolderCaps = true,
 							pokemon2Caps = false;
 				string message;
-				switch (ip.Item)
+				match (ip.Item)
 				{
-					case PBEItem.AguavBerry:
-					case PBEItem.BerryJuice:
-					case PBEItem.FigyBerry:
-					case PBEItem.IapapaBerry:
-					case PBEItem.MagoBerry:
-					case PBEItem.OranBerry:
-					case PBEItem.SitrusBerry:
-					case PBEItem.WikiBerry:
+					PBEItem.AguavBerry:
+					PBEItem.BerryJuice:
+					PBEItem.FigyBerry:
+					PBEItem.IapapaBerry:
+					PBEItem.MagoBerry:
+					PBEItem.OranBerry:
+					PBEItem.SitrusBerry:
+					PBEItem.WikiBerry:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Consumed: message = "{0} restored its health using its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Consumed: message = "{0} restored its health using its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.ApicotBerry:
-					case PBEItem.GanlonBerry:
-					case PBEItem.LiechiBerry:
-					case PBEItem.PetayaBerry:
-					case PBEItem.SalacBerry:
-					case PBEItem.StarfBerry:
+					PBEItem.ApicotBerry:
+					PBEItem.GanlonBerry:
+					PBEItem.LiechiBerry:
+					PBEItem.PetayaBerry:
+					PBEItem.SalacBerry:
+					PBEItem.StarfBerry:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Consumed: message = "{0} used its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Consumed: message = "{0} used its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.BugGem:
-					case PBEItem.DarkGem:
-					case PBEItem.DragonGem:
-					case PBEItem.ElectricGem:
-					case PBEItem.FightingGem:
-					case PBEItem.FireGem:
-					case PBEItem.FlyingGem:
-					case PBEItem.GhostGem:
-					case PBEItem.GrassGem:
-					case PBEItem.GroundGem:
-					case PBEItem.IceGem:
-					case PBEItem.NormalGem:
-					case PBEItem.PoisonGem:
-					case PBEItem.PsychicGem:
-					case PBEItem.RockGem:
-					case PBEItem.SteelGem:
-					case PBEItem.WaterGem:
+					PBEItem.BugGem:
+					PBEItem.DarkGem:
+					PBEItem.DragonGem:
+					PBEItem.ElectricGem:
+					PBEItem.FightingGem:
+					PBEItem.FireGem:
+					PBEItem.FlyingGem:
+					PBEItem.GhostGem:
+					PBEItem.GrassGem:
+					PBEItem.GroundGem:
+					PBEItem.IceGem:
+					PBEItem.NormalGem:
+					PBEItem.PoisonGem:
+					PBEItem.PsychicGem:
+					PBEItem.RockGem:
+					PBEItem.SteelGem:
+					PBEItem.WaterGem:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Consumed: message = "The {2} strengthened {0}'s power!"; itemHolderCaps = false; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Consumed: message = "The {2} strengthened {0}'s power!"; itemHolderCaps = false; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.BlackSludge:
+					PBEItem.BlackSludge:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Damage: message = "{0} is hurt by its {2}!"; break;
-							case PBEItemAction.RestoredHP: message = "{0} restored a little HP using its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Damage: message = "{0} is hurt by its {2}!"; break;
+							PBEItemAction.RestoredHP: message = "{0} restored a little HP using its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.DestinyKnot:
+					PBEItem.DestinyKnot:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Announced: message = "{0}'s {2} activated!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Announced: message = "{0}'s {2} activated!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.FlameOrb:
+					PBEItem.FlameOrb:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Announced: message = "{0} was burned by its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Announced: message = "{0} was burned by its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.FocusBand:
+					PBEItem.FocusBand:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Damage: message = "{0} hung on using its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Damage: message = "{0} hung on using its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.FocusSash:
+					PBEItem.FocusSash:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Consumed: message = "{0} hung on using its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Consumed: message = "{0} hung on using its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.Leftovers:
+					PBEItem.Leftovers:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.RestoredHP: message = "{0} restored a little HP using its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.RestoredHP: message = "{0} restored a little HP using its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.LifeOrb:
+					PBEItem.LifeOrb:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Damage: message = "{0} is hurt by its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Damage: message = "{0} is hurt by its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.PowerHerb:
+					PBEItem.PowerHerb:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Consumed: message = "{0} became fully charged due to its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Consumed: message = "{0} became fully charged due to its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.RockyHelmet:
+					PBEItem.RockyHelmet:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Damage: message = "{1} was hurt by the {2}!"; pokemon2Caps = true; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Damage: message = "{1} was hurt by the {2}!"; pokemon2Caps = true; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.SmokeBall:
+					PBEItem.SmokeBall:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Announced: message = "{0} used its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Announced: message = "{0} used its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					case PBEItem.ToxicOrb:
+					PBEItem.ToxicOrb:
 					{
-						switch (ip.ItemAction)
+						match (ip.ItemAction)
 						{
-							case PBEItemAction.Announced: message = "{0} was badly poisoned by its {2}!"; break;
-							default: throw new InvalidDataException(nameof(ip.ItemAction));
+							PBEItemAction.Announced: message = "{0} was badly poisoned by its {2}!"; break;
+							_: throw new InvalidDataException(nameof(ip.ItemAction));
 						}
 						break;
 					}
-					default: throw new InvalidDataException(nameof(ip.Item));
+					_: throw new InvalidDataException(nameof(ip.Item));
 				}
 				return string.Format(message, GetPkmnName(itemHolder, itemHolderCaps), GetPkmnName(pokemon2, pokemon2Caps), PBEDataProvider.Instance.GetItemName(ip.Item).English);
 			}
-			case PBEItemTurnPacket itp:
+			PBEItemTurnPacket itp:
 			{
 				PBEBattlePokemon itemUser = itp.ItemUserTrainer.GetPokemon(itp.ItemUser);
 				string itemEnglish = PBEDataProvider.Instance.GetItemName(itp.Item).English;
-				switch (itp.ItemAction)
+				match (itp.ItemAction)
 				{
-					case PBEItemTurnAction.Attempt:
+					PBEItemTurnAction.Attempt:
 					{
 						string word;
 						if (PBEDataUtils.AllBalls.Contains(itp.Item))
@@ -2570,7 +1614,7 @@ public sealed partial class PBEBattle
 						}
 						return string.Format("{0} {1} the {2}.", GetTrainerName(itemUser.Trainer), word, itemEnglish);
 					}
-					case PBEItemTurnAction.NoEffect:
+					PBEItemTurnAction.NoEffect:
 					{
 						if (PBEDataUtils.AllBalls.Contains(itp.Item))
 						{
@@ -2578,25 +1622,25 @@ public sealed partial class PBEBattle
 						}
 						return string.Format("The {0} had no effect.", itemEnglish);
 					}
-					case PBEItemTurnAction.Success:
+					PBEItemTurnAction.Success:
 					{
 						#string message;
-						switch (itp.Item)
+						match (itp.Item)
 						{
 							# No "success" items yet
-							default: throw new InvalidDataException(nameof(itp.Item));
+							_: throw new InvalidDataException(nameof(itp.Item));
 						}
 						#return string.Format(message, GetPkmnName(itemUser, true), itemEnglish);
 					}
-					default: throw new InvalidDataException(nameof(itp.ItemAction));
+					_: throw new InvalidDataException(nameof(itp.ItemAction));
 				}
 			}
-			case PBEMoveCritPacket mcp:
+			PBEMoveCritPacket mcp:
 			{
 				PBEBattlePokemon victim = mcp.VictimTrainer.GetPokemon(mcp.Victim);
 				return string.Format("A critical hit on {0}!", GetPkmnName(victim, false));
 			}
-			case PBEMovePPChangedPacket mpcp:
+			PBEMovePPChangedPacket mpcp:
 			{
 				PBEBattlePokemon moveUser = mpcp.MoveUserTrainer.GetPokemon(mpcp.MoveUser);
 				return string.Format("{0}'s {1} {3} {2} PP!",
@@ -2605,58 +1649,58 @@ public sealed partial class PBEBattle
 					Math.Abs(mpcp.AmountReduced),
 					mpcp.AmountReduced >= 0 ? "lost" : "gained");
 			}
-			case PBEMoveResultPacket mrp:
+			PBEMoveResultPacket mrp:
 			{
 				PBEBattlePokemon moveUser = mrp.MoveUserTrainer.GetPokemon(mrp.MoveUser);
 				PBEBattlePokemon pokemon2 = mrp.Pokemon2Trainer.GetPokemon(mrp.Pokemon2);
 				bool pokemon2Caps = true;
 				string message;
-				switch (mrp.Result)
+				match (mrp.Result)
 				{
-					case PBEResult.Ineffective_Ability: message = "{1} is protected by its Ability!"; break;
-					case PBEResult.Ineffective_Gender: message = "It doesn't affect {1}..."; pokemon2Caps = false; break;
-					case PBEResult.Ineffective_Level: message = "{1} is protected by its level!"; break;
-					case PBEResult.Ineffective_MagnetRise: message = $"{{1}} is protected by {PBEDataProvider.Instance.GetMoveName(PBEMove.MagnetRise).English}!"; break;
-					case PBEResult.Ineffective_Safeguard: message = $"{{1}} is protected by {PBEDataProvider.Instance.GetMoveName(PBEMove.Safeguard).English}!"; break;
-					case PBEResult.Ineffective_Stat:
-					case PBEResult.Ineffective_Status:
-					case PBEResult.InvalidConditions: message = "But it failed!"; break;
-					case PBEResult.Ineffective_Substitute: message = $"{{1}} is protected by {PBEDataProvider.Instance.GetMoveName(PBEMove.Substitute).English}!"; break;
-					case PBEResult.Ineffective_Type: message = "{1} is protected by its Type!"; break;
-					case PBEResult.Missed: message = "{0}'s attack missed {1}!"; pokemon2Caps = false; break;
-					case PBEResult.NoTarget: message = "But there was no target..."; break;
-					case PBEResult.NotVeryEffective_Type: message = "It's not very effective on {1}..."; pokemon2Caps = false; break;
-					case PBEResult.SuperEffective_Type: message = "It's super effective on {1}!"; pokemon2Caps = false; break;
-					default: throw new InvalidDataException(nameof(mrp.Result));
+					PBEResult.Ineffective_Ability: message = "{1} is protected by its Ability!"; break;
+					PBEResult.Ineffective_Gender: message = "It doesn't affect {1}..."; pokemon2Caps = false; break;
+					PBEResult.Ineffective_Level: message = "{1} is protected by its level!"; break;
+					PBEResult.Ineffective_MagnetRise: message = $"{{1}} is protected by {PBEDataProvider.Instance.GetMoveName(PBEMove.MagnetRise).English}!"; break;
+					PBEResult.Ineffective_Safeguard: message = $"{{1}} is protected by {PBEDataProvider.Instance.GetMoveName(PBEMove.Safeguard).English}!"; break;
+					PBEResult.Ineffective_Stat:
+					PBEResult.Ineffective_Status:
+					PBEResult.InvalidConditions: message = "But it failed!"; break;
+					PBEResult.Ineffective_Substitute: message = $"{{1}} is protected by {PBEDataProvider.Instance.GetMoveName(PBEMove.Substitute).English}!"; break;
+					PBEResult.Ineffective_Type: message = "{1} is protected by its Type!"; break;
+					PBEResult.Missed: message = "{0}'s attack missed {1}!"; pokemon2Caps = false; break;
+					PBEResult.NoTarget: message = "But there was no target..."; break;
+					PBEResult.NotVeryEffective_Type: message = "It's not very effective on {1}..."; pokemon2Caps = false; break;
+					PBEResult.SuperEffective_Type: message = "It's super effective on {1}!"; pokemon2Caps = false; break;
+					_: throw new InvalidDataException(nameof(mrp.Result));
 				}
 				return string.Format(message, GetPkmnName(moveUser, true), GetPkmnName(pokemon2, pokemon2Caps));
 			}
-			case PBEMoveUsedPacket mup:
+			PBEMoveUsedPacket mup:
 			{
 				PBEBattlePokemon moveUser = mup.MoveUserTrainer.GetPokemon(mup.MoveUser);
 				return string.Format("{0} used {1}!", GetPkmnName(moveUser, true), PBEDataProvider.Instance.GetMoveName(mup.Move).English);
 			}
-			case PBEPkmnFaintedPacket pfp:
+			PBEPkmnFaintedPacket pfp:
 			{
 				PBEBattlePokemon pokemon = pfp.PokemonTrainer.GetPokemon(pfp.Pokemon);
 				return string.Format("{0} fainted!", GetPkmnName(pokemon, true));
 			}
-			case PBEPkmnEXPEarnedPacket peep:
+			PBEPkmnEXPEarnedPacket peep:
 			{
 				PBEBattlePokemon pokemon = peep.PokemonTrainer.GetPokemon(peep.Pokemon);
 				return string.Format("{0} earned {1} EXP point(s)!", GetPkmnName(pokemon, true), peep.Earned);
 			}
-			case PBEPkmnFaintedPacket_Hidden pfph:
+			PBEPkmnFaintedPacket_Hidden pfph:
 			{
 				PBEBattlePokemon pokemon = pfph.PokemonTrainer.GetPokemon(pfph.OldPosition);
 				return string.Format("{0} fainted!", GetPkmnName(pokemon, true));
 			}
-			case IPBEPkmnFormChangedPacket pfcp:
+			IPBEPkmnFormChangedPacket pfcp:
 			{
 				PBEBattlePokemon pokemon = pfcp.PokemonTrainer.GetPokemon(pfcp.Pokemon);
 				return string.Format("{0}'s new form is {1}!", GetPkmnName(pokemon, true), PBEDataProvider.Instance.GetFormName(pokemon.Species, pfcp.NewForm).English);
 			}
-			case PBEPkmnHPChangedPacket phcp:
+			PBEPkmnHPChangedPacket phcp:
 			{
 				PBEBattlePokemon pokemon = phcp.PokemonTrainer.GetPokemon(phcp.Pokemon);
 				float percentageChange = phcp.NewHPPercentage - phcp.OldHPPercentage;
@@ -2669,41 +1713,41 @@ public sealed partial class PBEBattle
 				}
 				return DoHiddenHP(pokemon, percentageChange, absPercentageChange);
 			}
-			case PBEPkmnHPChangedPacket_Hidden phcph:
+			PBEPkmnHPChangedPacket_Hidden phcph:
 			{
 				PBEBattlePokemon pokemon = phcph.PokemonTrainer.GetPokemon(phcph.Pokemon);
 				float percentageChange = phcph.NewHPPercentage - phcph.OldHPPercentage;
 				float absPercentageChange = Math.Abs(percentageChange);
 				return DoHiddenHP(pokemon, percentageChange, absPercentageChange);
 			}
-			case PBEPkmnLevelChangedPacket plcp:
+			PBEPkmnLevelChangedPacket plcp:
 			{
 				PBEBattlePokemon pokemon = plcp.PokemonTrainer.GetPokemon(plcp.Pokemon);
 				return string.Format("{0} grew to level {1}!", GetPkmnName(pokemon, true), plcp.NewLevel);
 			}
-			case PBEPkmnStatChangedPacket pscp:
+			PBEPkmnStatChangedPacket pscp:
 			{
 				PBEBattlePokemon pokemon = pscp.PokemonTrainer.GetPokemon(pscp.Pokemon);
 				string statName, message;
-				switch (pscp.Stat)
+				match (pscp.Stat)
 				{
-					case PBEStat.Accuracy: statName = "Accuracy"; break;
-					case PBEStat.Attack: statName = "Attack"; break;
-					case PBEStat.Defense: statName = "Defense"; break;
-					case PBEStat.Evasion: statName = "Evasion"; break;
-					case PBEStat.SpAttack: statName = "Special Attack"; break;
-					case PBEStat.SpDefense: statName = "Special Defense"; break;
-					case PBEStat.Speed: statName = "Speed"; break;
-					default: throw new InvalidDataException(nameof(pscp.Stat));
+					PBEStat.Accuracy: statName = "Accuracy"; break;
+					PBEStat.Attack: statName = "Attack"; break;
+					PBEStat.Defense: statName = "Defense"; break;
+					PBEStat.Evasion: statName = "Evasion"; break;
+					PBEStat.SpAttack: statName = "Special Attack"; break;
+					PBEStat.SpDefense: statName = "Special Defense"; break;
+					PBEStat.Speed: statName = "Speed"; break;
+					_: throw new InvalidDataException(nameof(pscp.Stat));
 				}
 				int change = pscp.NewValue - pscp.OldValue;
-				switch (change)
+				match (change)
 				{
-					case -2: message = "harshly fell"; break;
-					case -1: message = "fell"; break;
-					case +1: message = "rose"; break;
-					case +2: message = "rose sharply"; break;
-					default:
+					-2: message = "harshly fell"; break;
+					-1: message = "fell"; break;
+					+1: message = "rose"; break;
+					+2: message = "rose sharply"; break;
+					_:
 					{
 						if (change == 0 && pscp.NewValue == -battle.Settings.MaxStatChange)
 						{
@@ -2730,7 +1774,7 @@ public sealed partial class PBEBattle
 				}
 				return string.Format("{0}'s {1} {2}!", GetPkmnName(pokemon, true), statName, message);
 			}
-			case IPBEPkmnSwitchInPacket psip:
+			IPBEPkmnSwitchInPacket psip:
 			{
 				if (!psip.Forced)
 				{
@@ -2738,7 +1782,7 @@ public sealed partial class PBEBattle
 				}
 				goto bottom;
 			}
-			case PBEPkmnSwitchOutPacket psop:
+			PBEPkmnSwitchOutPacket psop:
 			{
 				if (!psop.Forced)
 				{
@@ -2747,7 +1791,7 @@ public sealed partial class PBEBattle
 				}
 				goto bottom;
 			}
-			case PBEPkmnSwitchOutPacket_Hidden psoph:
+			PBEPkmnSwitchOutPacket_Hidden psoph:
 			{
 				if (!psoph.Forced)
 				{
@@ -2756,13 +1800,13 @@ public sealed partial class PBEBattle
 				}
 				goto bottom;
 			}
-			case PBEPsychUpPacket pup:
+			PBEPsychUpPacket pup:
 			{
 				PBEBattlePokemon user = pup.UserTrainer.GetPokemon(pup.User);
 				PBEBattlePokemon target = pup.TargetTrainer.GetPokemon(pup.Target);
 				return string.Format("{0} copied {1}'s stat changes!", GetPkmnName(user, true), GetPkmnName(target, false));
 			}
-			case PBEReflectTypePacket rtp:
+			PBEReflectTypePacket rtp:
 			{
 				PBEBattlePokemon user = rtp.UserTrainer.GetPokemon(rtp.User);
 				PBEBattlePokemon target = rtp.TargetTrainer.GetPokemon(rtp.Target);
@@ -2772,469 +1816,469 @@ public sealed partial class PBEBattle
 					GetPkmnName(target, false),
 					rtp.Type2 == PBEType.None ? $"{type1Str} type!" : $"{type1Str} and {PBEDataProvider.Instance.GetTypeName(rtp.Type2).English} types!");
 			}
-			case PBEReflectTypePacket_Hidden rtph:
+			PBEReflectTypePacket_Hidden rtph:
 			{
 				PBEBattlePokemon user = rtph.UserTrainer.GetPokemon(rtph.User);
 				PBEBattlePokemon target = rtph.TargetTrainer.GetPokemon(rtph.Target);
 				return string.Format("{0} copied {1}'s types!", GetPkmnName(user, true), GetPkmnName(target, false));
 			}
-			case PBESpecialMessagePacket smp: # TODO: Clean
+			PBESpecialMessagePacket smp: # TODO: Clean
 			{
 				string message;
-				switch (smp.Message)
+				match (smp.Message)
 				{
-					case PBESpecialMessage.DraggedOut: message = string.Format("{0} was dragged out!", GetPkmnName(((PBETrainer)smp.Params[0]).GetPokemon((PBEFieldPosition)smp.Params[1]), true)); break;
-					case PBESpecialMessage.Endure: message = string.Format("{0} endured the hit!", GetPkmnName(((PBETrainer)smp.Params[0]).GetPokemon((PBEFieldPosition)smp.Params[1]), true)); break;
-					case PBESpecialMessage.HPDrained: message = string.Format("{0} had its energy drained!", GetPkmnName(((PBETrainer)smp.Params[0]).GetPokemon((PBEFieldPosition)smp.Params[1]), true)); break;
-					case PBESpecialMessage.Magnitude: message = string.Format("Magnitude {0}!", (byte)smp.Params[0]); break;
-					case PBESpecialMessage.MultiHit: message = string.Format("Hit {0} time(s)!", (byte)smp.Params[0]); break;
-					case PBESpecialMessage.NothingHappened: message = "But nothing happened!"; break;
-					case PBESpecialMessage.OneHitKnockout: message = "It's a one-hit KO!"; break;
-					case PBESpecialMessage.PainSplit: message = "The battlers shared their pain!"; break;
-					case PBESpecialMessage.PayDay: message = "Coins were scattered everywhere!"; break;
-					case PBESpecialMessage.Recoil: message = string.Format("{0} is damaged by recoil!", GetPkmnName(((PBETrainer)smp.Params[0]).GetPokemon((PBEFieldPosition)smp.Params[1]), true)); break;
-					case PBESpecialMessage.Struggle: message = string.Format("{0} has no moves left!", GetPkmnName(((PBETrainer)smp.Params[0]).GetPokemon((PBEFieldPosition)smp.Params[1]), true)); break;
-					default: throw new InvalidDataException(nameof(smp.Message));
+					PBESpecialMessage.DraggedOut: message = string.Format("{0} was dragged out!", GetPkmnName(((PBETrainer)smp.Params[0]).GetPokemon((PBEFieldPosition)smp.Params[1]), true)); break;
+					PBESpecialMessage.Endure: message = string.Format("{0} endured the hit!", GetPkmnName(((PBETrainer)smp.Params[0]).GetPokemon((PBEFieldPosition)smp.Params[1]), true)); break;
+					PBESpecialMessage.HPDrained: message = string.Format("{0} had its energy drained!", GetPkmnName(((PBETrainer)smp.Params[0]).GetPokemon((PBEFieldPosition)smp.Params[1]), true)); break;
+					PBESpecialMessage.Magnitude: message = string.Format("Magnitude {0}!", (byte)smp.Params[0]); break;
+					PBESpecialMessage.MultiHit: message = string.Format("Hit {0} time(s)!", (byte)smp.Params[0]); break;
+					PBESpecialMessage.NothingHappened: message = "But nothing happened!"; break;
+					PBESpecialMessage.OneHitKnockout: message = "It's a one-hit KO!"; break;
+					PBESpecialMessage.PainSplit: message = "The battlers shared their pain!"; break;
+					PBESpecialMessage.PayDay: message = "Coins were scattered everywhere!"; break;
+					PBESpecialMessage.Recoil: message = string.Format("{0} is damaged by recoil!", GetPkmnName(((PBETrainer)smp.Params[0]).GetPokemon((PBEFieldPosition)smp.Params[1]), true)); break;
+					PBESpecialMessage.Struggle: message = string.Format("{0} has no moves left!", GetPkmnName(((PBETrainer)smp.Params[0]).GetPokemon((PBEFieldPosition)smp.Params[1]), true)); break;
+					_: throw new InvalidDataException(nameof(smp.Message));
 				}
 				return message;
 			}
-			case PBEStatus1Packet s1p:
+			PBEStatus1Packet s1p:
 			{
 				PBEBattlePokemon status1Receiver = s1p.Status1ReceiverTrainer.GetPokemon(s1p.Status1Receiver);
 				string message;
-				switch (s1p.Status1)
+				match (s1p.Status1)
 				{
-					case PBEStatus1.Asleep:
+					PBEStatus1.Asleep:
 					{
-						switch (s1p.StatusAction)
+						match (s1p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} fell asleep!"; break;
-							case PBEStatusAction.CausedImmobility: message = "{0} is fast asleep."; break;
-							case PBEStatusAction.Cleared:
-							case PBEStatusAction.Ended: message = "{0} woke up!"; break;
-							default: throw new InvalidDataException(nameof(s1p.StatusAction));
+							PBEStatusAction.Added: message = "{0} fell asleep!"; break;
+							PBEStatusAction.CausedImmobility: message = "{0} is fast asleep."; break;
+							PBEStatusAction.Cleared:
+							PBEStatusAction.Ended: message = "{0} woke up!"; break;
+							_: throw new InvalidDataException(nameof(s1p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus1.BadlyPoisoned:
+					PBEStatus1.BadlyPoisoned:
 					{
-						switch (s1p.StatusAction)
+						match (s1p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} was badly poisoned!"; break;
-							case PBEStatusAction.Cleared: message = "{0} was cured of its poisoning."; break;
-							case PBEStatusAction.Damage: message = "{0} was hurt by poison!"; break;
-							default: throw new InvalidDataException(nameof(s1p.StatusAction));
+							PBEStatusAction.Added: message = "{0} was badly poisoned!"; break;
+							PBEStatusAction.Cleared: message = "{0} was cured of its poisoning."; break;
+							PBEStatusAction.Damage: message = "{0} was hurt by poison!"; break;
+							_: throw new InvalidDataException(nameof(s1p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus1.Burned:
+					PBEStatus1.Burned:
 					{
-						switch (s1p.StatusAction)
+						match (s1p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} was burned!"; break;
-							case PBEStatusAction.Cleared: message = "{0}'s burn was healed."; break;
-							case PBEStatusAction.Damage: message = "{0} was hurt by its burn!"; break;
-							default: throw new InvalidDataException(nameof(s1p.StatusAction));
+							PBEStatusAction.Added: message = "{0} was burned!"; break;
+							PBEStatusAction.Cleared: message = "{0}'s burn was healed."; break;
+							PBEStatusAction.Damage: message = "{0} was hurt by its burn!"; break;
+							_: throw new InvalidDataException(nameof(s1p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus1.Frozen:
+					PBEStatus1.Frozen:
 					{
-						switch (s1p.StatusAction)
+						match (s1p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} was frozen solid!"; break;
-							case PBEStatusAction.CausedImmobility: message = "{0} is frozen solid!"; break;
-							case PBEStatusAction.Cleared:
-							case PBEStatusAction.Ended: message = "{0} thawed out!"; break;
-							default: throw new InvalidDataException(nameof(s1p.StatusAction));
+							PBEStatusAction.Added: message = "{0} was frozen solid!"; break;
+							PBEStatusAction.CausedImmobility: message = "{0} is frozen solid!"; break;
+							PBEStatusAction.Cleared:
+							PBEStatusAction.Ended: message = "{0} thawed out!"; break;
+							_: throw new InvalidDataException(nameof(s1p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus1.Paralyzed:
+					PBEStatus1.Paralyzed:
 					{
-						switch (s1p.StatusAction)
+						match (s1p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} is paralyzed! It may be unable to move!"; break;
-							case PBEStatusAction.CausedImmobility: message = "{0} is paralyzed! It can't move!"; break;
-							case PBEStatusAction.Cleared: message = "{0} was cured of paralysis."; break;
-							default: throw new InvalidDataException(nameof(s1p.StatusAction));
+							PBEStatusAction.Added: message = "{0} is paralyzed! It may be unable to move!"; break;
+							PBEStatusAction.CausedImmobility: message = "{0} is paralyzed! It can't move!"; break;
+							PBEStatusAction.Cleared: message = "{0} was cured of paralysis."; break;
+							_: throw new InvalidDataException(nameof(s1p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus1.Poisoned:
+					PBEStatus1.Poisoned:
 					{
-						switch (s1p.StatusAction)
+						match (s1p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} was poisoned!"; break;
-							case PBEStatusAction.Cleared: message = "{0} was cured of its poisoning."; break;
-							case PBEStatusAction.Damage: message = "{0} was hurt by poison!"; break;
-							default: throw new InvalidDataException(nameof(s1p.StatusAction));
+							PBEStatusAction.Added: message = "{0} was poisoned!"; break;
+							PBEStatusAction.Cleared: message = "{0} was cured of its poisoning."; break;
+							PBEStatusAction.Damage: message = "{0} was hurt by poison!"; break;
+							_: throw new InvalidDataException(nameof(s1p.StatusAction));
 						}
 						break;
 					}
-					default: throw new InvalidDataException(nameof(s1p.Status1));
+					_: throw new InvalidDataException(nameof(s1p.Status1));
 				}
 				return string.Format(message, GetPkmnName(status1Receiver, true));
 			}
-			case PBEStatus2Packet s2p:
+			PBEStatus2Packet s2p:
 			{
 				PBEBattlePokemon status2Receiver = s2p.Status2ReceiverTrainer.GetPokemon(s2p.Status2Receiver);
 				PBEBattlePokemon pokemon2 = s2p.Pokemon2Trainer.GetPokemon(s2p.Pokemon2);
 				string message;
 				bool status2ReceiverCaps = true,
 							pokemon2Caps = false;
-				switch (s2p.Status2)
+				match (s2p.Status2)
 				{
-					case PBEStatus2.Airborne:
+					PBEStatus2.Airborne:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} flew up high!"; break;
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} flew up high!"; break;
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Confused:
+					PBEStatus2.Confused:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} became confused!"; break;
-							case PBEStatusAction.Announced: message = "{0} is confused!"; break;
-							case PBEStatusAction.Cleared:
-							case PBEStatusAction.Ended: message = "{0} snapped out of its confusion."; break;
-							case PBEStatusAction.Damage: message = "It hurt itself in its confusion!"; break;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} became confused!"; break;
+							PBEStatusAction.Announced: message = "{0} is confused!"; break;
+							PBEStatusAction.Cleared:
+							PBEStatusAction.Ended: message = "{0} snapped out of its confusion."; break;
+							PBEStatusAction.Damage: message = "It hurt itself in its confusion!"; break;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Cursed:
+					PBEStatus2.Cursed:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{1} cut its own HP and laid a curse on {0}!"; status2ReceiverCaps = false; pokemon2Caps = true; break;
-							case PBEStatusAction.Damage: message = "{0} is afflicted by the curse!"; break;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{1} cut its own HP and laid a curse on {0}!"; status2ReceiverCaps = false; pokemon2Caps = true; break;
+							PBEStatusAction.Damage: message = "{0} is afflicted by the curse!"; break;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Disguised:
+					PBEStatus2.Disguised:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Ended: message = "{0}'s illusion wore off!"; break;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Ended: message = "{0}'s illusion wore off!"; break;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Flinching:
+					PBEStatus2.Flinching:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.CausedImmobility: message = "{0} flinched and couldn't move!"; break;
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.CausedImmobility: message = "{0} flinched and couldn't move!"; break;
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Identified:
-					case PBEStatus2.MiracleEye:
+					PBEStatus2.Identified:
+					PBEStatus2.MiracleEye:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} was identified!"; break;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} was identified!"; break;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.HelpingHand:
+					PBEStatus2.HelpingHand:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{1} is ready to help {0}!"; status2ReceiverCaps = false; pokemon2Caps = true; break;
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{1} is ready to help {0}!"; status2ReceiverCaps = false; pokemon2Caps = true; break;
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Infatuated:
+					PBEStatus2.Infatuated:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} fell in love with {1}!"; break;
-							case PBEStatusAction.Announced: message = "{0} is in love with {1}!"; break;
-							case PBEStatusAction.CausedImmobility: message = "{0} is immobilized by love!"; break;
-							case PBEStatusAction.Cleared:
-							case PBEStatusAction.Ended: message = "{0} got over its infatuation."; break;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} fell in love with {1}!"; break;
+							PBEStatusAction.Announced: message = "{0} is in love with {1}!"; break;
+							PBEStatusAction.CausedImmobility: message = "{0} is immobilized by love!"; break;
+							PBEStatusAction.Cleared:
+							PBEStatusAction.Ended: message = "{0} got over its infatuation."; break;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.LeechSeed:
+					PBEStatus2.LeechSeed:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} was seeded!"; break;
-							case PBEStatusAction.Damage: message = "{0}'s health is sapped by Leech Seed!"; break;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} was seeded!"; break;
+							PBEStatusAction.Damage: message = "{0}'s health is sapped by Leech Seed!"; break;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.LockOn:
+					PBEStatus2.LockOn:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} took aim at {1}!"; break;
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} took aim at {1}!"; break;
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.MagnetRise:
+					PBEStatus2.MagnetRise:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} levitated with electromagnetism!"; break;
-							case PBEStatusAction.Ended: message = "{0}'s electromagnetism wore off!"; break;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} levitated with electromagnetism!"; break;
+							PBEStatusAction.Ended: message = "{0}'s electromagnetism wore off!"; break;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Nightmare:
+					PBEStatus2.Nightmare:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} began having a nightmare!"; break;
-							case PBEStatusAction.Damage: message = "{0} is locked in a nightmare!"; break;
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} began having a nightmare!"; break;
+							PBEStatusAction.Damage: message = "{0} is locked in a nightmare!"; break;
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.PowerTrick:
+					PBEStatus2.PowerTrick:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} switched its Attack and Defense!"; break;
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} switched its Attack and Defense!"; break;
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Protected:
+					PBEStatus2.Protected:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added:
-							case PBEStatusAction.Damage: message = "{0} protected itself!"; break;
-							case PBEStatusAction.Cleared: message = "{1} broke through {0}'s protection!"; status2ReceiverCaps = false; pokemon2Caps = true; break;
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added:
+							PBEStatusAction.Damage: message = "{0} protected itself!"; break;
+							PBEStatusAction.Cleared: message = "{1} broke through {0}'s protection!"; status2ReceiverCaps = false; pokemon2Caps = true; break;
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Pumped:
+					PBEStatus2.Pumped:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} is getting pumped!"; break;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} is getting pumped!"; break;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Roost:
+					PBEStatus2.Roost:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added:
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added:
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 					}
-					case PBEStatus2.ShadowForce:
+					PBEStatus2.ShadowForce:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} vanished instantly!"; break;
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
-						}
-						break;
-					}
-					case PBEStatus2.Substitute:
-					{
-						switch (s2p.StatusAction)
-						{
-							case PBEStatusAction.Added: message = "{0} put in a substitute!"; break;
-							case PBEStatusAction.Damage: message = "The substitute took damage for {0}!"; status2ReceiverCaps = false; break;
-							case PBEStatusAction.Ended: message = "{0}'s substitute faded!"; break;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} vanished instantly!"; break;
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Transformed:
+					PBEStatus2.Substitute:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} transformed into {1}!"; break;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} put in a substitute!"; break;
+							PBEStatusAction.Damage: message = "The substitute took damage for {0}!"; status2ReceiverCaps = false; break;
+							PBEStatusAction.Ended: message = "{0}'s substitute faded!"; break;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Underground:
+					PBEStatus2.Transformed:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} burrowed its way under the ground!"; break;
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} transformed into {1}!"; break;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					case PBEStatus2.Underwater:
+					PBEStatus2.Underground:
 					{
-						switch (s2p.StatusAction)
+						match (s2p.StatusAction)
 						{
-							case PBEStatusAction.Added: message = "{0} hid underwater!"; break;
-							case PBEStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(s2p.StatusAction));
+							PBEStatusAction.Added: message = "{0} burrowed its way under the ground!"; break;
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
 						}
 						break;
 					}
-					default: throw new InvalidDataException(nameof(s2p.Status2));
+					PBEStatus2.Underwater:
+					{
+						match (s2p.StatusAction)
+						{
+							PBEStatusAction.Added: message = "{0} hid underwater!"; break;
+							PBEStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(s2p.StatusAction));
+						}
+						break;
+					}
+					_: throw new InvalidDataException(nameof(s2p.Status2));
 				}
 				return string.Format(message, GetPkmnName(status2Receiver, status2ReceiverCaps), GetPkmnName(pokemon2, pokemon2Caps));
 			}
-			case PBETeamStatusPacket tsp:
+			PBETeamStatusPacket tsp:
 			{
 				string message;
 				bool teamCaps = true;
-				switch (tsp.TeamStatus)
+				match (tsp.TeamStatus)
 				{
-					case PBETeamStatus.LightScreen:
+					PBETeamStatus.LightScreen:
 					{
-						switch (tsp.TeamStatusAction)
+						match (tsp.TeamStatusAction)
 						{
-							case PBETeamStatusAction.Added: message = "Light Screen raised {0} team's Special Defense!"; teamCaps = false; break;
-							case PBETeamStatusAction.Cleared:
-							case PBETeamStatusAction.Ended: message = "{0} team's Light Screen wore off!"; break;
-							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
+							PBETeamStatusAction.Added: message = "Light Screen raised {0} team's Special Defense!"; teamCaps = false; break;
+							PBETeamStatusAction.Cleared:
+							PBETeamStatusAction.Ended: message = "{0} team's Light Screen wore off!"; break;
+							_: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
 					}
-					case PBETeamStatus.LuckyChant:
+					PBETeamStatus.LuckyChant:
 					{
-						switch (tsp.TeamStatusAction)
+						match (tsp.TeamStatusAction)
 						{
-							case PBETeamStatusAction.Added: message = "The Lucky Chant shielded {0} team from critical hits!"; teamCaps = false; break;
-							case PBETeamStatusAction.Ended: message = "{0} team's Lucky Chant wore off!"; break;
-							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
+							PBETeamStatusAction.Added: message = "The Lucky Chant shielded {0} team from critical hits!"; teamCaps = false; break;
+							PBETeamStatusAction.Ended: message = "{0} team's Lucky Chant wore off!"; break;
+							_: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
 					}
-					case PBETeamStatus.QuickGuard:
+					PBETeamStatus.QuickGuard:
 					{
-						switch (tsp.TeamStatusAction)
+						match (tsp.TeamStatusAction)
 						{
-							case PBETeamStatusAction.Added: message = "Quick Guard protected {0} team!"; teamCaps = false; break;
-							case PBETeamStatusAction.Cleared: message = "{0} team's Quick Guard was destroyed!"; break;
-							case PBETeamStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
+							PBETeamStatusAction.Added: message = "Quick Guard protected {0} team!"; teamCaps = false; break;
+							PBETeamStatusAction.Cleared: message = "{0} team's Quick Guard was destroyed!"; break;
+							PBETeamStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
 					}
-					case PBETeamStatus.Reflect:
+					PBETeamStatus.Reflect:
 					{
-						switch (tsp.TeamStatusAction)
+						match (tsp.TeamStatusAction)
 						{
-							case PBETeamStatusAction.Added: message = "Reflect raised {0} team's Defense!"; teamCaps = false; break;
-							case PBETeamStatusAction.Cleared:
-							case PBETeamStatusAction.Ended: message = "{0} team's Reflect wore off!"; break;
-							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
+							PBETeamStatusAction.Added: message = "Reflect raised {0} team's Defense!"; teamCaps = false; break;
+							PBETeamStatusAction.Cleared:
+							PBETeamStatusAction.Ended: message = "{0} team's Reflect wore off!"; break;
+							_: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
 					}
-					case PBETeamStatus.Safeguard:
+					PBETeamStatus.Safeguard:
 					{
-						switch (tsp.TeamStatusAction)
+						match (tsp.TeamStatusAction)
 						{
-							case PBETeamStatusAction.Added: message = "{0} team became cloaked in a mystical veil!"; break;
-							case PBETeamStatusAction.Ended: message = "{0} team is no longer protected by Safeguard!"; break;
-							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
+							PBETeamStatusAction.Added: message = "{0} team became cloaked in a mystical veil!"; break;
+							PBETeamStatusAction.Ended: message = "{0} team is no longer protected by Safeguard!"; break;
+							_: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
 					}
-					case PBETeamStatus.Spikes:
+					PBETeamStatus.Spikes:
 					{
-						switch (tsp.TeamStatusAction)
+						match (tsp.TeamStatusAction)
 						{
-							case PBETeamStatusAction.Added: message = "Spikes were scattered all around the feet of {0} team!"; teamCaps = false; break;
-							#case PBETeamStatusAction.Cleared: message = "The spikes disappeared from around {0} team's feet!"; teamCaps = false; break;
-							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
+							PBETeamStatusAction.Added: message = "Spikes were scattered all around the feet of {0} team!"; teamCaps = false; break;
+							#PBETeamStatusAction.Cleared: message = "The spikes disappeared from around {0} team's feet!"; teamCaps = false; break;
+							_: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
 					}
-					case PBETeamStatus.StealthRock:
+					PBETeamStatus.StealthRock:
 					{
-						switch (tsp.TeamStatusAction)
+						match (tsp.TeamStatusAction)
 						{
-							case PBETeamStatusAction.Added: message = "Pointed stones float in the air around {0} team!"; teamCaps = false; break;
-							#case PBETeamStatusAction.Cleared: message = "The pointed stones disappeared from around {0} team!"; teamCaps = false; break;
-							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
+							PBETeamStatusAction.Added: message = "Pointed stones float in the air around {0} team!"; teamCaps = false; break;
+							#PBETeamStatusAction.Cleared: message = "The pointed stones disappeared from around {0} team!"; teamCaps = false; break;
+							_: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
 					}
-					case PBETeamStatus.Tailwind:
+					PBETeamStatus.Tailwind:
 					{
-						switch (tsp.TeamStatusAction)
+						match (tsp.TeamStatusAction)
 						{
-							case PBETeamStatusAction.Added: message = "The tailwind blew from behind {0} team!"; teamCaps = false; break;
-							case PBETeamStatusAction.Ended: message = "{0} team's tailwind petered out!"; break;
-							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
+							PBETeamStatusAction.Added: message = "The tailwind blew from behind {0} team!"; teamCaps = false; break;
+							PBETeamStatusAction.Ended: message = "{0} team's tailwind petered out!"; break;
+							_: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
 					}
-					case PBETeamStatus.ToxicSpikes:
+					PBETeamStatus.ToxicSpikes:
 					{
-						switch (tsp.TeamStatusAction)
+						match (tsp.TeamStatusAction)
 						{
-							case PBETeamStatusAction.Added: message = "Poison spikes were scattered all around {0} team's feet!"; break;
-							case PBETeamStatusAction.Cleared: message = "The poison spikes disappeared from around {0} team's feet!"; break;
-							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
+							PBETeamStatusAction.Added: message = "Poison spikes were scattered all around {0} team's feet!"; break;
+							PBETeamStatusAction.Cleared: message = "The poison spikes disappeared from around {0} team's feet!"; break;
+							_: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
 					}
-					case PBETeamStatus.WideGuard:
+					PBETeamStatus.WideGuard:
 					{
-						switch (tsp.TeamStatusAction)
+						match (tsp.TeamStatusAction)
 						{
-							case PBETeamStatusAction.Added: message = "Wide Guard protected {0} team!"; break;
-							case PBETeamStatusAction.Cleared: message = "{0} team's Wide Guard was destroyed!"; break;
-							case PBETeamStatusAction.Ended: goto bottom;
-							default: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
+							PBETeamStatusAction.Added: message = "Wide Guard protected {0} team!"; break;
+							PBETeamStatusAction.Cleared: message = "{0} team's Wide Guard was destroyed!"; break;
+							PBETeamStatusAction.Ended: goto bottom;
+							_: throw new InvalidDataException(nameof(tsp.TeamStatusAction));
 						}
 						break;
 					}
-					default: throw new InvalidDataException(nameof(tsp.TeamStatus));
+					_: throw new InvalidDataException(nameof(tsp.TeamStatus));
 				}
 				return string.Format(message, GetTeamName(tsp.Team, teamCaps));
 			}
-			case PBETeamStatusDamagePacket tsdp:
+			PBETeamStatusDamagePacket tsdp:
 			{
 				PBEBattlePokemon damageVictim = tsdp.DamageVictimTrainer.GetPokemon(tsdp.DamageVictim);
 				string message;
 				bool damageVictimCaps = false;
-				switch (tsdp.TeamStatus)
+				match (tsdp.TeamStatus)
 				{
-					case PBETeamStatus.QuickGuard: message = "Quick Guard protected {0}!"; break;
-					case PBETeamStatus.Spikes: message = "{0} is hurt by the spikes!"; damageVictimCaps = true; break;
-					case PBETeamStatus.StealthRock: message = "Pointed stones dug into {0}!"; break;
-					case PBETeamStatus.WideGuard: message = "Wide Guard protected {0}!"; break;
-					default: throw new InvalidDataException(nameof(tsdp.TeamStatus));
+					PBETeamStatus.QuickGuard: message = "Quick Guard protected {0}!"; break;
+					PBETeamStatus.Spikes: message = "{0} is hurt by the spikes!"; damageVictimCaps = true; break;
+					PBETeamStatus.StealthRock: message = "Pointed stones dug into {0}!"; break;
+					PBETeamStatus.WideGuard: message = "Wide Guard protected {0}!"; break;
+					_: throw new InvalidDataException(nameof(tsdp.TeamStatus));
 				}
 				return string.Format(message, GetPkmnName(damageVictim, damageVictimCaps));
 			}
-			case PBETypeChangedPacket tcp:
+			PBETypeChangedPacket tcp:
 			{
 				PBEBattlePokemon pokemon = tcp.PokemonTrainer.GetPokemon(tcp.Pokemon);
 				string type1Str = PBEDataProvider.Instance.GetTypeName(tcp.Type1).English;
@@ -3242,96 +2286,96 @@ public sealed partial class PBEBattle
 					GetPkmnName(pokemon, true),
 					tcp.Type2 == PBEType.None ? $"{type1Str} type!" : $"{type1Str} and {PBEDataProvider.Instance.GetTypeName(tcp.Type2).English} types!");
 			}
-			case PBEWeatherPacket wp:
+			PBEWeatherPacket wp:
 			{
-				switch (wp.Weather)
+				match (wp.Weather)
 				{
-					case PBEWeather.Hailstorm:
+					PBEWeather.Hailstorm:
 					{
-						switch (wp.WeatherAction)
+						match (wp.WeatherAction)
 						{
-							case PBEWeatherAction.Added: return "It started to hail!";
-							case PBEWeatherAction.Ended: return "The hail stopped.";
-							default: throw new InvalidDataException(nameof(wp.WeatherAction));
+							PBEWeatherAction.Added: return "It started to hail!";
+							PBEWeatherAction.Ended: return "The hail stopped.";
+							_: throw new InvalidDataException(nameof(wp.WeatherAction));
 						}
 					}
-					case PBEWeather.HarshSunlight:
+					PBEWeather.HarshSunlight:
 					{
-						switch (wp.WeatherAction)
+						match (wp.WeatherAction)
 						{
-							case PBEWeatherAction.Added: return "The sunlight turned harsh!";
-							case PBEWeatherAction.Ended: return "The sunlight faded.";
-							default: throw new InvalidDataException(nameof(wp.WeatherAction));
+							PBEWeatherAction.Added: return "The sunlight turned harsh!";
+							PBEWeatherAction.Ended: return "The sunlight faded.";
+							_: throw new InvalidDataException(nameof(wp.WeatherAction));
 						}
 					}
-					case PBEWeather.Rain:
+					PBEWeather.Rain:
 					{
-						switch (wp.WeatherAction)
+						match (wp.WeatherAction)
 						{
-							case PBEWeatherAction.Added: return "It started to rain!";
-							case PBEWeatherAction.Ended: return "The rain stopped.";
-							default: throw new InvalidDataException(nameof(wp.WeatherAction));
+							PBEWeatherAction.Added: return "It started to rain!";
+							PBEWeatherAction.Ended: return "The rain stopped.";
+							_: throw new InvalidDataException(nameof(wp.WeatherAction));
 						}
 					}
-					case PBEWeather.Sandstorm:
+					PBEWeather.Sandstorm:
 					{
-						switch (wp.WeatherAction)
+						match (wp.WeatherAction)
 						{
-							case PBEWeatherAction.Added: return "A sandstorm kicked up!";
-							case PBEWeatherAction.Ended: return "The sandstorm subsided.";
-							default: throw new InvalidDataException(nameof(wp.WeatherAction));
+							PBEWeatherAction.Added: return "A sandstorm kicked up!";
+							PBEWeatherAction.Ended: return "The sandstorm subsided.";
+							_: throw new InvalidDataException(nameof(wp.WeatherAction));
 						}
 					}
-					default: throw new InvalidDataException(nameof(wp.Weather));
+					_: throw new InvalidDataException(nameof(wp.Weather));
 				}
 			}
-			case PBEWeatherDamagePacket wdp:
+			PBEWeatherDamagePacket wdp:
 			{
 				PBEBattlePokemon damageVictim = wdp.DamageVictimTrainer.GetPokemon(wdp.DamageVictim);
 				string message;
-				switch (wdp.Weather)
+				match (wdp.Weather)
 				{
-					case PBEWeather.Hailstorm: message = "{0} is buffeted by the hail!"; break;
-					case PBEWeather.Sandstorm: message = "{0} is buffeted by the sandstorm!"; break;
-					default: throw new InvalidDataException(nameof(wdp.Weather));
+					PBEWeather.Hailstorm: message = "{0} is buffeted by the hail!"; break;
+					PBEWeather.Sandstorm: message = "{0} is buffeted by the sandstorm!"; break;
+					_: throw new InvalidDataException(nameof(wdp.Weather));
 				}
 				return string.Format(message, GetPkmnName(damageVictim, true));
 			}
-			case IPBEWildPkmnAppearedPacket wpap:
+			IPBEWildPkmnAppearedPacket wpap:
 			{
 				return string.Format("{0}{1} appeared!", wpap.Pokemon.Count == 1 ? "A wild " : "Oh! A wild ", wpap.Pokemon.Select(s => s.Nickname).ToArray().Andify());
 			}
-			case PBEActionsRequestPacket arp:
+			PBEActionsRequestPacket arp:
 			{
 				return string.Format("{0} must submit actions for {1} Pokémon.", GetTrainerName(arp.Trainer), arp.Pokemon.Count);
 			}
-			case IPBEAutoCenterPacket _:
+			IPBEAutoCenterPacket _:
 			{
 				return "The battlers shifted to the center!";
 			}
-			case PBEBattleResultPacket brp:
+			PBEBattleResultPacket brp:
 			{
 				bool team0Caps = true;
 				bool team1Caps = false;
 				string message;
-				switch (brp.BattleResult)
+				match (brp.BattleResult)
 				{
-					case PBEBattleResult.Team0Forfeit: message = "{0} forfeited."; break;
-					case PBEBattleResult.Team0Win: message = "{0} defeated {1}!"; break;
-					case PBEBattleResult.Team1Forfeit: message = "{1} forfeited."; team1Caps = true; break;
-					case PBEBattleResult.Team1Win: message = "{1} defeated {0}!"; team0Caps = false; team1Caps = true; break;
-					case PBEBattleResult.WildCapture: goto bottom;
-					case PBEBattleResult.WildEscape: message = "{0} got away!"; break;
-					case PBEBattleResult.WildFlee: message = "{1} got away!"; team1Caps = true; break;
-					default: throw new InvalidDataException(nameof(brp.BattleResult));
+					PBEBattleResult.Team0Forfeit: message = "{0} forfeited."; break;
+					PBEBattleResult.Team0Win: message = "{0} defeated {1}!"; break;
+					PBEBattleResult.Team1Forfeit: message = "{1} forfeited."; team1Caps = true; break;
+					PBEBattleResult.Team1Win: message = "{1} defeated {0}!"; team0Caps = false; team1Caps = true; break;
+					PBEBattleResult.WildCapture: goto bottom;
+					PBEBattleResult.WildEscape: message = "{0} got away!"; break;
+					PBEBattleResult.WildFlee: message = "{1} got away!"; team1Caps = true; break;
+					_: throw new InvalidDataException(nameof(brp.BattleResult));
 				}
 				return string.Format(message, GetRawCombinedName(battle.Teams[0], team0Caps), GetRawCombinedName(battle.Teams[1], team1Caps));
 			}
-			case PBESwitchInRequestPacket sirp:
+			PBESwitchInRequestPacket sirp:
 			{
 				return string.Format("{0} must send in {1} Pokémon.", GetTrainerName(sirp.Trainer), sirp.Amount);
 			}
-			case PBETurnBeganPacket tbp:
+			PBETurnBeganPacket tbp:
 			{
 				return string.Format("Turn {0} is starting.", tbp.TurnNumber);
 			}
@@ -3355,7 +2399,7 @@ public sealed partial class PBEBattle
 	}
 }
 
-public sealed partial class PBEBattle
+#public sealed partial class PBEBattle
 {
 	private const ushort CUR_REPLAY_VERSION = 0;
 
@@ -3496,10 +2540,10 @@ public sealed partial class PBEBattle
 	## <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="battleFormat"/> is invalid or <paramref name="position"/> is invalid for <paramref name="battleFormat"/>.</exception>
 	public static PBEFieldPosition GetPositionAcross(PBEBattleFormat battleFormat, PBEFieldPosition position)
 	{
-		switch (battleFormat)
+		match (battleFormat)
 		{
-			case PBEBattleFormat.Single:
-			case PBEBattleFormat.Rotation:
+			PBEBattleFormat.Single:
+			PBEBattleFormat.Rotation:
 			{
 				if (position == PBEFieldPosition.Center)
 				{
@@ -3510,7 +2554,7 @@ public sealed partial class PBEBattle
 					throw new ArgumentOutOfRangeException(nameof(position));
 				}
 			}
-			case PBEBattleFormat.Double:
+			PBEBattleFormat.Double:
 			{
 				if (position == PBEFieldPosition.Left)
 				{
@@ -3525,7 +2569,7 @@ public sealed partial class PBEBattle
 					throw new ArgumentOutOfRangeException(nameof(position));
 				}
 			}
-			case PBEBattleFormat.Triple:
+			PBEBattleFormat.Triple:
 			{
 				if (position == PBEFieldPosition.Left)
 				{
@@ -3544,7 +2588,7 @@ public sealed partial class PBEBattle
 					throw new ArgumentOutOfRangeException(nameof(position));
 				}
 			}
-			default: throw new ArgumentOutOfRangeException(nameof(battleFormat));
+			_: throw new ArgumentOutOfRangeException(nameof(battleFormat));
 		}
 	}
 
@@ -3561,9 +2605,9 @@ public sealed partial class PBEBattle
 		}
 		List<PBEBattlePokemon> allies = pkmn.Team.ActiveBattlers.FindAll(p => p != pkmn);
 		List<PBEBattlePokemon> foes = pkmn.Team.OpposingTeam.ActiveBattlers;
-		switch (pkmn.Battle.BattleFormat)
+		match (pkmn.Battle.BattleFormat)
 		{
-			case PBEBattleFormat.Single:
+			PBEBattleFormat.Single:
 			{
 				if (pkmn.FieldPosition == PBEFieldPosition.Center)
 				{
@@ -3578,7 +2622,7 @@ public sealed partial class PBEBattle
 					throw new InvalidDataException(nameof(pkmn.FieldPosition));
 				}
 			}
-			case PBEBattleFormat.Double:
+			PBEBattleFormat.Double:
 			{
 				if (pkmn.FieldPosition == PBEFieldPosition.Left)
 				{
@@ -3631,8 +2675,8 @@ public sealed partial class PBEBattle
 					throw new InvalidDataException(nameof(pkmn.FieldPosition));
 				}
 			}
-			case PBEBattleFormat.Triple:
-			case PBEBattleFormat.Rotation:
+			PBEBattleFormat.Triple:
+			PBEBattleFormat.Rotation:
 			{
 				if (pkmn.FieldPosition == PBEFieldPosition.Left)
 				{
@@ -3708,7 +2752,7 @@ public sealed partial class PBEBattle
 					throw new InvalidDataException(nameof(pkmn.FieldPosition));
 				}
 			}
-			default: throw new InvalidDataException(nameof(pkmn.Battle.BattleFormat));
+			_: throw new InvalidDataException(nameof(pkmn.Battle.BattleFormat));
 		}
 	}
 
@@ -3718,9 +2762,9 @@ public sealed partial class PBEBattle
 		if (!ot.TryGetPokemon(PBEFieldPosition.Left, out PBEBattlePokemon? pkmn))
 		{
 			# Left not found; fallback to its teammate
-			switch (user.Battle.BattleFormat)
+			match (user.Battle.BattleFormat)
 			{
-				case PBEBattleFormat.Double:
+				PBEBattleFormat.Double:
 				{
 					if (!ot.TryGetPokemon(PBEFieldPosition.Right, out pkmn))
 					{
@@ -3728,7 +2772,7 @@ public sealed partial class PBEBattle
 					}
 					break;
 				}
-				case PBEBattleFormat.Triple:
+				PBEBattleFormat.Triple:
 				{
 					if (!ot.TryGetPokemon(PBEFieldPosition.Center, out pkmn))
 					{
@@ -3747,7 +2791,7 @@ public sealed partial class PBEBattle
 					}
 					break;
 				}
-				default: throw new InvalidOperationException();
+				_: throw new InvalidOperationException();
 			}
 		}
 		targets.Add(pkmn);
@@ -3757,17 +2801,17 @@ public sealed partial class PBEBattle
 		PBETeam ot = user.Team.OpposingTeam;
 		if (!ot.TryGetPokemon(PBEFieldPosition.Center, out PBEBattlePokemon? pkmn))
 		{
-			switch (user.Battle.BattleFormat)
+			match (user.Battle.BattleFormat)
 			{
-				case PBEBattleFormat.Single:
-				case PBEBattleFormat.Rotation: return;
-				default: throw new InvalidOperationException();
-				case PBEBattleFormat.Triple:
+				PBEBattleFormat.Single:
+				PBEBattleFormat.Rotation: return;
+				_: throw new InvalidOperationException();
+				PBEBattleFormat.Triple:
 				{
 					# Center not found; fallback to its teammate
-					switch (user.FieldPosition)
+					match (user.FieldPosition)
 					{
-						case PBEFieldPosition.Left:
+						PBEFieldPosition.Left:
 						{
 							if (!ot.TryGetPokemon(PBEFieldPosition.Right, out pkmn))
 							{
@@ -3785,7 +2829,7 @@ public sealed partial class PBEBattle
 							}
 							break;
 						}
-						case PBEFieldPosition.Center:
+						PBEFieldPosition.Center:
 						{
 							if (!ot.TryGetPokemon(PBEFieldPosition.Left, out PBEBattlePokemon? left))
 							{
@@ -3808,7 +2852,7 @@ public sealed partial class PBEBattle
 							}
 							break;
 						}
-						case PBEFieldPosition.Right:
+						PBEFieldPosition.Right:
 						{
 							if (!ot.TryGetPokemon(PBEFieldPosition.Left, out pkmn))
 							{
@@ -3826,7 +2870,7 @@ public sealed partial class PBEBattle
 							}
 							break;
 						}
-						default: throw new InvalidDataException();
+						_: throw new InvalidDataException();
 					}
 					break;
 				}
@@ -3840,9 +2884,9 @@ public sealed partial class PBEBattle
 		if (!ot.TryGetPokemon(PBEFieldPosition.Right, out PBEBattlePokemon? pkmn))
 		{
 			# Right not found; fallback to its teammate
-			switch (user.Battle.BattleFormat)
+			match (user.Battle.BattleFormat)
 			{
-				case PBEBattleFormat.Double:
+				PBEBattleFormat.Double:
 				{
 					if (!ot.TryGetPokemon(PBEFieldPosition.Left, out pkmn))
 					{
@@ -3850,7 +2894,7 @@ public sealed partial class PBEBattle
 					}
 					break;
 				}
-				case PBEBattleFormat.Triple:
+				PBEBattleFormat.Triple:
 				{
 					if (!ot.TryGetPokemon(PBEFieldPosition.Center, out pkmn))
 					{
@@ -3869,7 +2913,7 @@ public sealed partial class PBEBattle
 					}
 					break;
 				}
-				default: throw new InvalidOperationException();
+				_: throw new InvalidOperationException();
 			}
 		}
 		targets.Add(pkmn);
@@ -3932,13 +2976,13 @@ public sealed partial class PBEBattle
 	public static bool AreTargetsValid(PBEBattlePokemon pkmn, IPBEMoveData mData, PBETurnTarget targets)
 	{
 		PBEMoveTarget possibleTargets = pkmn.GetMoveTargets(mData);
-		switch (pkmn.Battle.BattleFormat)
+		match (pkmn.Battle.BattleFormat)
 		{
-			case PBEBattleFormat.Single:
+			PBEBattleFormat.Single:
 			{
-				switch (possibleTargets)
+				match (possibleTargets)
 				{
-					case PBEMoveTarget.All:
+					PBEMoveTarget.All:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Center)
 						{
@@ -3949,12 +2993,12 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllFoes:
-					case PBEMoveTarget.AllFoesSurrounding:
-					case PBEMoveTarget.AllSurrounding:
-					case PBEMoveTarget.SingleFoeSurrounding:
-					case PBEMoveTarget.SingleNotSelf:
-					case PBEMoveTarget.SingleSurrounding:
+					PBEMoveTarget.AllFoes:
+					PBEMoveTarget.AllFoesSurrounding:
+					PBEMoveTarget.AllSurrounding:
+					PBEMoveTarget.SingleFoeSurrounding:
+					PBEMoveTarget.SingleNotSelf:
+					PBEMoveTarget.SingleSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Center)
 						{
@@ -3965,11 +3009,11 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllTeam:
-					case PBEMoveTarget.RandomFoeSurrounding:
-					case PBEMoveTarget.Self:
-					case PBEMoveTarget.SelfOrAllySurrounding:
-					case PBEMoveTarget.SingleAllySurrounding:
+					PBEMoveTarget.AllTeam:
+					PBEMoveTarget.RandomFoeSurrounding:
+					PBEMoveTarget.Self:
+					PBEMoveTarget.SelfOrAllySurrounding:
+					PBEMoveTarget.SingleAllySurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Center)
 						{
@@ -3980,14 +3024,14 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					default: throw new InvalidDataException(nameof(possibleTargets));
+					_: throw new InvalidDataException(nameof(possibleTargets));
 				}
 			}
-			case PBEBattleFormat.Double:
+			PBEBattleFormat.Double:
 			{
-				switch (possibleTargets)
+				match (possibleTargets)
 				{
-					case PBEMoveTarget.All:
+					PBEMoveTarget.All:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -3998,8 +3042,8 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllFoes:
-					case PBEMoveTarget.AllFoesSurrounding:
+					PBEMoveTarget.AllFoes:
+					PBEMoveTarget.AllFoesSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4010,7 +3054,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllTeam:
+					PBEMoveTarget.AllTeam:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4021,7 +3065,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllSurrounding:
+					PBEMoveTarget.AllSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4036,8 +3080,8 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.RandomFoeSurrounding:
-					case PBEMoveTarget.Self:
+					PBEMoveTarget.RandomFoeSurrounding:
+					PBEMoveTarget.Self:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4052,7 +3096,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SelfOrAllySurrounding:
+					PBEMoveTarget.SelfOrAllySurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4063,7 +3107,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleAllySurrounding:
+					PBEMoveTarget.SingleAllySurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4078,7 +3122,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleFoeSurrounding:
+					PBEMoveTarget.SingleFoeSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4089,8 +3133,8 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleNotSelf:
-					case PBEMoveTarget.SingleSurrounding:
+					PBEMoveTarget.SingleNotSelf:
+					PBEMoveTarget.SingleSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4105,14 +3149,14 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					default: throw new InvalidDataException(nameof(possibleTargets));
+					_: throw new InvalidDataException(nameof(possibleTargets));
 				}
 			}
-			case PBEBattleFormat.Triple:
+			PBEBattleFormat.Triple:
 			{
-				switch (possibleTargets)
+				match (possibleTargets)
 				{
-					case PBEMoveTarget.All:
+					PBEMoveTarget.All:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4123,7 +3167,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllFoes:
+					PBEMoveTarget.AllFoes:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4134,7 +3178,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllFoesSurrounding:
+					PBEMoveTarget.AllFoesSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4153,7 +3197,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllSurrounding:
+					PBEMoveTarget.AllSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4172,7 +3216,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllTeam:
+					PBEMoveTarget.AllTeam:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4183,8 +3227,8 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.RandomFoeSurrounding:
-					case PBEMoveTarget.Self:
+					PBEMoveTarget.RandomFoeSurrounding:
+					PBEMoveTarget.Self:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4203,7 +3247,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SelfOrAllySurrounding:
+					PBEMoveTarget.SelfOrAllySurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4222,7 +3266,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleAllySurrounding:
+					PBEMoveTarget.SingleAllySurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4237,7 +3281,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleFoeSurrounding:
+					PBEMoveTarget.SingleFoeSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4256,7 +3300,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleNotSelf:
+					PBEMoveTarget.SingleNotSelf:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4275,7 +3319,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleSurrounding:
+					PBEMoveTarget.SingleSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4294,14 +3338,14 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					default: throw new InvalidDataException(nameof(possibleTargets));
+					_: throw new InvalidDataException(nameof(possibleTargets));
 				}
 			}
-			case PBEBattleFormat.Rotation:
+			PBEBattleFormat.Rotation:
 			{
-				switch (possibleTargets)
+				match (possibleTargets)
 				{
-					case PBEMoveTarget.All:
+					PBEMoveTarget.All:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4312,12 +3356,12 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllFoes:
-					case PBEMoveTarget.AllFoesSurrounding:
-					case PBEMoveTarget.AllSurrounding:
-					case PBEMoveTarget.SingleFoeSurrounding:
-					case PBEMoveTarget.SingleNotSelf:
-					case PBEMoveTarget.SingleSurrounding:
+					PBEMoveTarget.AllFoes:
+					PBEMoveTarget.AllFoesSurrounding:
+					PBEMoveTarget.AllSurrounding:
+					PBEMoveTarget.SingleFoeSurrounding:
+					PBEMoveTarget.SingleNotSelf:
+					PBEMoveTarget.SingleSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4328,11 +3372,11 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllTeam:
-					case PBEMoveTarget.RandomFoeSurrounding:
-					case PBEMoveTarget.Self:
-					case PBEMoveTarget.SelfOrAllySurrounding:
-					case PBEMoveTarget.SingleAllySurrounding:
+					PBEMoveTarget.AllTeam:
+					PBEMoveTarget.RandomFoeSurrounding:
+					PBEMoveTarget.Self:
+					PBEMoveTarget.SelfOrAllySurrounding:
+					PBEMoveTarget.SingleAllySurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4343,10 +3387,10 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					default: throw new InvalidDataException(nameof(possibleTargets));
+					_: throw new InvalidDataException(nameof(possibleTargets));
 				}
 			}
-			default: throw new InvalidDataException(nameof(pkmn.Battle.BattleFormat));
+			_: throw new InvalidDataException(nameof(pkmn.Battle.BattleFormat));
 		}
 	}
 
@@ -4367,13 +3411,13 @@ public sealed partial class PBEBattle
 			throw new ArgumentOutOfRangeException(nameof(calledMove));
 		}
 		PBEMoveTarget possibleTargets = pkmn.GetMoveTargets(mData);
-		switch (pkmn.Battle.BattleFormat)
+		match (pkmn.Battle.BattleFormat)
 		{
-			case PBEBattleFormat.Single:
+			PBEBattleFormat.Single:
 			{
-				switch (possibleTargets)
+				match (possibleTargets)
 				{
-					case PBEMoveTarget.All:
+					PBEMoveTarget.All:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Center)
 						{
@@ -4384,13 +3428,13 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllFoes:
-					case PBEMoveTarget.AllFoesSurrounding:
-					case PBEMoveTarget.AllSurrounding:
-					case PBEMoveTarget.RandomFoeSurrounding:
-					case PBEMoveTarget.SingleFoeSurrounding:
-					case PBEMoveTarget.SingleNotSelf:
-					case PBEMoveTarget.SingleSurrounding:
+					PBEMoveTarget.AllFoes:
+					PBEMoveTarget.AllFoesSurrounding:
+					PBEMoveTarget.AllSurrounding:
+					PBEMoveTarget.RandomFoeSurrounding:
+					PBEMoveTarget.SingleFoeSurrounding:
+					PBEMoveTarget.SingleNotSelf:
+					PBEMoveTarget.SingleSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Center)
 						{
@@ -4401,10 +3445,10 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllTeam:
-					case PBEMoveTarget.Self:
-					case PBEMoveTarget.SelfOrAllySurrounding:
-					case PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
+					PBEMoveTarget.AllTeam:
+					PBEMoveTarget.Self:
+					PBEMoveTarget.SelfOrAllySurrounding:
+					PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Center)
 						{
@@ -4415,14 +3459,14 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					default: throw new InvalidDataException(nameof(possibleTargets));
+					_: throw new InvalidDataException(nameof(possibleTargets));
 				}
 			}
-			case PBEBattleFormat.Double:
+			PBEBattleFormat.Double:
 			{
-				switch (possibleTargets)
+				match (possibleTargets)
 				{
-					case PBEMoveTarget.All:
+					PBEMoveTarget.All:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4433,8 +3477,8 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllFoes:
-					case PBEMoveTarget.AllFoesSurrounding:
+					PBEMoveTarget.AllFoes:
+					PBEMoveTarget.AllFoesSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4445,7 +3489,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllTeam:
+					PBEMoveTarget.AllTeam:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4456,7 +3500,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllSurrounding:
+					PBEMoveTarget.AllSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4471,7 +3515,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.Self:
+					PBEMoveTarget.Self:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4486,7 +3530,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SelfOrAllySurrounding:
+					PBEMoveTarget.SelfOrAllySurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4504,7 +3548,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
+					PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4519,10 +3563,10 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.RandomFoeSurrounding:
-					case PBEMoveTarget.SingleFoeSurrounding:
-					case PBEMoveTarget.SingleNotSelf:
-					case PBEMoveTarget.SingleSurrounding:
+					PBEMoveTarget.RandomFoeSurrounding:
+					PBEMoveTarget.SingleFoeSurrounding:
+					PBEMoveTarget.SingleNotSelf:
+					PBEMoveTarget.SingleSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4540,14 +3584,14 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					default: throw new InvalidDataException(nameof(possibleTargets));
+					_: throw new InvalidDataException(nameof(possibleTargets));
 				}
 			}
-			case PBEBattleFormat.Triple:
+			PBEBattleFormat.Triple:
 			{
-				switch (possibleTargets)
+				match (possibleTargets)
 				{
-					case PBEMoveTarget.All:
+					PBEMoveTarget.All:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4558,7 +3602,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllFoes:
+					PBEMoveTarget.AllFoes:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4569,7 +3613,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllFoesSurrounding:
+					PBEMoveTarget.AllFoesSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4588,7 +3632,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllSurrounding:
+					PBEMoveTarget.AllSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4607,7 +3651,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllTeam:
+					PBEMoveTarget.AllTeam:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4618,7 +3662,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.Self:
+					PBEMoveTarget.Self:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4637,7 +3681,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SelfOrAllySurrounding:
+					PBEMoveTarget.SelfOrAllySurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4682,7 +3726,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
+					PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4708,9 +3752,9 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.RandomFoeSurrounding:
-					case PBEMoveTarget.SingleFoeSurrounding:
-					case PBEMoveTarget.SingleSurrounding:
+					PBEMoveTarget.RandomFoeSurrounding:
+					PBEMoveTarget.SingleFoeSurrounding:
+					PBEMoveTarget.SingleSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left)
 						{
@@ -4755,7 +3799,7 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.SingleNotSelf:
+					PBEMoveTarget.SingleNotSelf:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4778,14 +3822,14 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					default: throw new InvalidDataException(nameof(possibleTargets));
+					_: throw new InvalidDataException(nameof(possibleTargets));
 				}
 			}
-			case PBEBattleFormat.Rotation:
+			PBEBattleFormat.Rotation:
 			{
-				switch (possibleTargets)
+				match (possibleTargets)
 				{
-					case PBEMoveTarget.All:
+					PBEMoveTarget.All:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4796,13 +3840,13 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllFoes:
-					case PBEMoveTarget.AllFoesSurrounding:
-					case PBEMoveTarget.AllSurrounding:
-					case PBEMoveTarget.RandomFoeSurrounding:
-					case PBEMoveTarget.SingleFoeSurrounding:
-					case PBEMoveTarget.SingleNotSelf:
-					case PBEMoveTarget.SingleSurrounding:
+					PBEMoveTarget.AllFoes:
+					PBEMoveTarget.AllFoesSurrounding:
+					PBEMoveTarget.AllSurrounding:
+					PBEMoveTarget.RandomFoeSurrounding:
+					PBEMoveTarget.SingleFoeSurrounding:
+					PBEMoveTarget.SingleNotSelf:
+					PBEMoveTarget.SingleSurrounding:
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4813,10 +3857,10 @@ public sealed partial class PBEBattle
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
 						}
 					}
-					case PBEMoveTarget.AllTeam:
-					case PBEMoveTarget.Self:
-					case PBEMoveTarget.SelfOrAllySurrounding:
-					case PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
+					PBEMoveTarget.AllTeam:
+					PBEMoveTarget.Self:
+					PBEMoveTarget.SelfOrAllySurrounding:
+					PBEMoveTarget.SingleAllySurrounding: # Helping Hand cannot be called by Metronome anyway
 					{
 						if (pkmn.FieldPosition == PBEFieldPosition.Left || pkmn.FieldPosition == PBEFieldPosition.Center || pkmn.FieldPosition == PBEFieldPosition.Right)
 						{
@@ -4825,15 +3869,8 @@ public sealed partial class PBEBattle
 						else
 						{
 							throw new InvalidDataException(nameof(pkmn.FieldPosition));
-						}
-					}
-					default: throw new InvalidDataException(nameof(possibleTargets));
-				}
-			}
-			default: throw new InvalidDataException(nameof(pkmn.Battle.BattleFormat));
-		}
-	}
-}
+					_: throw new InvalidDataException(nameof(possibleTargets));
+			_: throw new InvalidDataException(nameof(pkmn.Battle.BattleFormat));
 
 
 

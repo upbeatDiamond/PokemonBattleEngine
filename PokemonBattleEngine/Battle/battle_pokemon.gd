@@ -1,15 +1,15 @@
 ## <summary>Represents a specific Pokémon during a battle.</summary>
 class PBEBattlePokemon:# : IPBEPokemonKnownTypes, IPBEPokemonTypes, IPBESpeciesForm
 
-	public PBEBattle Battle 
-	public PBETeam Team 
-	public PBETrainer Trainer 
-	public byte Id 
-	public bool IsWild => Team.IsWild;
-	public bool IsLocallyHosted => Battle.IsLocallyHosted;
-	public bool PBEIgnore 
+	var Battle : PBEBattle
+	var Team : PBETeam 
+	var Trainer : PBETrainer 
+	var Id : int# byte
+	var IsWild #bool => Team.IsWild;
+	var IsLocallyHosted :bool #=> Battle.IsLocallyHosted;
+	var PBEIgnore :bool 
 
-	public bool CanBattle => HP > 0 && !PBEIgnore;
+	var CanBattle: bool# => HP > 0 && !PBEIgnore;
 
 	#region Basic Properties
 

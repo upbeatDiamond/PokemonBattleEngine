@@ -17,7 +17,7 @@ public sealed class PBETeams : IReadOnlyList<PBETeam>
 		}
 	}
 
-	// Trainer battle
+	# Trainer battle
 	internal PBETeams(PBEBattle battle, IReadOnlyList<PBETrainerInfo> ti0, IReadOnlyList<PBETrainerInfo> ti1, out PBETrainers trainers)
 	{
 		var allTrainers = new List<PBETrainer>();
@@ -27,7 +27,7 @@ public sealed class PBETeams : IReadOnlyList<PBETeam>
 		_team1.OpposingTeam = _team0;
 		trainers = new PBETrainers(allTrainers);
 	}
-	// Wild battle
+	# Wild battle
 	internal PBETeams(PBEBattle battle, IReadOnlyList<PBETrainerInfo> ti, PBEWildInfo wi, out PBETrainers trainers)
 	{
 		var allTrainers = new List<PBETrainer>();
@@ -37,7 +37,7 @@ public sealed class PBETeams : IReadOnlyList<PBETeam>
 		_team1.OpposingTeam = _team0;
 		trainers = new PBETrainers(allTrainers);
 	}
-	// Remote battle
+	# Remote battle
 	internal PBETeams(PBEBattle battle, PBEBattlePacket packet, out PBETrainers trainers)
 	{
 		var allTrainers = new List<PBETrainer>();
@@ -64,10 +64,10 @@ public sealed class PBETeams : IReadOnlyList<PBETeam>
 		yield return _team1;
 	}
 }
-/// <summary>Represents a team in a specific <see cref="PBEBattle"/>.</summary>
+## <summary>Represents a team in a specific <see cref="PBEBattle"/>.</summary>
 public sealed class PBETeam
 {
-	/// <summary>The battle this team and its party belongs to.</summary>
+	## <summary>The battle this team and its party belongs to.</summary>
 	public PBEBattle Battle { get; }
 	public PBETeam OpposingTeam { get; internal set; }
 	public ReadOnlyCollection<PBETrainer> Trainers { get; }
@@ -92,7 +92,7 @@ public sealed class PBETeam
 	public bool MonFaintedLastTurn { get; set; }
 	public bool MonFaintedThisTurn { get; set; }
 
-	// Trainer battle
+	# Trainer battle
 	internal PBETeam(PBEBattle battle, byte id, IReadOnlyList<PBETrainerInfo> ti, List<PBETrainer> allTrainers)
 	{
 		int count = ti.Count;
@@ -116,9 +116,9 @@ public sealed class PBETeam
 		}
 		Trainers = new ReadOnlyCollection<PBETrainer>(trainers);
 		CombinedName = GetCombinedName();
-		OpposingTeam = null!; // OpposingTeam is set in PBETeams after both are created
+		OpposingTeam = null!; # OpposingTeam is set in PBETeams after both are created
 	}
-	// Wild battle
+	# Wild battle
 	internal PBETeam(PBEBattle battle, byte id, PBEWildInfo wi, List<PBETrainer> allTrainers)
 	{
 		int count = wi.Party.Count;
@@ -134,9 +134,9 @@ public sealed class PBETeam
 		Id = id;
 		Trainers = new ReadOnlyCollection<PBETrainer>(new[] { new PBETrainer(this, wi, allTrainers) });
 		CombinedName = GetCombinedName();
-		OpposingTeam = null!; // OpposingTeam is set in PBETeams after both are created
+		OpposingTeam = null!; # OpposingTeam is set in PBETeams after both are created
 	}
-	// Remote battle
+	# Remote battle
 	internal PBETeam(PBEBattle battle, PBEBattlePacket.PBETeamInfo info, List<PBETrainer> allTrainers)
 	{
 		ReadOnlyCollection<PBEBattlePacket.PBETeamInfo.PBETrainerInfo> ti = info.Trainers;
@@ -154,7 +154,7 @@ public sealed class PBETeam
 		}
 		Trainers = new ReadOnlyCollection<PBETrainer>(trainers);
 		CombinedName = GetCombinedName();
-		OpposingTeam = null!; // OpposingTeam is set in PBETeams after both are created
+		OpposingTeam = null!; # OpposingTeam is set in PBETeams after both are created
 	}
 	private static bool VerifyWildCount(PBEBattleFormat format, int count)
 	{
@@ -225,7 +225,7 @@ public sealed class PBETeam
 		var sb = new StringBuilder();
 		sb.AppendLine($"Team {Id}:");
 		sb.AppendLine($"TeamStatus: {TeamStatus}");
-		//sb.AppendLine($"NumPkmn: {Party.Length}");
+		#sb.AppendLine($"NumPkmn: {Party.Length}");
 		sb.AppendLine($"NumConsciousPkmn: {NumConsciousPkmn}");
 		sb.AppendLine($"NumPkmnOnField: {NumPkmnOnField}");
 		return sb.ToString();
