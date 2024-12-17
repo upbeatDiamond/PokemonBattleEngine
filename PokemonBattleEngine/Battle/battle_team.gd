@@ -211,23 +211,18 @@ public sealed class PBETeam
 		}
 		pkmn = null;
 		return false;
-	}
-	public void TryAddPokemonToCollection(PBEFieldPosition pos, ICollection<PBEBattlePokemon> list)
-	{
-		if (TryGetPokemon(pos, out PBEBattlePokemon? pkmn))
-		{
-			list.Add(pkmn);
-		}
-	}
 
-	public override string ToString()
-	{
-		var sb = new StringBuilder();
-		sb.AppendLine($"Team {Id}:");
-		sb.AppendLine($"TeamStatus: {TeamStatus}");
+
+	public void TryAddPokemonToCollection(PBEFieldPosition pos, ICollection<PBEBattlePokemon> list)
+		if (TryGetPokemon(pos, out PBEBattlePokemon? pkmn)):
+			list.Add(pkmn);
+
+
+	func _to_string() -> String:
+		var sb := ""
+		sb = str(sb, "Team ", id, ":\n")
+		sb = str(sb, "TeamStatus:  ", TeamStatus, "\n")
 		#sb.AppendLine($"NumPkmn: {Party.Length}");
-		sb.AppendLine($"NumConsciousPkmn: {NumConsciousPkmn}");
-		sb.AppendLine($"NumPkmnOnField: {NumPkmnOnField}");
-		return sb.ToString();
-	}
-}
+		sb = str(sb, "NumConsciousPkmn: ", NumConsciousPkmn, "\n")
+		sb = str(sb, "NumPkmnOnField: ", NumPkmnOnField, "\n")
+		return sb

@@ -796,7 +796,7 @@ top:
 	}
 }
 
-static PokedexCountTable(int count, float g600, float g450, float g300, float g150, float g30, float ge0) -> float:
+static func PokedexCountTable(int count, float g600, float g450, float g300, float g150, float g30, float ge0) -> float:
 {
 	if (count > 600)
 	{
