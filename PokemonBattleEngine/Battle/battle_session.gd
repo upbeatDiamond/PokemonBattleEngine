@@ -246,7 +246,8 @@ func SwitchesOrActions():
 			switches.resize(count)
 			
 			for i in range(0, count, 1):
-				(PBEBattlePokemon pkmn, PBEFieldPosition pos) = trainer.SwitchInQueue[i];
+				#(PBEBattlePokemon pkmn, PBEFieldPosition pos) = trainer.SwitchInQueue[i];
+				## ^ This involves multiple return, and I can't find the function it calls?
 				pkmn.FieldPosition = pos;
 				switches[i] = CreateSwitchInInfo(pkmn);
 				PBETrainer.SwitchTwoPokemon(pkmn, pos); # Swap after Illusion
@@ -283,149 +284,109 @@ func SwitchesOrActions():
 				_: 
 					pass#throw new ArgumentOutOfRangeException(nameof(BattleFormat));
 
-	trainersWithSwitchIns = Trainers.Where(t => t.SwitchInsRequired > 0).ToArray();
-	if (trainersWithSwitchIns.Length > 0)
-	{
+	#trainersWithSwitchIns = Trainers.Where(t => t.SwitchInsRequired > 0).ToArray();
+	if (trainersWithSwitchIns.Length > 0):
 		BattleState = PBEBattleState.WaitingForSwitchIns;
-		foreach (PBETrainer trainer in trainersWithSwitchIns)
-		{
+		for trainer in trainersWithSwitchIns:
 			BroadcastSwitchInRequest(trainer);
-		}
-	}
-	else
-	{
-		if (EndCheck())
-		{
+	else:
+		if EndCheck():
 			return;
-		}
 
-		foreach (PBEBattlePokemon pkmn in ActiveBattlers)
-		{
+		for pkmn in ActiveBattlers:
 			pkmn.HasUsedMoveThisTurn = false;
 			pkmn.TurnAction = null;
 			pkmn.SpeedBoost_AbleToSpeedBoostThisTurn = pkmn.Ability == PBEAbility.SpeedBoost;
 
-			if (pkmn.Status2.HasFlag(PBEStatus2.Flinching))
-			{
+			if (pkmn.Status2.HasFlag(PBEStatus2.Flinching)):
 				BroadcastStatus2(pkmn, pkmn, PBEStatus2.Flinching, PBEStatusAction.Ended);
-			}
-			if (pkmn.Status2.HasFlag(PBEStatus2.HelpingHand))
-			{
+			if (pkmn.Status2.HasFlag(PBEStatus2.HelpingHand)):
 				BroadcastStatus2(pkmn, pkmn, PBEStatus2.HelpingHand, PBEStatusAction.Ended);
-			}
-			if (pkmn.Status2.HasFlag(PBEStatus2.LockOn))
-			{
-				if (--pkmn.LockOnTurns == 0)
-				{
+			if (pkmn.Status2.HasFlag(PBEStatus2.LockOn)):
+				if (--pkmn.LockOnTurns == 0):
 					pkmn.LockOnPokemon = null;
 					BroadcastStatus2(pkmn, pkmn, PBEStatus2.LockOn, PBEStatusAction.Ended);
-				}
-			}
-			if (pkmn.Protection_Used)
-			{
-				pkmn.Protection_Counter++;
+			if (pkmn.Protection_Used):
+				pkmn.Protection_Counter += 1
 				pkmn.Protection_Used = false;
-				if (pkmn.Status2.HasFlag(PBEStatus2.Protected))
-				{
+				if (pkmn.Status2.HasFlag(PBEStatus2.Protected)):
 					BroadcastStatus2(pkmn, pkmn, PBEStatus2.Protected, PBEStatusAction.Ended);
-				}
-			}
-			else
-			{
+			else:
 				pkmn.Protection_Counter = 0;
-			}
-			if (pkmn.Status2.HasFlag(PBEStatus2.Roost))
-			{
+			if (pkmn.Status2.HasFlag(PBEStatus2.Roost)):
 				pkmn.EndRoost();
 				BroadcastStatus2(pkmn, pkmn, PBEStatus2.Roost, PBEStatusAction.Ended);
-			}
-		}
-		foreach (PBETeam team in Teams)
-		{
-			if (team.TeamStatus.HasFlag(PBETeamStatus.QuickGuard))
-			{
+		for team in Teams:
+			if (team.TeamStatus.HasFlag(PBETeamStatus.QuickGuard)):
 				BroadcastTeamStatus(team, PBETeamStatus.QuickGuard, PBETeamStatusAction.Ended);
-			}
-			if (team.TeamStatus.HasFlag(PBETeamStatus.WideGuard))
-			{
+			if (team.TeamStatus.HasFlag(PBETeamStatus.WideGuard)):
 				BroadcastTeamStatus(team, PBETeamStatus.WideGuard, PBETeamStatusAction.Ended);
-			}
-		}
-		foreach (PBETrainer trainer in Trainers)
-		{
+		for trainer in Trainers:
 			trainer.ActionsRequired.Clear();
 			trainer.ActionsRequired.AddRange(trainer.ActiveBattlersOrdered);
-		}
 
 		# #318 - We check pkmn on the field instead of conscious pkmn because of multi-battles
 		# It still works if there's only one trainer on the team since we check for available switch-ins above
-		if (BattleFormat == PBEBattleFormat.Triple && Teams.All(t => t.NumPkmnOnField == 1))
-		{
-			PBEBattlePokemon pkmn0 = ActiveBattlers[0],
-					pkmn1 = ActiveBattlers[1];
-			if ((pkmn0.FieldPosition == PBEFieldPosition.Left && pkmn1.FieldPosition == PBEFieldPosition.Left) || (pkmn0.FieldPosition == PBEFieldPosition.Right && pkmn1.FieldPosition == PBEFieldPosition.Right))
-			{
-				PBEFieldPosition pkmn0OldPos = pkmn0.FieldPosition,
-						pkmn1OldPos = pkmn1.FieldPosition;
+		if (BattleFormat == PBEBattleFormat.Triple): #&& Teams.All(t => t.NumPkmnOnField == 1))
+			var pkmn0 = ActiveBattlers[0]
+			var pkmn1 = ActiveBattlers[1]
+			if ((pkmn0.FieldPosition == PBEFieldPosition.Left && pkmn1.FieldPosition == PBEFieldPosition.Left) || (pkmn0.FieldPosition == PBEFieldPosition.Right && pkmn1.FieldPosition == PBEFieldPosition.Right)):
+				var pkmn0OldPos = pkmn0.FieldPosition
+				var pkmn1OldPos = pkmn1.FieldPosition;
 				pkmn0.FieldPosition = PBEFieldPosition.Center;
 				pkmn1.FieldPosition = PBEFieldPosition.Center;
 				BroadcastAutoCenter(pkmn0, pkmn0OldPos, pkmn1, pkmn1OldPos);
-			}
-		}
-
-		TurnNumber++;
+		
+		TurnNumber += 1
 		BroadcastTurnBegan();
-		foreach (PBETeam team in Teams)
-		{
-			bool old = team.MonFaintedThisTurn; # Fire events in a specific order
+		for team in Teams:
+			var old : bool = team.MonFaintedThisTurn; # Fire events in a specific order
 			team.MonFaintedThisTurn = false;
 			team.MonFaintedLastTurn = old;
-		}
 		BattleState = PBEBattleState.WaitingForActions;
-		foreach (PBETrainer trainer in Trainers.Where(t => t.NumConsciousPkmn > 0))
-		{
-			BroadcastActionsRequest(trainer);
+		#foreach (PBETrainer trainer in Trainers.Where(t => t.NumConsciousPkmn > 0))
+			#BroadcastActionsRequest(trainer);
 
 
-func GetActingOrder(IEnumerable<PBEBattlePokemon> pokemon, bool ignoreItemsThatActivate): #  IEnumerable<PBEBattlePokemon> 
+func GetActingOrder(pokemon, ignoreItemsThatActivate:bool): #  IEnumerable<PBEBattlePokemon> 
 	var evaluated = [] #new List<(PBEBattlePokemon Pokemon, float Speed)>(); # TODO: Full Incense, Lagging Tail, Stall, Quick Claw
 	for pkmn in pokemon:
 		
 		var speed : float = pkmn.Speed * GetStatChangeModifier(pkmn.SpeedChange, false);
 
 		match (pkmn.Item):
-			case PBEItem.ChoiceScarf:
-				speed *= 1.5f;
-			case PBEItem.MachoBrace:
-			case PBEItem.PowerAnklet:
-			case PBEItem.PowerBand:
-			case PBEItem.PowerBelt:
-			case PBEItem.PowerBracer:
-			case PBEItem.PowerLens:
-			case PBEItem.PowerWeight:
-				speed *= 0.5f;
+			PBEItem.ChoiceScarf:
+				speed *= 1.5
+			PBEItem.MachoBrace, \
+			PBEItem.PowerAnklet, \
+			PBEItem.PowerBand, \
+			PBEItem.PowerBelt, \
+			PBEItem.PowerBracer, \
+			PBEItem.PowerLens, \
+			PBEItem.PowerWeight:
+				speed *= 0.5
 			PBEItem.QuickPowder:
-				if (pkmn.OriginalSpecies == PBESpecies.Ditto && !pkmn.Status2.HasFlag(PBEStatus2.Transformed))
-					speed *= 2.0f;
-		if (ShouldDoWeatherEffects())
-			if (Weather == PBEWeather.HarshSunlight && pkmn.Ability == PBEAbility.Chlorophyll)
-				speed *= 2.0f;
-			elif (Weather == PBEWeather.Rain && pkmn.Ability == PBEAbility.SwiftSwim)
-				speed *= 2.0f;
-			elif (Weather == PBEWeather.Sandstorm && pkmn.Ability == PBEAbility.SandRush)
-				speed *= 2.0f;
+				if (pkmn.OriginalSpecies == PBESpecies.Ditto && !pkmn.Status2.HasFlag(PBEStatus2.Transformed)):
+					speed *= 2.0
+		if (ShouldDoWeatherEffects()):
+			if (Weather == PBEWeather.HarshSunlight && pkmn.Ability == PBEAbility.Chlorophyll):
+				speed *= 2.0
+			elif (Weather == PBEWeather.Rain && pkmn.Ability == PBEAbility.SwiftSwim):
+				speed *= 2.0
+			elif (Weather == PBEWeather.Sandstorm && pkmn.Ability == PBEAbility.SandRush):
+				speed *= 2.0
 		match (pkmn.Ability):
 			PBEAbility.QuickFeet:
-				if (pkmn.Status1 != PBEStatus1.None)
-					speed *= 1.5f;
+				if (pkmn.Status1 != PBEStatus1.None):
+					speed *= 1.5
 			PBEAbility.SlowStart:
-				if (pkmn.SlowStart_HinderTurnsLeft > 0)
-					speed *= 0.5f;
+				if (pkmn.SlowStart_HinderTurnsLeft > 0):
+					speed *= 0.5
 		
-		if (pkmn.Ability != PBEAbility.QuickFeet && pkmn.Status1 == PBEStatus1.Paralyzed)
-			speed *= 0.25f;
+		if (pkmn.Ability != PBEAbility.QuickFeet && pkmn.Status1 == PBEStatus1.Paralyzed):
+			speed *= 0.25
 		if (pkmn.Team.TeamStatus.HasFlag(PBETeamStatus.Tailwind)):
-			speed *= 2.0f
+			speed *= 2.0
 		#(PBEBattlePokemon Pokemon, float Speed) tup = (pkmn, speed)
 		if (evaluated.Count == 0):
 			evaluated.Add( [pkmn, speed] )
@@ -441,7 +402,7 @@ func GetActingOrder(IEnumerable<PBEBattlePokemon> pokemon, bool ignoreItemsThatA
 				else:
 					evaluated.Insert(pkmnTiedWith, [pkmn, speed])
 			else:
-				int pkmnToGoBefore = evaluated.FindIndex(t => BattleStatus.HasFlag(PBEBattleStatus.TrickRoom) ? t.Speed > speed : t.Speed < speed);
+				var pkmnToGoBefore : int #= evaluated.FindIndex(t => BattleStatus.HasFlag(PBEBattleStatus.TrickRoom) ? t.Speed > speed : t.Speed < speed);
 				if (pkmnToGoBefore == -1):
 					evaluated.Add([pkmn, speed])
 				else:
@@ -449,63 +410,55 @@ func GetActingOrder(IEnumerable<PBEBattlePokemon> pokemon, bool ignoreItemsThatA
 	return evaluated.filter(func(tuple): return tuple[0])
 
 
-func void DetermineTurnOrder():
-	static int GetMovePrio(PBEBattlePokemon p)
-	{
-		IPBEMoveData mData = PBEDataProvider.Instance.GetMoveData(p.TurnAction!.FightMove);
-		int priority = mData.Priority;
-		if (p.Ability == PBEAbility.Prankster && mData.Category == PBEMoveCategory.Status)
-		{
-			priority++;
-		}
-		return priority;
-	}
+func GetMovePrio(p:PBEBattlePokemon) -> int:
+	var mData : IPBEMoveData = PBEDataProvider.Instance.GetMoveData(p.TurnAction.FightMove);
+	var priority : int = mData.Priority;
+	if (p.Ability == PBEAbility.Prankster && mData.Category == PBEMoveCategory.Status):
+		priority += 1
+	return priority;
 
+
+func DetermineTurnOrder() -> void:
 	_turnOrder.Clear();
 	#const int PursuitPriority = +7;
-	const int SwitchRotatePriority = +6;
-	const int WildFleePriority = -7;
-	List<PBEBattlePokemon> pkmnUsingItem = ActiveBattlers.FindAll(p => p.TurnAction?.Decision == PBETurnDecision.Item);
-	List<PBEBattlePokemon> pkmnSwitchingOut = ActiveBattlers.FindAll(p => p.TurnAction?.Decision == PBETurnDecision.SwitchOut);
-	List<PBEBattlePokemon> pkmnFighting = ActiveBattlers.FindAll(p => p.TurnAction?.Decision == PBETurnDecision.Fight);
-	List<PBEBattlePokemon> wildFleeing = ActiveBattlers.FindAll(p => p.TurnAction?.Decision == PBETurnDecision.WildFlee);
+	const SwitchRotatePriority = +6;
+	const WildFleePriority = -7;
+	var pkmnUsingItem # : List<PBEBattlePokemon> = ActiveBattlers.FindAll(p => p.TurnAction?.Decision == PBETurnDecision.Item);
+	var pkmnSwitchingOut # : List<PBEBattlePokemon> = ActiveBattlers.FindAll(p => p.TurnAction?.Decision == PBETurnDecision.SwitchOut);
+	var pkmnFighting # : List<PBEBattlePokemon> = ActiveBattlers.FindAll(p => p.TurnAction?.Decision == PBETurnDecision.Fight);
+	var wildFleeing # : List<PBEBattlePokemon> = ActiveBattlers.FindAll(p => p.TurnAction?.Decision == PBETurnDecision.WildFlee);
 	# Item use happens first:
 	_turnOrder.AddRange(GetActingOrder(pkmnUsingItem, true));
 	# Get move/switch/rotate/wildflee priority sorted
-	IOrderedEnumerable<IGrouping<int, PBEBattlePokemon>> prios =
-			pkmnSwitchingOut.Select(p => (p, SwitchRotatePriority))
-			.Concat(pkmnFighting.Select(p => (p, GetMovePrio(p)))) # Get move priority
-			.Concat(wildFleeing.Select(p => (p, WildFleePriority)))
-			.GroupBy(t => t.Item2, t => t.p)
-			.OrderByDescending(t => t.Key);
-	foreach (IGrouping<int, PBEBattlePokemon> bracket in prios)
-	{
-		bool ignoreItemsThatActivate = bracket.Key == SwitchRotatePriority || bracket.Key == WildFleePriority;
-		_turnOrder.AddRange(GetActingOrder(bracket, ignoreItemsThatActivate));
+	#IOrderedEnumerable<IGrouping<int, PBEBattlePokemon>> prios =
+			#pkmnSwitchingOut.Select(p => (p, SwitchRotatePriority))
+			#.Concat(pkmnFighting.Select(p => (p, GetMovePrio(p)))) # Get move priority
+			#.Concat(wildFleeing.Select(p => (p, WildFleePriority)))
+			#.GroupBy(t => t.Item2, t => t.p)
+			#.OrderByDescending(t => t.Key);
+	#foreach (IGrouping<int, PBEBattlePokemon> bracket in prios)
+		#bool ignoreItemsThatActivate = bracket.Key == SwitchRotatePriority || bracket.Key == WildFleePriority;
+		#_turnOrder.AddRange(GetActingOrder(bracket, ignoreItemsThatActivate));
 
-func void RunActionsInOrder():
-	for pkmn in _turnOrder.duplicate() # Copy the list so a faint or ejection does not cause a collection modified exception
-		if (BattleResult is not null) # Do not broadcast battle result by calling EndCheck() in here; do it in TurnEnded()
+func RunActionsInOrder():
+	for pkmn in _turnOrder.duplicate(): # Copy the list so a faint or ejection does not cause a collection modified exception
+		if (BattleResult != null): # Do not broadcast battle result by calling EndCheck() in here; do it in TurnEnded()
 			return;
-		elif (ActiveBattlers.Contains(pkmn))
-			match (pkmn.TurnAction!.Decision)
-				case PBETurnDecision.Fight:
+		elif (ActiveBattlers.Contains(pkmn)):
+			match (pkmn.TurnAction.Decision):
+				PBETurnDecision.Fight:
 					UseMove(pkmn, pkmn.TurnAction.FightMove, pkmn.TurnAction.FightTargets);
-					break;
-				case PBETurnDecision.Item:
+				PBETurnDecision.Item:
 					UseItem(pkmn, pkmn.TurnAction.UseItem);
-					break;
-				case PBETurnDecision.SwitchOut:
+				PBETurnDecision.SwitchOut:
 					SwitchTwoPokemon(pkmn, pkmn.Trainer.GetPokemon(pkmn.TurnAction.SwitchPokemonId));
-					break;
 				PBETurnDecision.WildFlee:
 					WildFleeCheck(pkmn);
-					break;
 				_: 
 					pass#throw new ArgumentOutOfRangeException(nameof(pkmn.TurnAction.Decision));
 
 
-func void TurnEnded()
+func TurnEnded():
 	if EndCheck():
 		return;
 
@@ -518,31 +471,30 @@ func void TurnEnded()
 	# Verified: LightScreen/LuckyChant/Reflect/Safeguard/TrickRoom are removed in the order they were added
 	for team in Teams: #each (PBETeam 
 		if (team.TeamStatus.HasFlag(PBETeamStatus.LightScreen)):
-			team.LightScreenCount--;
-			if (team.LightScreenCount == 0)
+			team.LightScreenCount -= 1
+			if (team.LightScreenCount == 0):
 				BroadcastTeamStatus(team, PBETeamStatus.LightScreen, PBETeamStatusAction.Ended);
 		if (team.TeamStatus.HasFlag(PBETeamStatus.LuckyChant)):
-			team.LuckyChantCount--;
+			team.LuckyChantCount -= 1
 			if (team.LuckyChantCount == 0):
 				BroadcastTeamStatus(team, PBETeamStatus.LuckyChant, PBETeamStatusAction.Ended);
 		if (team.TeamStatus.HasFlag(PBETeamStatus.Reflect)):
-			team.ReflectCount--;
+			team.ReflectCount -= 1
 			if (team.ReflectCount == 0):
 				BroadcastTeamStatus(team, PBETeamStatus.Reflect, PBETeamStatusAction.Ended);
 		if (team.TeamStatus.HasFlag(PBETeamStatus.Safeguard)):
-			team.SafeguardCount--;
+			team.SafeguardCount -= 1
 			if (team.SafeguardCount == 0):
 				BroadcastTeamStatus(team, PBETeamStatus.Safeguard, PBETeamStatusAction.Ended);
 		if (team.TeamStatus.HasFlag(PBETeamStatus.Tailwind)):
-			team.TailwindCount--;
+			team.TailwindCount -= 1
 			if (team.TailwindCount == 0):
 				BroadcastTeamStatus(team, PBETeamStatus.Tailwind, PBETeamStatusAction.Ended);
 
 	# Trick Room
-	if (BattleStatus.HasFlag(PBEBattleStatus.TrickRoom))
-		TrickRoomCount--;
+	if (BattleStatus.HasFlag(PBEBattleStatus.TrickRoom)):
+		TrickRoomCount -= 1
 		if (TrickRoomCount == 0):
 			BroadcastBattleStatus(PBEBattleStatus.TrickRoom, PBEBattleStatusAction.Ended);
 
 	SwitchesOrActions();
-}
