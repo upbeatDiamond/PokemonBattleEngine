@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
+using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Data.Utils;
 using Kermalis.SimpleNARC;
 using Microsoft.Data.Sqlite;
@@ -8,7 +8,7 @@ namespace Kermalis.PokemonBattleEngineExtras;
 
 internal static class LocalizationDumper
 {
-	// You must dump the NARC files yourself (/a/0/0/2 in each language)
+	## You must dump the NARC files yourself (/a/0/0/2 in each language)
 	public static void Run(SqliteConnection con)
 	{
 		var english = new NARC(@"../../../\DumpedData\W2EnglishTexts.narc");
@@ -62,7 +62,7 @@ internal static class LocalizationDumper
 				Insert(tableName, id, eng[0][text], fre[0][text], ger[0][text], ita[0][text], jap[0][text], jap[1][text], kor[0][text], spa[0][text]);
 			}
 
-			// Abilities
+			## Abilities
 			{
 				void WriteAll(string tableName)
 				{
@@ -77,7 +77,7 @@ internal static class LocalizationDumper
 				LoadTexts(375);
 				WriteAll("AbilityDescriptions");
 			}
-			// Forms
+			## Forms
 			{
 				void InsertForm(string tableName, PBESpecies species, PBEForm form, string e, string f, string g, string i, string jkana, string jkanji, string k, string s)
 				{
@@ -177,7 +177,7 @@ internal static class LocalizationDumper
 				WriteFormTexts(tableName, PBESpecies.Kyurem, PBEForm.Kyurem_Black, 726);
 				WriteFormTexts(tableName, PBESpecies.Keldeo, PBEForm.Keldeo_Resolute, 727);
 				WriteFormTexts(tableName, PBESpecies.Meloetta, PBEForm.Meloetta_Pirouette, 728);
-				// All Unown forms are called "One Form", all Arceus forms are called "Arceus", and all Genesect forms are called "Genesect", so I'm changing them here
+				## All Unown forms are called "One Form", all Arceus forms are called "Arceus", and all Genesect forms are called "Genesect", so I'm changing them here
 				WriteUnown(tableName, PBEForm.Unown_A, "A");
 				WriteUnown(tableName, PBEForm.Unown_B, "B");
 				WriteUnown(tableName, PBEForm.Unown_C, "C");
@@ -206,7 +206,7 @@ internal static class LocalizationDumper
 				WriteUnown(tableName, PBEForm.Unown_X, "X");
 				WriteUnown(tableName, PBEForm.Unown_Y, "Y");
 				WriteUnown(tableName, PBEForm.Unown_Z, "Z");
-				LoadTexts(398); // Load types texts
+				LoadTexts(398); ## Load types texts
 				WriteArceusGenesect(tableName, PBESpecies.Arceus, PBEForm.Arceus, PBEType.Normal);
 				WriteArceusGenesect(tableName, PBESpecies.Arceus, PBEForm.Arceus_Bug, PBEType.Bug);
 				WriteArceusGenesect(tableName, PBESpecies.Arceus, PBEForm.Arceus_Dark, PBEType.Dark);
@@ -230,7 +230,7 @@ internal static class LocalizationDumper
 				WriteArceusGenesect(tableName, PBESpecies.Genesect, PBEForm.Genesect_Douse, PBEType.Water);
 				WriteArceusGenesect(tableName, PBESpecies.Genesect, PBEForm.Genesect_Shock, PBEType.Electric);
 			}
-			// Genders (Does not have PBEGender.Genderless)
+			## Genders (Does not have PBEGender.Genderless)
 			{
 				LoadTexts(441);
 				const string tableName = "GenderNames";
@@ -239,7 +239,7 @@ internal static class LocalizationDumper
 				Insert(tableName, PBEGender.Genderless.ToString(), "Unknown", "Inconnu", "Unbekannt", "Sconosciuto", "不明のすがた", "不明のすがた", "불명의 모습", "Desconocido");
 				WriteTexts(tableName, PBEGender.Male.ToString(), 114);
 			}
-			// Items
+			## Items
 			{
 				PBEItem[] allItems = Enum.GetValues<PBEItem>();
 				void WriteAll(string tableName)
@@ -255,7 +255,7 @@ internal static class LocalizationDumper
 				LoadTexts(64);
 				WriteAll("ItemNames");
 			}
-			// Moves
+			## Moves
 			{
 				void WriteAll(string tableName)
 				{
@@ -270,17 +270,17 @@ internal static class LocalizationDumper
 				LoadTexts(403);
 				WriteAll("MoveNames");
 			}
-			// Natures
+			## Natures
 			{
 				LoadTexts(379);
 				const string tableName = "NatureNames";
 				CreateTable(tableName);
 				for (PBENature i = 0; i < PBENature.MAX; i++)
 				{
-					WriteTexts(tableName, i.ToString(), (int)i + 35); // Nature 0 is at entry 35 in this file
+					WriteTexts(tableName, i.ToString(), (int)i + 35); ## Nature 0 is at entry 35 in this file
 				}
 			}
-			// Species
+			## Species
 			{
 				void WriteAll(string tableName)
 				{
@@ -297,7 +297,7 @@ internal static class LocalizationDumper
 				LoadTexts(464);
 				WriteAll("SpeciesCategories");
 			}
-			// Stats (Non-Japanese languages do not have PBEStat.Accuracy or PBEStat.Evasion)
+			## Stats (Non-Japanese languages do not have PBEStat.Accuracy or PBEStat.Evasion)
 			{
 				LoadTexts(372);
 				const string tableName = "StatNames";
@@ -311,7 +311,7 @@ internal static class LocalizationDumper
 				Insert(tableName, PBEStat.Accuracy.ToString(), "Accuracy", "Précision", "Genauigkeit", "Precisione", jap[0][6], jap[1][6], "명중률", "Precisión");
 				Insert(tableName, PBEStat.Evasion.ToString(), "Evasiveness", "Esquive", "Fluchtwert", "Elusione", jap[0][7], jap[1][7], "회피율", "Evasión");
 			}
-			// Types (Does not have PBEType.None)
+			## Types (Does not have PBEType.None)
 			{
 				LoadTexts(398);
 				const string tableName = "TypeNames";

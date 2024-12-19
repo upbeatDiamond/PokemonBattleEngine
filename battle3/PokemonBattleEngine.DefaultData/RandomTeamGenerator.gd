@@ -1,5 +1,5 @@
-﻿// This file is adapted from Pokémon Showdown (MIT License): https://github.com/smogon/pokemon-showdown/blob/master/data/mods/gen5/random-teams.ts
-// Those guys know what they're doing!
+## This file is adapted from Pokémon Showdown (MIT License): https:##github.com/smogon/pokemon-showdown/blob/master/data/mods/gen5/random-teams.ts
+## Those guys know what they're doing!
 using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Data.Legality;
@@ -41,7 +41,7 @@ public static class PBEDDRandomTeamGenerator
 		public int SpecialPool;
 		public int Hazards;
 		public int DamagingMoves;
-		public char SetupCategory; // 'N', 'M', 'P', 'S' - None, Mixed, Physical, Special
+		public char SetupCategory; ## 'N', 'M', 'P', 'S' - None, Mixed, Physical, Special
 		private readonly Dictionary<PBEMoveCategory, float> _categories = new();
 		private readonly Dictionary<PBEType, int> _types = new();
 		private readonly Dictionary<PBEAbility, int> _abilities = new();
@@ -88,7 +88,7 @@ public static class PBEDDRandomTeamGenerator
 	private static readonly PBEMove[] _mixedSetupMoves = new[] { PBEMove.Growth, PBEMove.ShellSmash, PBEMove.WorkUp };
 	private static readonly PBEMove[] _speedSetupMoves = new[] { PBEMove.Agility, PBEMove.Autotomize, PBEMove.FlameCharge, PBEMove.RockPolish, PBEMove.ShiftGear };
 	private static readonly PBEMove[] _hazardMoves = new[] { PBEMove.Spikes, PBEMove.StealthRock, PBEMove.ToxicSpikes };
-	// Moves that shouldn't be the only STAB move
+	## Moves that shouldn't be the only STAB move
 	private static readonly PBEMove[] _noSTABMoves = new[] { PBEMove.AquaJet, PBEMove.Bounce, PBEMove.Explosion, PBEMove.FakeOut, PBEMove.FlameCharge, PBEMove.IceShard, PBEMove.MachPunch, PBEMove.Pluck,
 		PBEMove.Pursuit, PBEMove.QuickAttack, PBEMove.Selfdestruct, PBEMove.SuckerPunch, PBEMove.ClearSmog, PBEMove.Eruption, PBEMove.IcyWind, PBEMove.Incinerate, PBEMove.Snarl, PBEMove.VacuumWave, PBEMove.WaterSpout };
 
@@ -100,7 +100,7 @@ public static class PBEDDRandomTeamGenerator
 		{
 			bool reject = false;
 			ability = PBEDataProvider.GlobalRandom.RandomElement(abilityPool);
-			// Reasons to reject
+			## Reasons to reject
 			switch (ability)
 			{
 				case PBEAbility.AngerPoint:
@@ -117,46 +117,46 @@ public static class PBEDDRandomTeamGenerator
 				case PBEAbility.SwiftSwim: reject = !teamDs.Rain && !moves.Contains(PBEMove.RainDance); break;
 				case PBEAbility.IceBody:
 				case PBEAbility.SnowCloak: reject = !teamDs.Hail && !moves.Contains(PBEMove.Hail); break;
-				// Zangoose
+				## Zangoose
 				case PBEAbility.Immunity: reject = pData.Abilities.Contains(PBEAbility.ToxicBoost); break;
 				case PBEAbility.Lightningrod: reject = pData.HasType(PBEType.Ground); break;
-				// Basculin
+				## Basculin
 				case PBEAbility.MoldBreaker: reject = pData.Abilities.Contains(PBEAbility.Adaptability); break;
 				case PBEAbility.Overgrow: reject = counter[PBEType.Grass] == 0; break;
-				// Breloom
+				## Breloom
 				case PBEAbility.PoisonHeal: reject = counter[PBEAbility.Technician] > 0 && pData.Abilities.Contains(PBEAbility.Technician); break;
 				case PBEAbility.Prankster: reject = counter[PBEMoveCategory.Status] == 0; break;
 				case PBEAbility.Reckless:
 				case PBEAbility.RockHead: reject = counter.Recoil == 0; break;
-				// Solosis, Duosion, Reuniclus
+				## Solosis, Duosion, Reuniclus
 				case PBEAbility.Regenerator: reject = pData.Abilities.Contains(PBEAbility.MagicGuard); break;
 				case PBEAbility.SandForce:
 				case PBEAbility.SandRush:
 				case PBEAbility.SandVeil: reject = !teamDs.Sandstorm && !moves.Contains(PBEMove.Sandstorm); break;
 				case PBEAbility.SereneGrace: reject = species == PBESpecies.Blissey || species == PBESpecies.Togetic; break;
-				// Timburr, Gurdurr, Conkeldurr
+				## Timburr, Gurdurr, Conkeldurr
 				case PBEAbility.SheerForce: reject = (counter[PBEAbility.IronFist] > counter[PBEAbility.SheerForce] && pData.Abilities.Contains(PBEAbility.IronFist)) || moves.Contains(PBEMove.FakeOut); break;
 				case PBEAbility.Simple:
 				case PBEAbility.WeakArmor: reject = counter.SetupCategory == 'N'; break;
 				case PBEAbility.Sturdy: reject = counter.Recoil > 0 && counter.Recovery == 0; break;
 				case PBEAbility.Swarm: reject = counter[PBEType.Bug] == 0; break;
-				// Ambipom, Minccino, Cinccino
+				## Ambipom, Minccino, Cinccino
 				case PBEAbility.Technician: reject = counter[PBEAbility.SkillLink] >= counter[PBEAbility.Technician] && pData.Abilities.Contains(PBEAbility.SkillLink); break;
 				case PBEAbility.TintedLens: reject = counter.Damage >= counter.DamagingMoves || (counter[PBEMoveCategory.Status] > 2 && counter.SetupCategory == 'N'); break;
 				case PBEAbility.Torrent: reject = counter[PBEType.Water] == 0; break;
-				// Clefable
+				## Clefable
 				case PBEAbility.Unaware: reject = counter[PBEMoveCategory.Status] < 2 && pData.Abilities.Contains(PBEAbility.MagicGuard); break;
 				case PBEAbility.Unburden: reject = pData.BaseStats.Speed > 100; break;
-				// Chinchou, Lanturn
+				## Chinchou, Lanturn
 				case PBEAbility.WaterAbsorb: reject = pData.Abilities.Contains(PBEAbility.VoltAbsorb); break;
 			}
-			// Reasons to always accept
+			## Reasons to always accept
 			if (!reject)
 			{
 				if (_counterAbilities.Contains(ability))
 				{
 					reject = counter[ability] == 0;
-					if (!reject) // If we have an ability that the counter says has good moves, use the ability
+					if (!reject) ## If we have an ability that the counter says has good moves, use the ability
 					{
 						break;
 					}
@@ -174,7 +174,7 @@ public static class PBEDDRandomTeamGenerator
 					break;
 				}
 			}
-			// Ability was rejected
+			## Ability was rejected
 			if (reject)
 			{
 				abilityPool.Remove(ability);
@@ -192,8 +192,8 @@ public static class PBEDDRandomTeamGenerator
 			foreach (PBEMove move in moves)
 			{
 				IPBEMoveData mData = PBEDataProvider.Instance.GetMoveData(move);
-				//if (!move.basePower && !move.basePowerCallback) continue;
-				// KERMALIS: Instead gonna check status for now
+				##if (!move.basePower && !move.basePowerCallback) continue;
+				## KERMALIS: Instead gonna check status for now
 				if (mData.Category != PBEMoveCategory.Status)
 				{
 					list.Add(mData.Type);
@@ -201,7 +201,7 @@ public static class PBEDDRandomTeamGenerator
 			}
 			item = PBEDataUtils.TypeToGem[PBEDataProvider.GlobalRandom.RandomElement(list)];
 		}
-		// First, the extra high-priority items
+		## First, the extra high-priority items
 		if (species == PBESpecies.Marowak)
 		{
 			item = PBEItem.ThickClub;
@@ -295,10 +295,10 @@ public static class PBEDDRandomTeamGenerator
 		}
 		else if (ability == PBEAbility.Unburden && (counter[PBEMoveCategory.Physical] > 0 || counter[PBEMoveCategory.Special] > 0))
 		{
-			// Give Unburden mons a random Gem of the type of one of their damaging moves
+			## Give Unburden mons a random Gem of the type of one of their damaging moves
 			GetRandomGem();
 		}
-		// Medium priority
+		## Medium priority
 		else if (counter[PBEMoveCategory.Status] == 0 && (moves.Contains(PBEMove.Eruption) || moves.Contains(PBEMove.WaterSpout)))
 		{
 			item = PBEItem.ChoiceScarf;
@@ -360,7 +360,7 @@ public static class PBEDDRandomTeamGenerator
 		{
 			item = PBEItem.FocusSash;
 		}
-		// This is the "REALLY can't think of a good item" cutoff
+		## This is the "REALLY can't think of a good item" cutoff
 		else if (PBETypeEffectiveness.GetEffectiveness(PBEType.Rock, pData) >= 1 || moves.Contains(PBEMove.DragonTail))
 		{
 			item = PBEItem.Leftovers;
@@ -374,7 +374,7 @@ public static class PBEDDRandomTeamGenerator
 			item = PBEItem.Leftovers;
 		}
 
-		// For Trick / Switcheroo
+		## For Trick / Switcheroo
 		if (item == PBEItem.Leftovers && pData.HasType(PBEType.Poison))
 		{
 			item = PBEItem.BlackSludge;
@@ -400,7 +400,7 @@ public static class PBEDDRandomTeamGenerator
 
 		do
 		{
-			// Choose next moves from learnset/viable moves and add them to moves list:
+			## Choose next moves from learnset/viable moves and add them to moves list:
 			while (moves.Count < PBESettings.DefaultNumMoves && movePool.Count > 0)
 			{
 				PBEMove move = PBEDataProvider.GlobalRandom.RandomElement(movePool);
@@ -416,13 +416,13 @@ public static class PBEDDRandomTeamGenerator
 
 			counter = QueryMoves(pData, moves, movePool);
 
-			// If there are no more moves to choose, there's nothing to cull
+			## If there are no more moves to choose, there's nothing to cull
 			if (movePool.Count == 0 && rejectedPool.Count == 0)
 			{
 				break;
 			}
 
-			// Iterate through the moves again, this time to cull them:
+			## Iterate through the moves again, this time to cull them:
 			for (int i = startI; i < moves.Count; i++)
 			{
 				PBEMove move = moves[i];
@@ -433,7 +433,7 @@ public static class PBEDDRandomTeamGenerator
 
 				switch (move)
 				{
-					// Not very useful without their supporting moves
+					## Not very useful without their supporting moves
 					case PBEMove.BatonPass:
 					{
 						if (counter.SetupCategory == 'N' && counter.SpeedSetup == 0 && !moves.Contains(PBEMove.Substitute) && !moves.Contains(PBEMove.Wish) && !pData.HasAbility(PBEAbility.SpeedBoost))
@@ -484,7 +484,7 @@ public static class PBEDDRandomTeamGenerator
 						break;
 					}
 
-					// Set up once and only if we have the moves for it
+					## Set up once and only if we have the moves for it
 					case PBEMove.BellyDrum:
 					case PBEMove.BulkUp:
 					case PBEMove.Coil:
@@ -558,7 +558,7 @@ public static class PBEDDRandomTeamGenerator
 						break;
 					}
 
-					// Bad after setup
+					## Bad after setup
 					case PBEMove.BulletPunch:
 					{
 						if (counter.SpeedSetup > 0)
@@ -635,7 +635,7 @@ public static class PBEDDRandomTeamGenerator
 						{
 							reject = true;
 						}
-						else if (moves.Contains(PBEMove.Rest) || (moves.Contains(PBEMove.LightScreen) && moves.Contains(PBEMove.Reflect))) // A typo? light screen and reflect together? not ||?
+						else if (moves.Contains(PBEMove.Rest) || (moves.Contains(PBEMove.LightScreen) && moves.Contains(PBEMove.Reflect))) ## A typo? light screen and reflect together? not ||?
 						{
 							reject = true;
 						}
@@ -688,7 +688,7 @@ public static class PBEDDRandomTeamGenerator
 					}
 					case PBEMove.Uturn:
 					{
-						if (counter.SetupCategory != 'N' || counter.SpeedSetup > 0 || moves.Contains(PBEMove.BatonPass)) // KERMALIS: Should reject if they have volt switch?
+						if (counter.SetupCategory != 'N' || counter.SpeedSetup > 0 || moves.Contains(PBEMove.BatonPass)) ## KERMALIS: Should reject if they have volt switch?
 						{
 							reject = true;
 						}
@@ -703,8 +703,8 @@ public static class PBEDDRandomTeamGenerator
 						break;
 					}
 
-					// Bit redundant to have both
-					// Attacks:
+					## Bit redundant to have both
+					## Attacks:
 					case PBEMove.BugBite:
 					{
 						if (moves.Contains(PBEMove.Uturn))
@@ -910,7 +910,7 @@ public static class PBEDDRandomTeamGenerator
 						break;
 					}
 
-					// Status:
+					## Status:
 					case PBEMove.Encore:
 					case PBEMove.IceShard:
 					case PBEMove.SuckerPunch:
@@ -964,7 +964,7 @@ public static class PBEDDRandomTeamGenerator
 					}
 					case PBEMove.WillOWisp:
 					{
-						if (moves.Contains(PBEMove.LavaPlume) || (moves.Contains(PBEMove.Scald) && !pData.HasType(PBEType.Ghost))) // KERMALIS: why ghost check
+						if (moves.Contains(PBEMove.LavaPlume) || (moves.Contains(PBEMove.Scald) && !pData.HasType(PBEType.Ghost))) ## KERMALIS: why ghost check
 						{
 							reject = true;
 						}
@@ -972,10 +972,10 @@ public static class PBEDDRandomTeamGenerator
 					}
 				}
 
-				// This move doesn't satisfy our setup requirements:
+				## This move doesn't satisfy our setup requirements:
 				if ((mData.Category == PBEMoveCategory.Physical && counter.SetupCategory == 'S') || (mData.Category == PBEMoveCategory.Special && counter.SetupCategory == 'P'))
 				{
-					// Reject STABs last in case the setup type changes later on
+					## Reject STABs last in case the setup type changes later on
 					int stabs = counter[pData.Type1];
 					if (pData.Type2 != PBEType.None)
 					{
@@ -991,8 +991,8 @@ public static class PBEDDRandomTeamGenerator
 				{
 					if (mData.Category != c && counter[c] < 2 && !moves.Contains(PBEMove.BatonPass) && (mData.Category != PBEMoveCategory.Status || !mData.IsHPRestoreMove()) && move != PBEMove.SleepTalk)
 					{
-						// Mono-attacking with setup and Rest/SleepTalk is allowed
-						// Reject status moves only if there is nothing else to reject
+						## Mono-attacking with setup and Rest/SleepTalk is allowed
+						## Reject status moves only if there is nothing else to reject
 						if (mData.Category != PBEMoveCategory.Status || (counter[c] + counter[PBEMoveCategory.Status] > 3 && counter.PhysicalSetup + counter.SpecialSetup < 2))
 						{
 							reject = true;
@@ -1001,11 +1001,11 @@ public static class PBEDDRandomTeamGenerator
 				}
 				if (counter.SetupCategory == 'S' && move == PBEMove.HiddenPower && pData.Type2 != PBEType.None && counter[PBEMoveCategory.Special] <= 2 && !pData.HasType(mData.Type) && counter[PBEMoveCategory.Physical] == 0 && counter.SpecialPool > 0)
 				{
-					// Hidden Power isn't good enough
+					## Hidden Power isn't good enough
 					reject = true;
 				}
 
-				// Pokemon should have moves that benefit their Type/Ability/Weather, as well as moves required by its forme
+				## Pokemon should have moves that benefit their Type/Ability/Weather, as well as moves required by its forme
 				if (!reject)
 				{
 					if ((
@@ -1035,7 +1035,7 @@ public static class PBEDDRandomTeamGenerator
 						) && (counter[PBEMoveCategory.Status] > 1)))
 						))
 					{
-						// Reject Status or non-STAB
+						## Reject Status or non-STAB
 						if (!isSetup && !mData.IsWeatherMove() /*&& !move.damage*/ && (mData.Category != PBEMoveCategory.Status || !mData.IsHPRestoreMove()) && move != PBEMove.Judgment && move != PBEMove.SleepTalk)
 						{
 							if (mData.Category == PBEMoveCategory.Status || !pData.HasType(mData.Type) /*|| move.selfSwitch*/ || (mData.Power > 0 && mData.Power < 40 && !mData.IsMultiHitMove()))
@@ -1046,7 +1046,7 @@ public static class PBEDDRandomTeamGenerator
 					}
 				}
 
-				// Sleep Talk shouldn't be selected without Rest
+				## Sleep Talk shouldn't be selected without Rest
 				if (move == PBEMove.Rest && reject)
 				{
 					int sleeptalk = moves.IndexOf(PBEMove.SleepTalk);
@@ -1063,11 +1063,11 @@ public static class PBEDDRandomTeamGenerator
 					}
 				}
 
-				// Remove rejected moves from the move list
+				## Remove rejected moves from the move list
 				if (reject)
 				{
-					// Let's say our movePool originally has 4 moves and we reject three, we have one move and three are looping in rejectedPool forever.
-					// This if prevents them from looping through rejectedPool
+					## Let's say our movePool originally has 4 moves and we reject three, we have one move and three are looping in rejectedPool forever.
+					## This if prevents them from looping through rejectedPool
 					if (movePool.Count > 0)
 					{
 						rejectedPool.Add(move);
@@ -1076,7 +1076,7 @@ public static class PBEDDRandomTeamGenerator
 					break;
 				}
 
-				// TODO: Hidden power IVs and types
+				## TODO: Hidden power IVs and types
 			}
 		} while (moves.Count < PBESettings.DefaultNumMoves);
 
@@ -1092,29 +1092,29 @@ public static class PBEDDRandomTeamGenerator
 			return counter;
 		}
 
-		// Iterate through all moves we've chosen so far and keep track of what they do:
+		## Iterate through all moves we've chosen so far and keep track of what they do:
 		foreach (PBEMove move in moves)
 		{
 			IPBEMoveData mData = PBEDataProvider.Instance.GetMoveData(move);
 			PBEType moveType = move == PBEMove.Judgment ? pData.Type1 : mData.Type;
 
-			// Moves that do a set amount of damage:
+			## Moves that do a set amount of damage:
 			if (mData.IsSetDamageMove())
 			{
 				counter.Damage++;
 				counter.DamagingMoves++;
 			}
-			else // Are Physical/Special/Status moves:
+			else ## Are Physical/Special/Status moves:
 			{
 				counter[mData.Category]++;
 			}
 
-			// Moves that have a low base power:
+			## Moves that have a low base power:
 			if (move == PBEMove.LowKick || (mData.Power > 0 && mData.Power <= 60 && move != PBEMove.RapidSpin))
 			{
 				counter[PBEAbility.Technician]++;
 			}
-			// Moves that hit up to 5 times: (KERMALIS: Also TripleKick)
+			## Moves that hit up to 5 times: (KERMALIS: Also TripleKick)
 			if (mData.IsMultiHitMove())
 			{
 				counter[PBEAbility.SkillLink]++;
@@ -1127,19 +1127,19 @@ public static class PBEDDRandomTeamGenerator
 			{
 				counter.Drain++;
 			}
-			// Moves which have a base power, but aren't super-weak like RapidSpin
+			## Moves which have a base power, but aren't super-weak like RapidSpin
 			if (move == PBEMove.NaturePower || mData.Power > 30 || mData.IsMultiHitMove()/* || mData.basePowerCallback*/)
 			{
 				counter[moveType]++;
 				if (pData.HasType(moveType) || pData.Abilities.Contains(PBEAbility.Normalize))
 				{
 					counter[PBEAbility.Adaptability]++;
-					// STAB:
-					// Certain moves aren't acceptable as a Pokémon's only STAB attack
+					## STAB:
+					## Certain moves aren't acceptable as a Pokémon's only STAB attack
 					if (!_noSTABMoves.Contains(move) && (move != PBEMove.HiddenPower || pData.Type2 == PBEType.None))
 					{
 						counter.STAB++;
-						// Ties between Physical and Special setup should broken in favor of STABs
+						## Ties between Physical and Special setup should broken in favor of STABs
 						counter[mData.Category] += 0.1f;
 					}
 				}
@@ -1153,7 +1153,7 @@ public static class PBEDDRandomTeamGenerator
 				}
 				counter.DamagingMoves++;
 			}
-			// Moves with secondary effects:
+			## Moves with secondary effects:
 			if (mData.HasSecondaryEffects(PBESettings.DefaultSettings))
 			{
 				counter[PBEAbility.SheerForce]++;
@@ -1162,17 +1162,17 @@ public static class PBEDDRandomTeamGenerator
 					counter[PBEAbility.SereneGrace]++;
 				}
 			}
-			// Moves with low accuracy:
+			## Moves with low accuracy:
 			if (mData.Accuracy != 0 && mData.Accuracy < 90)
 			{
 				counter.Inaccurate++;
 			}
-			// Moves with non-zero priority:
+			## Moves with non-zero priority:
 			if (mData.Category != PBEMoveCategory.Status && mData.Priority != 0)
 			{
 				counter.Priority++;
 			}
-			// Moves that change stats:
+			## Moves that change stats:
 			if (_recoveryMoves.Contains(move))
 			{
 				counter.Recovery++;
@@ -1205,7 +1205,7 @@ public static class PBEDDRandomTeamGenerator
 			}
 		}
 
-		// Keep track of available moves
+		## Keep track of available moves
 		foreach (PBEMove move in movePool)
 		{
 			IPBEMoveData mData = PBEDataProvider.Instance.GetMoveData(move);
@@ -1222,7 +1222,7 @@ public static class PBEDDRandomTeamGenerator
 			}
 		}
 
-		// Choose a setup type:
+		## Choose a setup type:
 		if (counter.MixedSetup > 0)
 		{
 			counter.SetupCategory = 'M';
@@ -1268,12 +1268,12 @@ public static class PBEDDRandomTeamGenerator
 		return counter;
 	}
 
-	// TODO: Hidden power types
+	## TODO: Hidden power types
 	private static void GetRandomSet(PBESpecies species, PBEForm form, IPBEDDPokemonDataExtended pData, bool isLead, TeamDetails teamDs, PBELegalPokemon pkmn)
 	{
 		pkmn.EffortValues.Equalize();
 		List<PBEMove> moves = GetMoves(species, form, pData, isLead, teamDs, out Counter counter);
-		// If Hidden Power has been removed, reset the IVs
+		## If Hidden Power has been removed, reset the IVs
 		if (!moves.Contains(PBEMove.HiddenPower))
 		{
 			pkmn.IndividualValues.Maximize();
@@ -1292,9 +1292,9 @@ public static class PBEDDRandomTeamGenerator
 			pkmn.Item = GetItem(species, form, pkmn.Ability, moves, pData, counter, isLead);
 		}
 
-		// KERMALIS: This is where showdown does level scaling
+		## KERMALIS: This is where showdown does level scaling
 
-		// Minimize confusion damage
+		## Minimize confusion damage
 		if (counter[PBEMoveCategory.Physical] == 0 && !moves.Contains(PBEMove.Transform))
 		{
 			pkmn.EffortValues.Attack = 0;
@@ -1317,21 +1317,21 @@ public static class PBEDDRandomTeamGenerator
 		}
 	}
 
-	/// <summary>Creates a random team meant for <see cref="PBESettings.DefaultSettings"/>.</summary>
-	/// <param name="numPkmn">The amount of Pokémon to create in the team./></param>
+	##/ <summary>Creates a random team meant for <see cref="PBESettings.DefaultSettings"/>.</summary>
+	##/ <param name="numPkmn">The amount of Pokémon to create in the team./></param>
 	public static PBELegalPokemonCollection CreateRandomTeam(int numPkmn)
 	{
 		return CreateRandomTeam(numPkmn, PBEDataUtils.FullyEvolvedSpecies);
 	}
-	// TODO: Move Illusion out of the way instead of just yeeting it if it's last
-	// TODO: Tiers?, level scaling, limit one type combination
-	// TODO: Hidden Power types
-	// TODO: Custom settings
-	// TODO: Non-competitive moves (such as MegaDrain/GigaDrain together, HelpingHand), ban certain species (such as Wobbuffet & Unown, but add certain pre-evolutions such as Pikachu)
-	// TODO: Prioritize correct attack stat for species, currently will give special moves to a physical attacker, etc
-	/// <summary>Creates a random team meant for <see cref="PBESettings.DefaultSettings"/>.</summary>
-	/// <param name="numPkmn">The amount of Pokémon to create in the team./></param>
-	/// <param name="allowedSpecies">The allowed species to consider.</param>
+	## TODO: Move Illusion out of the way instead of just yeeting it if it's last
+	## TODO: Tiers?, level scaling, limit one type combination
+	## TODO: Hidden Power types
+	## TODO: Custom settings
+	## TODO: Non-competitive moves (such as MegaDrain/GigaDrain together, HelpingHand), ban certain species (such as Wobbuffet & Unown, but add certain pre-evolutions such as Pikachu)
+	## TODO: Prioritize correct attack stat for species, currently will give special moves to a physical attacker, etc
+	##/ <summary>Creates a random team meant for <see cref="PBESettings.DefaultSettings"/>.</summary>
+	##/ <param name="numPkmn">The amount of Pokémon to create in the team./></param>
+	##/ <param name="allowedSpecies">The allowed species to consider.</param>
 	public static PBELegalPokemonCollection CreateRandomTeam(int numPkmn, IEnumerable<PBESpecies> allowedSpecies)
 	{
 		if (numPkmn < 1 || numPkmn > PBESettings.DefaultMaxPartySize)
@@ -1349,7 +1349,7 @@ public static class PBEDDRandomTeamGenerator
 		{
 			(PBESpecies species, PBEForm form) = PBEDataProvider.GlobalRandom.RandomSpecies(speciesPool, true);
 			speciesPool.Remove(species);
-			// KERMALIS: Showdown limits {maxShared} per tier
+			## KERMALIS: Showdown limits {maxShared} per tier
 			IPBEDDPokemonDataExtended pData = PBEDefaultDataProvider.Instance.GetPokemonDataExtended(species, form);
 			if (ShouldDenyType(usedTypes, pData.Type1, maxShared) || ShouldDenyType(usedTypes, pData.Type2, maxShared))
 			{
@@ -1359,30 +1359,30 @@ public static class PBEDDRandomTeamGenerator
 			var pkmn = new PBELegalPokemon(species, form, PBESettings.DefaultMaxLevel, PBEDataProvider.Instance.GetEXPRequired(pData.GrowthRate, PBESettings.DefaultMaxLevel), PBESettings.DefaultSettings);
 			GetRandomSet(species, form, pData, currentIndex == 0, teamDs, pkmn);
 
-			// Illusion shouldn't be the last Pokémon of the team
+			## Illusion shouldn't be the last Pokémon of the team
 			if (pkmn.Ability == PBEAbility.Illusion && currentIndex == numPkmn - 1)
 			{
 				continue;
 			}
 
-			// KERMALIS: Showdown limits one type combination, excluding weather ability users
+			## KERMALIS: Showdown limits one type combination, excluding weather ability users
 
-			// KERMALIS: Showdown sets Illusion user's level to the level of the last in the party
+			## KERMALIS: Showdown sets Illusion user's level to the level of the last in the party
 
-			// Now that our Pokémon has passed all checks, we can increment our counters
+			## Now that our Pokémon has passed all checks, we can increment our counters
 			team.Add(pkmn);
 			if (team.Count >= numPkmn || speciesPool.Count == 0)
 			{
 				break;
 			}
 			currentIndex++;
-			// Increment our tier counter
+			## Increment our tier counter
 
-			// Increment type counters
+			## Increment type counters
 			AddTypeToDict(usedTypes, pData.Type1);
 			AddTypeToDict(usedTypes, pData.Type2);
 
-			// Team details
+			## Team details
 			if (pkmn.Ability == PBEAbility.SnowWarning || pkmn.Moveset.Contains(PBEMove.Hail))
 			{
 				teamDs.Hail = true;

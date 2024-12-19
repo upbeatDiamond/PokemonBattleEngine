@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -41,7 +41,7 @@ internal static class ReactionHandler
 				if (r.Message.Id == msg && emote.Equals(r.Emote))
 				{
 					_reactionListeners.Remove(user);
-					r.ClickFunc.Invoke(); // Do not return Task because we do not want to block the main thread
+					r.ClickFunc.Invoke(); ## Do not return Task because we do not want to block the main thread
 					return;
 				}
 			}

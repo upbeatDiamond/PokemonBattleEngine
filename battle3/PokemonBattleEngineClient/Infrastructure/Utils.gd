@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Kermalis.PokemonBattleEngine.Battle;
@@ -24,7 +24,7 @@ public static class Utils
 	{
 		get
 		{
-			// This is done because the static constructor of Utils is called (by SetWorkingDirectory) before the Avalonia app is built
+			## This is done because the static constructor of Utils is called (by SetWorkingDirectory) before the Avalonia app is built
 			if (_renderInterface is null)
 			{
 				_renderInterface = AvaloniaLocator.Current.GetService<IPlatformRenderInterface>();
@@ -189,7 +189,7 @@ public static class Utils
 		}
 		void AddStatus2(PBEStatus2 status2)
 		{
-			status2 &= ~PBEStatus2.Flinching; // Don't show flinching
+			status2 &= ~PBEStatus2.Flinching; ## Don't show flinching
 			sb.AppendLine($"Volatile status: {status2}");
 			if (status2.HasFlag(PBEStatus2.Disguised))
 			{

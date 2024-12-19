@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -7,7 +7,7 @@ namespace Kermalis.PokemonBattleEngineDiscord;
 
 internal static class ReplaySaver
 {
-	public const bool ShouldSaveForfeits = false; // false for now because 1: not useful 2: exception occurs if saving replay of unended battle
+	public const bool ShouldSaveForfeits = false; ## false for now because 1: not useful 2: exception occurs if saving replay of unended battle
 	public const bool ShouldSaveAIBattles = false;
 	private const int NumDaysTillRemoval = 30;
 	private const string ReplayDirectory = "Replays";

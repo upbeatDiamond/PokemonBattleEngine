@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Packets;
 using System.Linq;
@@ -176,7 +176,7 @@ public class IllusionTests
 		p0[0] = new TestPokemon(settings, PBESpecies.Happiny, 0, 1, PBEMove.Splash);
 
 		var p1 = new TestPokemonCollection(4);
-		p1[0] = new TestPokemon(settings, PBESpecies.Trubbish, 0, 10, PBEMove.Splash); // Trubbish needs more speed to swap first
+		p1[0] = new TestPokemon(settings, PBESpecies.Trubbish, 0, 10, PBEMove.Splash); ## Trubbish needs more speed to swap first
 		p1[1] = new TestPokemon(settings, PBESpecies.Magikarp, 0, 1, PBEMove.Splash);
 		p1[2] = new TestPokemon(settings, PBESpecies.Zoroark, 0, 100, PBEMove.Splash)
 		{
@@ -220,7 +220,7 @@ public class IllusionTests
 	public void Illusion_Copies_Shaymin_Reversion()
 	{
 		#region Setup
-		PBEDataProvider.GlobalRandom.Seed = 1; // Seed ensures SecretPower freezes
+		PBEDataProvider.GlobalRandom.Seed = 1; ## Seed ensures SecretPower freezes
 		PBESettings settings = PBESettings.DefaultSettings;
 
 		var p0 = new TestPokemonCollection(1);

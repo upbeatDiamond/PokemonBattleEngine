@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using System.Linq;
 using Xunit;
@@ -194,7 +194,7 @@ public class BehaviorTests
 
 		#region Check
 		Assert.True(koffing.HP == 0 && magikarp.HP > 0
-			&& battle.BattleResult == PBEBattleResult.Team1Win); // Koffing's team loses
+			&& battle.BattleResult == PBEBattleResult.Team1Win); ## Koffing's team loses
 		#endregion
 
 		#region Cleanup

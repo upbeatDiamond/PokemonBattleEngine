@@ -1,11 +1,11 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using System;
 
 namespace Kermalis.PokemonBattleEngine.DefaultData.AI;
 
-// Wild Pokémon always select a random usable move (unless they are forced to use a move)
-// They will flee randomly based on their IPBEPokemonData.FleeRate only if it's a single battle and they are allowed to flee
+## Wild Pokémon always select a random usable move (unless they are forced to use a move)
+## They will flee randomly based on their IPBEPokemonData.FleeRate only if it's a single battle and they are allowed to flee
 public sealed class PBEDDWildAI
 {
 	public PBETrainer Trainer { get; }
@@ -21,7 +21,7 @@ public sealed class PBEDDWildAI
 		{
 			throw new InvalidOperationException($"{nameof(Trainer.Battle.BattleState)} must be {PBEBattleState.WaitingForActions} to create actions.");
 		}
-		// Try to flee if it's a single wild battle and the Pokémon is a runner
+		## Try to flee if it's a single wild battle and the Pokémon is a runner
 		if (allowFlee && Trainer.IsWild && Trainer.Battle.BattleFormat == PBEBattleFormat.Single && Trainer.IsFleeValid(out _))
 		{
 			PBEBattlePokemon user = Trainer.ActionsRequired[0];
@@ -35,24 +35,24 @@ public sealed class PBEDDWildAI
 				return;
 			}
 		}
-		// Select a move
+		## Select a move
 		var actions = new PBETurnAction[Trainer.ActionsRequired.Count];
 		for (int i = 0; i < actions.Length; i++)
 		{
 			PBEBattlePokemon user = Trainer.ActionsRequired[i];
-			// If a Pokémon is forced to struggle, it must use Struggle
+			## If a Pokémon is forced to struggle, it must use Struggle
 			if (user.IsForcedToStruggle())
 			{
 				actions[i] = new PBETurnAction(user, PBEMove.Struggle, PBEBattleUtils.GetPossibleTargets(user, user.GetMoveTargets(PBEMove.Struggle))[0]);
 				continue;
 			}
-			// If a Pokémon has a temp locked move (Dig, Dive, ShadowForce) it must be used
+			## If a Pokémon has a temp locked move (Dig, Dive, ShadowForce) it must be used
 			if (user.TempLockedMove != PBEMove.None)
 			{
 				actions[i] = new PBETurnAction(user, user.TempLockedMove, user.TempLockedTargets);
 				continue;
 			}
-			// The Pokémon is free to fight, so pick a random move
+			## The Pokémon is free to fight, so pick a random move
 			PBEMove[] usableMoves = user.GetUsableMoves();
 			PBEMove move = PBEDataProvider.GlobalRandom.RandomElement(usableMoves);
 			actions[i] = new PBETurnAction(user, move, PBEBattle.GetRandomTargetForMetronome(user, move, PBEDataProvider.GlobalRandom));

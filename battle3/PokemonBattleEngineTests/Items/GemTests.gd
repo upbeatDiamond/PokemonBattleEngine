@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Xunit;
 using Xunit.Abstractions;
@@ -13,8 +13,8 @@ public class GemTests
 		TestUtils.SetOutputHelper(output);
 	}
 
-	// TODO: Do gems activate even if Explosion hits nobody?
-	// TODO: Do gems activate for WaterAbsorb, LightningRod, etc?
+	## TODO: Do gems activate even if Explosion hits nobody?
+	## TODO: Do gems activate for WaterAbsorb, LightningRod, etc?
 
 	[Theory]
 	[InlineData(PBEMove.Megahorn, PBEItem.BugGem)]
@@ -37,7 +37,7 @@ public class GemTests
 	public void Gem_Works(PBEMove move, PBEItem item)
 	{
 		#region Setup
-		PBEDataProvider.GlobalRandom.Seed = 4; // Seed ensures all moves do not miss
+		PBEDataProvider.GlobalRandom.Seed = 4; ## Seed ensures all moves do not miss
 		PBESettings settings = PBESettings.DefaultSettings;
 
 		var p0 = new TestPokemonCollection(1);
@@ -66,9 +66,9 @@ public class GemTests
 
 		battle.RunTurn();
 
-		Assert.True(!battle.VerifyMoveResultHappened(mew, magikarp, PBEResult.Missed) // Did not miss
-			&& battle.VerifyItemHappened(mew, mew, item, PBEItemAction.Consumed) // Gem consumed
-			&& mew.Item == PBEItem.None); // Properly removed
+		Assert.True(!battle.VerifyMoveResultHappened(mew, magikarp, PBEResult.Missed) ## Did not miss
+			&& battle.VerifyItemHappened(mew, mew, item, PBEItemAction.Consumed) ## Gem consumed
+			&& mew.Item == PBEItem.None); ## Properly removed
 		#endregion
 
 		#region Cleanup
@@ -115,12 +115,12 @@ public class GemTests
 		if (settings.BugFix)
 		{
 			Assert.True(!battle.VerifyItemHappened(swellow, swellow, PBEItem.NormalGem, PBEItemAction.Consumed)
-				&& swellow.Item == PBEItem.NormalGem); // Not consumed
+				&& swellow.Item == PBEItem.NormalGem); ## Not consumed
 		}
 		else
 		{
 			Assert.True(battle.VerifyItemHappened(swellow, swellow, PBEItem.NormalGem, PBEItemAction.Consumed)
-				&& swellow.Item == PBEItem.None); // Buggy
+				&& swellow.Item == PBEItem.None); ## Buggy
 		}
 		#endregion
 
@@ -176,10 +176,10 @@ public class GemTests
 
 		battle.RunTurn();
 
-		Assert.True(battle.VerifyMoveResultHappened(excadrill, starly, PBEResult.Ineffective_Type) && starly.HPPercentage == 1 // Doesn't affect Flying
-			&& battle.VerifyMoveResultHappened(excadrill, rotom, PBEResult.Ineffective_Ability) && rotom.HPPercentage == 1 // Doesn't affect Levitate
-			&& battle.VerifyMoveResultHappened(excadrill, shedinja, PBEResult.Ineffective_Ability) && shedinja.HPPercentage == 1 // Doesn't affect WonderGuard
-			&& excadrill.Item == PBEItem.GroundGem); // Gem not consumed
+		Assert.True(battle.VerifyMoveResultHappened(excadrill, starly, PBEResult.Ineffective_Type) && starly.HPPercentage == 1 ## Doesn't affect Flying
+			&& battle.VerifyMoveResultHappened(excadrill, rotom, PBEResult.Ineffective_Ability) && rotom.HPPercentage == 1 ## Doesn't affect Levitate
+			&& battle.VerifyMoveResultHappened(excadrill, shedinja, PBEResult.Ineffective_Ability) && shedinja.HPPercentage == 1 ## Doesn't affect WonderGuard
+			&& excadrill.Item == PBEItem.GroundGem); ## Gem not consumed
 		#endregion
 
 		#region Cleanup
@@ -187,7 +187,7 @@ public class GemTests
 		#endregion
 	}
 
-	// Failing is technically "effectiveness", but here's another test just because I can
+	## Failing is technically "effectiveness", but here's another test just because I can
 	[Fact]
 	public void Gem_Does_Not_Activate__Fail()
 	{
@@ -221,8 +221,8 @@ public class GemTests
 
 		battle.RunTurn();
 
-		Assert.True(battle.VerifyMoveResultHappened(spiritomb, magikarp, PBEResult.InvalidConditions) && magikarp.HPPercentage == 1 // Fail
-			&& spiritomb.Item == PBEItem.DarkGem); // Gem not consumed
+		Assert.True(battle.VerifyMoveResultHappened(spiritomb, magikarp, PBEResult.InvalidConditions) && magikarp.HPPercentage == 1 ## Fail
+			&& spiritomb.Item == PBEItem.DarkGem); ## Gem not consumed
 		#endregion
 
 		#region Cleanup
@@ -234,7 +234,7 @@ public class GemTests
 	public void Gem_Does_Not_Activate__Miss()
 	{
 		#region Setup
-		PBEDataProvider.GlobalRandom.Seed = 2; // Seed ensures all miss
+		PBEDataProvider.GlobalRandom.Seed = 2; ## Seed ensures all miss
 		PBESettings settings = PBESettings.DefaultSettings;
 
 		var p0 = new TestPokemonCollection(2);
@@ -276,10 +276,10 @@ public class GemTests
 
 		battle.RunTurn();
 
-		Assert.True(battle.VerifyMoveResultHappened(corsola, magikarp, PBEResult.Missed) && magikarp.HPPercentage == 1 // Miss everyone
+		Assert.True(battle.VerifyMoveResultHappened(corsola, magikarp, PBEResult.Missed) && magikarp.HPPercentage == 1 ## Miss everyone
 			&& battle.VerifyMoveResultHappened(corsola, happiny, PBEResult.Missed) && happiny.HPPercentage == 1
 			&& battle.VerifyMoveResultHappened(corsola, qwilfish, PBEResult.Missed) && qwilfish.HPPercentage == 1
-			&& corsola.Item == PBEItem.GroundGem); // Gem not consumed
+			&& corsola.Item == PBEItem.GroundGem); ## Gem not consumed
 		#endregion
 
 		#region Cleanup
@@ -287,7 +287,7 @@ public class GemTests
 		#endregion
 	}
 
-	// Protection is technically "missing", but here's another test just because I can
+	## Protection is technically "missing", but here's another test just because I can
 	[Fact]
 	public void Gem_Does_Not_Activate__Protection()
 	{
@@ -328,7 +328,7 @@ public class GemTests
 
 		Assert.True(battle.VerifyTeamStatusDamageHappened(t1.Team, PBETeamStatus.WideGuard, happiny) && happiny.HPPercentage == 1
 			&& battle.VerifyTeamStatusDamageHappened(t1.Team, PBETeamStatus.WideGuard, qwilfish) && qwilfish.HPPercentage == 1
-			&& excadrill.Item == PBEItem.GroundGem); // Gem not consumed
+			&& excadrill.Item == PBEItem.GroundGem); ## Gem not consumed
 		#endregion
 
 		#region Cleanup

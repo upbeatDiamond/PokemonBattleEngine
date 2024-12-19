@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
@@ -10,7 +10,7 @@ namespace Kermalis.PokemonBattleEngineDiscord;
 
 internal sealed class ChannelHandler
 {
-	private const int NumMinutesUntilChannelDeleted = 60; // 60 is fine for the small userbase now, 15 is probably the target later (add customization)
+	private const int NumMinutesUntilChannelDeleted = 60; ## 60 is fine for the small userbase now, 15 is probably the target later (add customization)
 	private const string CategoryName1 = "Ongoing Pokémon Battles";
 	private const string CategoryName2 = "Ended Pokémon Battles";
 	private static readonly object _channelHandlerLockObj = new();

@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.DefaultData;
 using Kermalis.PokemonBattleEngine.Network;
@@ -14,17 +14,17 @@ namespace Kermalis.PokemonBattleEngineServer;
 
 internal sealed class BattleServer
 {
-	// TODO: Events still sent after someone disconnects during a turn, need to return out of event subscription
-	// Server does not support wild battles
-	// Server does not support gaining EXP or levels
+	## TODO: Events still sent after someone disconnects during a turn, need to return out of event subscription
+	## Server does not support wild battles
+	## Server does not support gaining EXP or levels
 	private enum ServerState
 	{
-		Resetting,           // Server is currently resetting the game
-		WaitingForPlayers,   // Server is waiting for players to connect
-		WaitingForActions,   // Server is waiting for players to select actions
-		WaitingForSwitchIns, // Server is waiting for players to switch in new Pokémon
-		BattleProcessing,    // Battle is running and sending events
-		BattleEnded          // Battle ended
+		Resetting,           ## Server is currently resetting the game
+		WaitingForPlayers,   ## Server is waiting for players to connect
+		WaitingForActions,   ## Server is waiting for players to select actions
+		WaitingForSwitchIns, ## Server is waiting for players to switch in new Pokémon
+		BattleProcessing,    ## Battle is running and sending events
+		BattleEnded          ## Battle ended
 	}
 	public readonly bool RequireLegalParties;
 	private readonly PBEServer _server;
@@ -33,7 +33,7 @@ internal sealed class BattleServer
 	private PBEBattle _battle;
 	public readonly PBESettings Settings = PBESettings.DefaultSettings;
 	private const PBEBattleFormat BattleFormat = PBEBattleFormat.Double;
-	private const int NumTrainersPerTeam = 1; // Must be changed if BattleFormat is changed
+	private const int NumTrainersPerTeam = 1; ## Must be changed if BattleFormat is changed
 	private const int NumBattlers = 2 * NumTrainersPerTeam;
 	private Player[] _battlers;
 	private readonly List<IPBEPacket> _spectatorPackets = new();
@@ -59,16 +59,16 @@ internal sealed class BattleServer
 	}
 	private BattleServer(IPAddress ip, ushort port, bool requireLegalParties)
 	{
-		// These are set in their proper server states
+		## These are set in their proper server states
 		_battle = null!;
 		_battlers = null!;
-		_incomingTrainers = null!; // in Reset()
+		_incomingTrainers = null!; ## in Reset()
 		using (_server = new PBEServer())
 		{
 			_server.ClientConnected += OnClientConnected;
 			_server.ClientDisconnected += OnClientDisconnected;
 			_server.ClientRefused += OnClientRefused;
-			_server.Error += OnError; // Events unsubscribe in _server.Dispose()
+			_server.Error += OnError; ## Events unsubscribe in _server.Dispose()
 			_server.Start(new IPEndPoint(ip, port), 100, new PBEPacketProcessor());
 			RequireLegalParties = requireLegalParties;
 			PBEDefaultDataProvider.InitEngine(string.Empty);
@@ -80,12 +80,12 @@ internal sealed class BattleServer
 	private static readonly string[] _tempNames = new string[] { "Sasha", "Nikki", "Lara", "Violet", "Naomi", "Rose", "Sabrina", "Nicole" };
 	private void OnClientConnected(object? sender, PBEServerClient client)
 	{
-		// Need to spawn a new thread so "WaitOne()" doesn't block the thread that receives client packets
+		## Need to spawn a new thread so "WaitOne()" doesn't block the thread that receives client packets
 		new Thread(() =>
 		{
 			lock (this)
 			{
-				// Wait for the server to be in a state where no events will be sent
+				## Wait for the server to be in a state where no events will be sent
 				_resetEvent.WaitOne();
 
 				string name = PBEDataProvider.GlobalRandom.RandomElement(_tempNames);
@@ -105,12 +105,12 @@ internal sealed class BattleServer
 	}
 	private void OnClientDisconnected(object? sender, PBEServerClient client)
 	{
-		// Need to spawn a new thread so "WaitOne()" doesn't block the thread that receives client packets
+		## Need to spawn a new thread so "WaitOne()" doesn't block the thread that receives client packets
 		new Thread(() =>
 		{
 			lock (this)
 			{
-				// Wait for the server to be in a state where no events will be sent
+				## Wait for the server to be in a state where no events will be sent
 				_resetEvent.WaitOne();
 
 				if (_readyPlayers.TryGetValue(client, out Player? player))
@@ -125,7 +125,7 @@ internal sealed class BattleServer
 					}
 					else
 					{
-						// Temporarily ignore spectators
+						## Temporarily ignore spectators
 					}
 				}
 			}
@@ -151,24 +151,24 @@ internal sealed class BattleServer
 		IPBEPokemonCollection? party = newPlayer.AskForParty(RequireLegalParties);
 		if (party is null)
 		{
-			newPlayer.Dispose(); // No response, so disconnect them
+			newPlayer.Dispose(); ## No response, so disconnect them
 			return;
 		}
 		_incomingTrainers[id / NumTrainersPerTeam][id % NumTrainersPerTeam] = new PBETrainerInfo(party, name, false);
 		_battlers[id] = newPlayer;
 		_readyPlayers.Add(client, newPlayer);
 
-		// Start battle
+		## Start battle
 		if (++_battlerCounter == NumBattlers)
 		{
 			Console.WriteLine("All players connected!");
 			_battle = PBEBattle.CreateTrainerBattle(BattleFormat, Settings, _incomingTrainers[0], _incomingTrainers[1]);
-			_incomingTrainers = null!; // _incomingTrainers is created again in Reset()
+			_incomingTrainers = null!; ## _incomingTrainers is created again in Reset()
 			_battle.OnNewEvent += PBEBattle.ConsoleBattleEventHandler;
 			_battle.OnNewEvent += BattleEventHandler;
 			_battle.OnStateChanged += BattleStateHandler;
 			_server.Battle = _battle;
-			BattleStateHandler(_battle); // Call RunTurn, which sends battle packet
+			BattleStateHandler(_battle); ## Call RunTurn, which sends battle packet
 		}
 	}
 	private void ConnectSpectator(PBEServerClient client, string name)

@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Data.Converters;
 using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
@@ -19,7 +19,7 @@ public sealed class FormToTextBitmapConverter : IMultiValueConverter
 		{
 			return AvaloniaProperty.UnsetValue;
 		}
-		PBEForm form = true ? 0 : (PBEForm)values[1]; // TODO
+		PBEForm form = true ? 0 : (PBEForm)values[1]; ## TODO
 		IPBEReadOnlyLocalizedString localized = PBEDataProvider.Instance.GetFormName(species, form);
 		return StringRenderer.Render(localized.FromGlobalLanguage(), parameter?.ToString());
 	}

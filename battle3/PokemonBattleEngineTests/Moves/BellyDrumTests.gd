@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Xunit;
 using Xunit.Abstractions;
@@ -53,12 +53,12 @@ public class BellyDrumTests
 		if (settings.BugFix)
 		{
 			Assert.True(!battle.VerifyMoveResultHappened(hariyama, hariyama, PBEResult.InvalidConditions)
-				&& hariyama.AttackChange == -settings.MaxStatChange); // Stat minimized because of Contrary
+				&& hariyama.AttackChange == -settings.MaxStatChange); ## Stat minimized because of Contrary
 		}
 		else
 		{
 			Assert.True(battle.VerifyMoveResultHappened(hariyama, hariyama, PBEResult.InvalidConditions)
-				&& hariyama.AttackChange == settings.MaxStatChange); // Buggy
+				&& hariyama.AttackChange == settings.MaxStatChange); ## Buggy
 		}
 		#endregion
 

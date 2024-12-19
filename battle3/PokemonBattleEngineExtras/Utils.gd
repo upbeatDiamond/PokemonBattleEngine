@@ -1,4 +1,4 @@
-﻿using Kermalis.EndianBinaryIO;
+using Kermalis.EndianBinaryIO;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.SimpleNARC;
 using System.IO;
@@ -35,8 +35,8 @@ internal static class Utils
 			var r = new EndianBinaryReader(ms);
 			ushort numBlocks = r.ReadUInt16();
 			ushort numEntries = r.ReadUInt16();
-			r.ReadUInt32(); // fileSize
-			r.ReadUInt32(); // padding
+			r.ReadUInt32(); ## fileSize
+			r.ReadUInt32(); ## padding
 			string[][] texts = new string[numBlocks][];
 			uint[] blockOffsets = new uint[numBlocks];
 			for (int i = 0; i < numBlocks; i++)
@@ -48,14 +48,14 @@ internal static class Utils
 			for (int i = 0; i < numBlocks; i++)
 			{
 				ms.Position = blockOffsets[i];
-				r.ReadUInt32(); // blockSize
+				r.ReadUInt32(); ## blockSize
 				uint[] stringOffsets = new uint[numEntries];
 				ushort[] stringLengths = new ushort[numEntries];
 				for (int j = 0; j < numEntries; j++)
 				{
 					stringOffsets[j] = r.ReadUInt32();
 					stringLengths[j] = r.ReadUInt16();
-					r.ReadUInt16(); // textFlags[j]
+					r.ReadUInt16(); ## textFlags[j]
 				}
 				for (int j = 0; j < numEntries; j++)
 				{
@@ -73,7 +73,7 @@ internal static class Utils
 						decoded[k] = encoded[k] ^ key;
 						key = ((key >> 3) | (key << 13)) & 0xFFFF;
 					}
-					string text = string.Empty; // Prevent null entries
+					string text = string.Empty; ## Prevent null entries
 					for (int k = 0; k < len; k++)
 					{
 						int c = decoded[k];

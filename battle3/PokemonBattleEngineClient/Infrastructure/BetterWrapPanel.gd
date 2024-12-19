@@ -1,5 +1,5 @@
-﻿// This source file is adapted from the Avalonia project. 
-// (https://github.com/AvaloniaUI/Avalonia)
+## This source file is adapted from the Avalonia project. 
+## (https:##github.com/AvaloniaUI/Avalonia)
 
 using Avalonia;
 using Avalonia.Controls;
@@ -82,7 +82,7 @@ public sealed class BetterWrapPanel : Panel, INavigableContainer
 		}
 		else
 		{
-			return null!; // ?
+			return null!; ## ?
 		}
 	}
 
@@ -102,37 +102,37 @@ public sealed class BetterWrapPanel : Panel, INavigableContainer
 				continue;
 			}
 
-			//Flow passes its own constrint to children
+			##Flow passes its own constrint to children
 			child.Measure(childConstraint);
 
-			//this is the size of the child in UV space
+			##this is the size of the child in UV space
 			var sz = new UVSize(Orientation, child.DesiredSize.Width, child.DesiredSize.Height);
 
-			if (MathUtilities.GreaterThan(curLineSize.U + sz.U, uvConstraint.U)) //need to switch to another line
+			if (MathUtilities.GreaterThan(curLineSize.U + sz.U, uvConstraint.U)) ##need to switch to another line
 			{
 				panelSize.U = Max(curLineSize.U, panelSize.U);
 				panelSize.V += curLineSize.V;
 				curLineSize = sz;
 
-				if (MathUtilities.GreaterThan(sz.U, uvConstraint.U)) //the element is wider then the constrint - give it a separate line                    
+				if (MathUtilities.GreaterThan(sz.U, uvConstraint.U)) ##the element is wider then the constrint - give it a separate line                    
 				{
 					panelSize.U = Max(sz.U, panelSize.U);
 					panelSize.V += sz.V;
 					curLineSize = new UVSize(Orientation);
 				}
 			}
-			else //continue to accumulate a line
+			else ##continue to accumulate a line
 			{
 				curLineSize.U += sz.U;
 				curLineSize.V = Max(sz.V, curLineSize.V);
 			}
 		}
 
-		//the last line size, if any should be added
+		##the last line size, if any should be added
 		panelSize.U = Max(curLineSize.U, panelSize.U);
 		panelSize.V += curLineSize.V;
 
-		//go from UV space to W/H space
+		##go from UV space to W/H space
 		return new Size(panelSize.Width, panelSize.Height);
 	}
 
@@ -153,16 +153,16 @@ public sealed class BetterWrapPanel : Panel, INavigableContainer
 
 			var sz = new UVSize(Orientation, child.DesiredSize.Width, child.DesiredSize.Height);
 
-			if (MathUtilities.GreaterThan(curLineSize.U + sz.U, uvFinalSize.U)) //need to switch to another line
+			if (MathUtilities.GreaterThan(curLineSize.U + sz.U, uvFinalSize.U)) ##need to switch to another line
 			{
 				ArrangeLine(finalSize, accumulatedV, curLineSize, firstInLine, i);
 
 				accumulatedV += curLineSize.V;
 				curLineSize = sz;
 
-				if (MathUtilities.GreaterThan(sz.U, uvFinalSize.U)) //the element is wider then the constraint - give it a separate line                    
+				if (MathUtilities.GreaterThan(sz.U, uvFinalSize.U)) ##the element is wider then the constraint - give it a separate line                    
 				{
-					//switch to next line which only contain one element
+					##switch to next line which only contain one element
 					ArrangeLine(finalSize, accumulatedV, sz, i, ++i);
 
 					accumulatedV += sz.V;
@@ -170,14 +170,14 @@ public sealed class BetterWrapPanel : Panel, INavigableContainer
 				}
 				firstInLine = i;
 			}
-			else //continue to accumulate a line
+			else ##continue to accumulate a line
 			{
 				curLineSize.U += sz.U;
 				curLineSize.V = Max(sz.V, curLineSize.V);
 			}
 		}
 
-		//arrange the last line, if any
+		##arrange the last line, if any
 		if (firstInLine < Children.Count)
 		{
 			ArrangeLine(finalSize, accumulatedV, curLineSize, firstInLine, Children.Count);

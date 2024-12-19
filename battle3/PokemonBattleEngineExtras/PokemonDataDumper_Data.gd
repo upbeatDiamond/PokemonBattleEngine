@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
+using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.DefaultData;
 using System.Collections.Generic;
 
@@ -662,21 +662,21 @@ internal static partial class PokemonDataDumper
 			PBEMove.Fly,
 			PBEMove.Surf,
 			PBEMove.Strength,
-			PBEMove.None, // Defog/Whirlpool - code will apply the right one
-            PBEMove.RockSmash,
+			PBEMove.None, ## Defog/Whirlpool - code will apply the right one
+			PBEMove.RockSmash,
 			PBEMove.Waterfall,
 			PBEMove.RockClimb
 		};
-	// These tutor moves are copied from overlay_0005.bin address 0x2FF64 to ram address 0x02200CE4 on each map load (USA offsets)
-	// The tutor compatibility is at the end of the table (0x3012C and 0x02200EAC [USA offsets]), starting with Bulbasaur and ending with Arceus (no form entries), and each compatibility is a bitfield of 5 bytes
-	// Each tutor move entry is 0xC bytes:
-	// u16 moveId
-	// u8 redShard
-	// u8 blueShard
-	// u8 yellowShard
-	// u8 greenShard
-	// u16 unk1
-	// u32 areaId (0 = Route 212, 1 = Survival Area, 2 = Snowpoint City)
+	## These tutor moves are copied from overlay_0005.bin address 0x2FF64 to ram address 0x02200CE4 on each map load (USA offsets)
+	## The tutor compatibility is at the end of the table (0x3012C and 0x02200EAC [USA offsets]), starting with Bulbasaur and ending with Arceus (no form entries), and each compatibility is a bitfield of 5 bytes
+	## Each tutor move entry is 0xC bytes:
+	## u16 moveId
+	## u8 redShard
+	## u8 blueShard
+	## u8 yellowShard
+	## u8 greenShard
+	## u16 unk1
+	## u32 areaId (0 = Route 212, 1 = Survival Area, 2 = Snowpoint City)
 	private static readonly PBEMove[] _ptTutorMoves = new PBEMove[38]
 		{
 			PBEMove.Dive,
@@ -718,11 +718,11 @@ internal static partial class PokemonDataDumper
 			PBEMove.Swift,
 			PBEMove.Uproar
 		};
-	// These tutor moves are decompressed to memory (ram address 0x022093E0 in HG, 0x022093F0 in SS) on each map load (USA offsets)
-	// Each tutor move entry is 0x4 bytes:
-	// u16 moveId
-	// u8 bpCost
-	// u8 areaId (0 = Frontier Access [top left tutor], 1 = Frontier Access [top right tutor], 2 = Frontier Access [bottom right tutor], 3 = Ilex Forest [Headbutt tutor])
+	## These tutor moves are decompressed to memory (ram address 0x022093E0 in HG, 0x022093F0 in SS) on each map load (USA offsets)
+	## Each tutor move entry is 0x4 bytes:
+	## u16 moveId
+	## u8 bpCost
+	## u8 areaId (0 = Frontier Access [top left tutor], 1 = Frontier Access [top right tutor], 2 = Frontier Access [bottom right tutor], 3 = Ilex Forest [Headbutt tutor])
 	private static readonly PBEMove[] _hgssTutorMoves = new PBEMove[52]
 		{
 			PBEMove.Dive,
@@ -942,16 +942,16 @@ internal static partial class PokemonDataDumper
 			PBEMove.HydroCannon,
 			PBEMove.DracoMeteor
 		};
-	// These tutor moves are decompressed to memory (ram address 0x021D0B38 in B2, 0x021D0B6C in W2) on each map load (USA offsets)
-	// For some reason, the location order in this table is different from the Pokémon's compatibility (this table is [Humilau,Driftveil,Nacrene,Lentimas] but in Pokémon data it is [Driftveil,Lentimas,Humilau,Nacrene])
-	// Each tutor move entry is 0xC bytes:
-	// u32 moveId
-	// u32 shardCost
-	// u32 indexInList
+	## These tutor moves are decompressed to memory (ram address 0x021D0B38 in B2, 0x021D0B6C in W2) on each map load (USA offsets)
+	## For some reason, the location order in this table is different from the Pokémon's compatibility (this table is [Humilau,Driftveil,Nacrene,Lentimas] but in Pokémon data it is [Driftveil,Lentimas,Humilau,Nacrene])
+	## Each tutor move entry is 0xC bytes:
+	## u32 moveId
+	## u32 shardCost
+	## u32 indexInList
 	private static readonly PBEMove[][] _b2w2TutorMoves = new PBEMove[4][]
 		{
-			new PBEMove[15] // Driftveil City
-            {
+			new PBEMove[15] ## Driftveil City
+			{
 				PBEMove.BugBite,
 				PBEMove.Covet,
 				PBEMove.SuperFang,
@@ -968,8 +968,8 @@ internal static partial class PokemonDataDumper
 				PBEMove.FirePunch,
 				PBEMove.IcePunch
 			},
-			new PBEMove[17] // Lentimas Town
-            {
+			new PBEMove[17] ## Lentimas Town
+			{
 				PBEMove.MagicCoat,
 				PBEMove.Block,
 				PBEMove.EarthPower,
@@ -988,8 +988,8 @@ internal static partial class PokemonDataDumper
 				PBEMove.HyperVoice,
 				PBEMove.IronTail
 			},
-			new PBEMove[13] // Humilau City
-            {
+			new PBEMove[13] ## Humilau City
+			{
 				PBEMove.Bind,
 				PBEMove.Snore,
 				PBEMove.KnockOff,
@@ -1004,8 +1004,8 @@ internal static partial class PokemonDataDumper
 				PBEMove.DrainPunch,
 				PBEMove.Roost
 			},
-			new PBEMove[15] // Nacrene City
-            {
+			new PBEMove[15] ## Nacrene City
+			{
 				PBEMove.GastroAcid,
 				PBEMove.WorrySeed,
 				PBEMove.Spite,

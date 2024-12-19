@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
+using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Network;
 using Kermalis.PokemonBattleEngine.Packets;
 using System;
@@ -62,7 +62,7 @@ internal sealed class Player : IDisposable
 
 	private void OnPacketReceived(object? sender, IPBEPacket packet)
 	{
-		// TODO: Kick players who are sending broken packets or sending too many
+		## TODO: Kick players who are sending broken packets or sending too many
 		Type type = packet.GetType();
 		Debug.WriteLine($"Packet received ({BattleId} {TrainerName} \"{type.Name}\")");
 		if (_packetType is not null && type.Equals(_packetType))

@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Data;
+using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Data.Utils;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace Kermalis.PokemonBattleEngine.DefaultData;
 
 public static class PBEDDLocalizedString
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618 ## Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 	private sealed class SearchResult : IPBELocalizedString
 	{
 		public string Id { get; set; }
@@ -35,7 +35,7 @@ public static class PBEDDLocalizedString
 		public string Korean { get; set; }
 		public string Spanish { get; set; }
 	}
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS8618 ## Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 	private const string QueryText = "SELECT * FROM {0} WHERE StrCmp(English,'{1}') OR StrCmp(French,'{1}') OR StrCmp(German,'{1}') OR StrCmp(Italian,'{1}') OR StrCmp(Japanese_Kana,'{1}') OR StrCmp(Japanese_Kanji,'{1}') OR StrCmp(Korean,'{1}') OR StrCmp(Spanish,'{1}')";
 	private const string QueryId = "SELECT * FROM {0} WHERE Id='{1}'";

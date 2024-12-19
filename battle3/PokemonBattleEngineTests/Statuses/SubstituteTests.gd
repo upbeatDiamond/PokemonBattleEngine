@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Xunit;
 using Xunit.Abstractions;
@@ -46,9 +46,9 @@ public class SubstituteTests
 
 		battle.RunTurn();
 
-		Assert.True(battle.VerifyStatus2Happened(kecleon, kecleon, PBEStatus2.Substitute, PBEStatusAction.Added) // Substitute added
-			&& !kecleon.Status2.HasFlag(PBEStatus2.Substitute) // Substitute broke
-			&& kecleon.Type1 == PBEType.Normal && kecleon.Type2 == PBEType.None); // ColorChange not activated
+		Assert.True(battle.VerifyStatus2Happened(kecleon, kecleon, PBEStatus2.Substitute, PBEStatusAction.Added) ## Substitute added
+			&& !kecleon.Status2.HasFlag(PBEStatus2.Substitute) ## Substitute broke
+			&& kecleon.Type1 == PBEType.Normal && kecleon.Type2 == PBEType.None); ## ColorChange not activated
 		#endregion
 
 		#region Cleanup

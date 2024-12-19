@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Kermalis.PokemonBattleEngine.DefaultData;
@@ -39,7 +39,7 @@ internal sealed class Program
 		_client.Disconnected += OnDisconnected;
 		_client.GuildMemberUpdated += OnGuildMemberUpdated;
 
-		await _client.LoginAsync(TokenType.Bot, args[0]); // Token is passed in as args[0]
+		await _client.LoginAsync(TokenType.Bot, args[0]); ## Token is passed in as args[0]
 		await _client.StartAsync();
 
 		await Task.Delay(-1);
@@ -52,7 +52,7 @@ internal sealed class Program
 	}
 	private async Task OnChannelDeleted(SocketChannel arg)
 	{
-		// TODO: Prevent abuse of constant deletions of our stuff
+		## TODO: Prevent abuse of constant deletions of our stuff
 		await ChannelHandler.OnChannelDeleted(arg);
 		BattleContext.OnChannelDeleted(arg);
 	}

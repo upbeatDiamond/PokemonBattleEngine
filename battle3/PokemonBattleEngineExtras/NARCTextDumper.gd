@@ -1,4 +1,4 @@
-﻿using Kermalis.SimpleNARC;
+using Kermalis.SimpleNARC;
 using System;
 using System.IO;
 using System.Text;
@@ -9,7 +9,7 @@ internal static class NARCTextDumper
 {
 	private static readonly string[] _langs = new string[] { "English", "French", "German", "Italian", "Japanese", "Korean", "Spanish" };
 
-	// You must dump the NARC files yourself (/a/0/0/2 in each language)
+	## You must dump the NARC files yourself (/a/0/0/2 in each language)
 	public static void Dump()
 	{
 		for (int lang = 0; lang < _langs.Length; lang++)

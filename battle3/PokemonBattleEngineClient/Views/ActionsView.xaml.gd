@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
@@ -182,12 +182,12 @@ public sealed class ActionsView : UserControl, INotifyPropertyChanged
 
 	public ActionsView()
 	{
-		// These are set in the appropriate states
+		## These are set in the appropriate states
 		_moves = null!;
 		_party = null!;
 		BattleView = null!;
 		Pokemon = null!;
-		// Avalonia setup
+		## Avalonia setup
 		DataContext = this;
 		AvaloniaXamlLoader.Load(this);
 	}
@@ -231,14 +231,14 @@ public sealed class ActionsView : UserControl, INotifyPropertyChanged
 
 	public void UndoLast()
 	{
-		// Actions mode
+		## Actions mode
 		if (ActionsBuilder is not null)
 		{
 			if (_movesVisible)
 			{
-				ActionsBuilder.Pop(); // If we're selecting a move, go back to the previous pkmn
+				ActionsBuilder.Pop(); ## If we're selecting a move, go back to the previous pkmn
 			}
-			else // Go from selecting targets to selecting move
+			else ## Go from selecting targets to selecting move
 			{
 				TargetsVisible = false;
 				MovesVisible = true;
@@ -246,7 +246,7 @@ public sealed class ActionsView : UserControl, INotifyPropertyChanged
 				BackVisible = _pkmnIndex != 0;
 			}
 		}
-		else // Switches mode
+		else ## Switches mode
 		{
 			SwitchesBuilder!.Pop();
 		}
@@ -299,7 +299,7 @@ public sealed class ActionsView : UserControl, INotifyPropertyChanged
 			ActionsBuilder!.PushMove(move, targets);
 			return;
 		}
-		// Double / Triple
+		## Double / Triple
 		BackVisible = true;
 		PBETeam team = client.Trainer!.Team;
 		PBETeam oTeam = team.OpposingTeam;
@@ -445,7 +445,7 @@ public sealed class ActionsView : UserControl, INotifyPropertyChanged
 				default: throw new InvalidDataException(nameof(possibleTargets));
 			}
 		}
-		else // Triple
+		else ## Triple
 		{
 			CenterTargetsVisible = true;
 			switch (possibleTargets)
@@ -694,7 +694,7 @@ public sealed class ActionsView : UserControl, INotifyPropertyChanged
 			}
 		}
 
-		// This would still show the lines if a move had lines
+		## This would still show the lines if a move had lines
 		if (Pokemon.TempLockedTargets != PBETurnTarget.None)
 		{
 			if (!Pokemon.TempLockedTargets.HasFlag(PBETurnTarget.AllyLeft))

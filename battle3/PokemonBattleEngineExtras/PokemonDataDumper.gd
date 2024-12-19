@@ -1,4 +1,4 @@
-﻿using Kermalis.EndianBinaryIO;
+using Kermalis.EndianBinaryIO;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Data.Utils;
 using Kermalis.PokemonBattleEngine.DefaultData;
@@ -13,28 +13,28 @@ namespace Kermalis.PokemonBattleEngineExtras;
 
 internal static partial class PokemonDataDumper
 {
-	// You must dump everything yourself
-	// The GBA ROMs must all be USA v1.0
-	// Colo and XD must be USA
-	// DPPt dumps use overlay files which may or may not have different offsets depending on the region, so just keep in mind I have USA versions of each game
-	// HGSS/Gen5 dumps should work across all regions
-	//
-	// Colo and XD level-up moves are in common.fsys/common_rel.fdat
-	//
-	// D, P, and Pt level-up move NARC is /poketool/personal/wotbl.narc (D and P have identical level-up move NARCs)
-	// D, P, and Pt egg moves are in overlay/overlay_0005.bin
-	// Pt TMHM moves are in the Pokémon data NARC which is /poketool/personal/pl_personal.narc (Pt changed no TMHM compatibility from DP so I use it alone)
-	// Pt tutor compatibility is in overlay/overlay_0005.bin
-	// HG and SS level-up move NARC is /a/0/3/3 (HG and SS have identical level-up move NARCs)
-	// HG and SS TMHM moves are in the Pokémon data NARC which is /a/0/0/2 (HG and SS have identical Pokémon data NARCs)
-	// HG and SS tutor compatibility is in /fielddata/wazaoshie/waza_oshie.bin (HG and SS have identical tutor compatibility)
-	// HG and SS egg move NARC is /a/2/2/9 (HG and SS have identical egg move NARCs)
-	//
-	// B2 and W2 evolution NARC is /a/0/1/9 (B2 and W2 have identical evolution NARCs)
-	// B, W, B2, and W2 level-up move NARC is /a/0/1/8 (B and W have identical level-up move NARCs) (B2 and W2 have identical level-up move NARCs)
-	// B, W, B2, and W2 TMHM moves are in the Pokémon data NARC which is /a/0/1/6 (B and W have identical Pokémon data NARCs) (B2 and W2 have identical Pokémon data NARCs)
-	// B2 and W2 tutor compatibility is in the Pokémon data NARC which is /a/0/1/6 (B2 and W2 have identical Pokémon data NARCs)
-	// B and W egg move NARC is /a/1/2/3, B2 and W2 egg move NARC is /a/1/2/4 (B, W, B2, and W2 have identical egg move NARCs)
+	## You must dump everything yourself
+	## The GBA ROMs must all be USA v1.0
+	## Colo and XD must be USA
+	## DPPt dumps use overlay files which may or may not have different offsets depending on the region, so just keep in mind I have USA versions of each game
+	## HGSS/Gen5 dumps should work across all regions
+	##
+	## Colo and XD level-up moves are in common.fsys/common_rel.fdat
+	##
+	## D, P, and Pt level-up move NARC is /poketool/personal/wotbl.narc (D and P have identical level-up move NARCs)
+	## D, P, and Pt egg moves are in overlay/overlay_0005.bin
+	## Pt TMHM moves are in the Pokémon data NARC which is /poketool/personal/pl_personal.narc (Pt changed no TMHM compatibility from DP so I use it alone)
+	## Pt tutor compatibility is in overlay/overlay_0005.bin
+	## HG and SS level-up move NARC is /a/0/3/3 (HG and SS have identical level-up move NARCs)
+	## HG and SS TMHM moves are in the Pokémon data NARC which is /a/0/0/2 (HG and SS have identical Pokémon data NARCs)
+	## HG and SS tutor compatibility is in /fielddata/wazaoshie/waza_oshie.bin (HG and SS have identical tutor compatibility)
+	## HG and SS egg move NARC is /a/2/2/9 (HG and SS have identical egg move NARCs)
+	##
+	## B2 and W2 evolution NARC is /a/0/1/9 (B2 and W2 have identical evolution NARCs)
+	## B, W, B2, and W2 level-up move NARC is /a/0/1/8 (B and W have identical level-up move NARCs) (B2 and W2 have identical level-up move NARCs)
+	## B, W, B2, and W2 TMHM moves are in the Pokémon data NARC which is /a/0/1/6 (B and W have identical Pokémon data NARCs) (B2 and W2 have identical Pokémon data NARCs)
+	## B2 and W2 tutor compatibility is in the Pokémon data NARC which is /a/0/1/6 (B2 and W2 have identical Pokémon data NARCs)
+	## B and W egg move NARC is /a/1/2/3, B2 and W2 egg move NARC is /a/1/2/4 (B, W, B2, and W2 have identical egg move NARCs)
 
 	private static Dictionary<(PBESpecies, PBEForm), Pokemon> _dict = null!;
 	private static EndianBinaryReader _r = null!;
@@ -177,7 +177,7 @@ internal static partial class PokemonDataDumper
 
 		for (int sp = 1; sp <= 708; sp++)
 		{
-			// Skip Egg, Bad Egg, and Pokéstar Studios Pokémon
+			## Skip Egg, Bad Egg, and Pokéstar Studios Pokémon
 			if (sp > 649 && sp < 685)
 			{
 				continue;
@@ -195,7 +195,7 @@ internal static partial class PokemonDataDumper
 				var pokedata = new EndianBinaryReader(s_p, endianness: Endianness.LittleEndian);
 				var evolution = new EndianBinaryReader(s_e, endianness: Endianness.LittleEndian);
 
-				// Pokedata
+				## Pokedata
 				pkmn.HP = pokedata.ReadByte(0x0);
 				pkmn.Attack = pokedata.ReadByte(0x1);
 				pkmn.Defense = pokedata.ReadByte(0x2);
@@ -222,11 +222,11 @@ internal static partial class PokemonDataDumper
 				pkmn.FleeRate = pokedata.ReadByte(0x1B);
 				pkmn.BaseEXPYield = pokedata.ReadUInt16(0x22);
 				pkmn.Weight = MathF.Round(pokedata.ReadUInt16(0x26) * 0.1f, 1);
-				// Evolution
+				## Evolution
 				for (int i = 0; i < 7; i++)
 				{
 					ushort method = evolution.ReadUInt16();
-					evolution.ReadUInt16(); // Param
+					evolution.ReadUInt16(); ## Param
 					var evo = (PBESpecies)evolution.ReadUInt16();
 					if (method != 0)
 					{
@@ -239,16 +239,16 @@ internal static partial class PokemonDataDumper
 
 	private static void Gen3_LevelUp()
 	{
-#pragma warning disable CS8321 // Local function is declared but never used
+#pragma warning disable CS8321 ## Local function is declared but never used
 		for (int sp = 1; sp <= 411; sp++)
 		{
-			// Gen 2 Unown slots are ignored in gen 3
+			## Gen 2 Unown slots are ignored in gen 3
 			if (sp > 251 && sp < 277)
 			{
 				continue;
 			}
 
-			// It is the same in Ruby, Sapphire, Colo, and XD; the others have some differences
+			## It is the same in Ruby, Sapphire, Colo, and XD; the others have some differences
 			_r.Stream.Position = 0x207BC8 + (sizeof(uint) * sp);
 			_s.Stream.Position = 0x207B58 + (sizeof(uint) * sp);
 			_fr.Stream.Position = 0x25D7B4 + (sizeof(uint) * sp);
@@ -275,7 +275,7 @@ internal static partial class PokemonDataDumper
 				}
 			}
 			ReadGBALevelUpMoves(_r, PBEDDMoveObtainMethod.LevelUp_RSColoXD);
-			//ReadGBALevelUpMoves(_s, PBEDDMoveObtainMethod.LevelUp_RSColoXD);
+			##ReadGBALevelUpMoves(_s, PBEDDMoveObtainMethod.LevelUp_RSColoXD);
 			ReadGBALevelUpMoves(_fr, PBEDDMoveObtainMethod.LevelUp_FR);
 			ReadGBALevelUpMoves(_lg, PBEDDMoveObtainMethod.LevelUp_LG);
 			ReadGBALevelUpMoves(_e, PBEDDMoveObtainMethod.LevelUp_E);
@@ -285,7 +285,7 @@ internal static partial class PokemonDataDumper
 				for (int i = 0; i < 17; i++)
 				{
 					byte level = reader.ReadByte();
-					reader.ReadByte(); // Padding
+					reader.ReadByte(); ## Padding
 					var move = (PBEMove)reader.ReadUInt16();
 					if (move == PBEMove.None)
 					{
@@ -297,10 +297,10 @@ internal static partial class PokemonDataDumper
 					}
 				}
 			}
-			//ReadGCLevelUpMoves(_coloCommonRel, PBEDDMoveObtainMethod.LevelUp_RSColoXD);
-			//ReadGCLevelUpMoves(_xdCommonRel, PBEDDMoveObtainMethod.LevelUp_RSColoXD);
+			##ReadGCLevelUpMoves(_coloCommonRel, PBEDDMoveObtainMethod.LevelUp_RSColoXD);
+			##ReadGCLevelUpMoves(_xdCommonRel, PBEDDMoveObtainMethod.LevelUp_RSColoXD);
 		}
-#pragma warning restore CS8321 // Local function is declared but never used
+#pragma warning restore CS8321 ## Local function is declared but never used
 	}
 	private static void Gen4_LevelUp()
 	{
@@ -310,7 +310,7 @@ internal static partial class PokemonDataDumper
 
 		for (int sp = 1; sp <= 507; sp++)
 		{
-			// 494 is Egg, 495 is Bad Egg
+			## 494 is Egg, 495 is Bad Egg
 			if (sp == 494 || sp == 495)
 			{
 				continue;
@@ -338,7 +338,7 @@ internal static partial class PokemonDataDumper
 					}
 				}
 			}
-			// DP only has 0-500
+			## DP only has 0-500
 			if (sp <= 500)
 			{
 				ReadLevelUpMoves(dp[sp], PBEDDMoveObtainMethod.LevelUp_DP);
@@ -375,12 +375,12 @@ internal static partial class PokemonDataDumper
 					}
 				}
 			}
-			// BW only has 0-667 (no Egg or Bad Egg)
+			## BW only has 0-667 (no Egg or Bad Egg)
 			if (sp <= 667)
 			{
 				ReadLevelUpMoves(bw[sp], true);
 			}
-			// Skip Egg, Bad Egg, and Pokéstar Studios Pokémon in B2W2
+			## Skip Egg, Bad Egg, and Pokéstar Studios Pokémon in B2W2
 			if (sp <= 649 || sp >= 685)
 			{
 				ReadLevelUpMoves(b2w2[sp], false);
@@ -390,16 +390,16 @@ internal static partial class PokemonDataDumper
 
 	private static void Gen3_TMHM()
 	{
-#pragma warning disable CS8321 // Local function is declared but never used
+#pragma warning disable CS8321 ## Local function is declared but never used
 		for (int sp = 1; sp <= 411; sp++)
 		{
-			// Gen 2 Unown slots are ignored in gen 3
+			## Gen 2 Unown slots are ignored in gen 3
 			if (sp > 251 && sp < 277)
 			{
 				continue;
 			}
 
-			// It is the same across all of gen 3, so I will only read one
+			## It is the same across all of gen 3, so I will only read one
 			_r.Stream.Position = 0x1FD0F0 + (8 * sp);
 			_s.Stream.Position = 0x1FD080 + (8 * sp);
 			_fr.Stream.Position = 0x252BC8 + (8 * sp);
@@ -426,10 +426,10 @@ internal static partial class PokemonDataDumper
 				}
 			}
 			ReadGBATMHM(_r);
-			//ReadGBATMHM(_s);
-			//ReadGBATMHM(_fr);
-			//ReadGBATMHM(_lg);
-			//ReadGBATMHM(_e);
+			##ReadGBATMHM(_s);
+			##ReadGBATMHM(_fr);
+			##ReadGBATMHM(_lg);
+			##ReadGBATMHM(_e);
 			void ReadGCTMHM(EndianBinaryReader reader)
 			{
 				(PBESpecies, PBEForm) key = GetGen3Key(reader, sp);
@@ -441,10 +441,10 @@ internal static partial class PokemonDataDumper
 					}
 				}
 			}
-			//ReadGCTMHM(_coloCommonRel);
-			//ReadGCTMHM(_xdCommonRel);
+			##ReadGCTMHM(_coloCommonRel);
+			##ReadGCTMHM(_xdCommonRel);
 		}
-#pragma warning restore CS8321 // Local function is declared but never used
+#pragma warning restore CS8321 ## Local function is declared but never used
 	}
 	private static void Gen4_TMHM()
 	{
@@ -453,7 +453,7 @@ internal static partial class PokemonDataDumper
 
 		for (int sp = 1; sp <= 507; sp++)
 		{
-			// 494 is Egg, 495 is Bad Egg
+			## 494 is Egg, 495 is Bad Egg
 			if (sp == 494 || sp == 495)
 			{
 				continue;
@@ -529,12 +529,12 @@ internal static partial class PokemonDataDumper
 					}
 				}
 			}
-			// BW only has 0-667 (no Egg or Bad Egg)
+			## BW only has 0-667 (no Egg or Bad Egg)
 			if (sp <= 667)
 			{
 				ReadTMHMMoves(bw[sp], true);
 			}
-			// Skip Egg, Bad Egg, and Pokéstar Studios Pokémon in B2W2
+			## Skip Egg, Bad Egg, and Pokéstar Studios Pokémon in B2W2
 			if (sp <= 649 || sp >= 685)
 			{
 				ReadTMHMMoves(b2w2[sp], false);
@@ -546,13 +546,13 @@ internal static partial class PokemonDataDumper
 	{
 		for (int sp = 1; sp <= 411; sp++)
 		{
-			// Gen 2 Unown slots are ignored in gen 3
+			## Gen 2 Unown slots are ignored in gen 3
 			if (sp > 251 && sp < 277)
 			{
 				continue;
 			}
 
-			// It is the same in FR and LG, so I will only read one
+			## It is the same in FR and LG, so I will only read one
 			_fr.Stream.Position = 0x459B7E + (sizeof(ushort) * sp);
 			_lg.Stream.Position = 0x45959E + (sizeof(ushort) * sp);
 			_e.Stream.Position = 0x615048 + (sizeof(uint) * sp);
@@ -570,7 +570,7 @@ internal static partial class PokemonDataDumper
 				}
 			}
 			ReadTutorMoves(_fr, _frlgTutorMoves, PBEDDMoveObtainMethod.MoveTutor_FRLG);
-			//ReadTutorMoves(_lg, frlgTutorMoves, PBEDDMoveObtainMethod.MoveTutor_FRLG);
+			##ReadTutorMoves(_lg, frlgTutorMoves, PBEDDMoveObtainMethod.MoveTutor_FRLG);
 			ReadTutorMoves(_e, _emeraldTutorMoves, PBEDDMoveObtainMethod.MoveTutor_E);
 		}
 	}
@@ -578,7 +578,7 @@ internal static partial class PokemonDataDumper
 	{
 		for (int sp = 1; sp <= 411; sp++)
 		{
-			// Gen 2 Unown slots are ignored in gen 3
+			## Gen 2 Unown slots are ignored in gen 3
 			if (sp > 251 && sp < 277)
 			{
 				continue;
@@ -625,7 +625,7 @@ internal static partial class PokemonDataDumper
 			var r = new EndianBinaryReader(fs, endianness: Endianness.LittleEndian);
 			Span<byte> bytes = stackalloc byte[8];
 
-			for (int sp = 1; sp <= 505; sp++) // Includes forms but not eggs
+			for (int sp = 1; sp <= 505; sp++) ## Includes forms but not eggs
 			{
 				(PBESpecies, PBEForm) key = sp > 493 ? _gen4SpeciesIndexToPBESpecies[sp + 2] : ((PBESpecies)sp, 0);
 				r.ReadBytes(bytes);
@@ -681,7 +681,7 @@ internal static partial class PokemonDataDumper
 					}
 				}
 			}
-			// BW only has 0-667 (no Egg or Bad Egg)
+			## BW only has 0-667 (no Egg or Bad Egg)
 			if (sp <= 667)
 			{
 				using (var ms = new MemoryStream(bw[sp]))
@@ -690,7 +690,7 @@ internal static partial class PokemonDataDumper
 					ReadFreeTutorMoves(reader, true);
 				}
 			}
-			// Skip Egg, Bad Egg, and Pokéstar Studios Pokémon
+			## Skip Egg, Bad Egg, and Pokéstar Studios Pokémon
 			if (sp <= 649 || sp >= 685)
 			{
 				using (var ms = new MemoryStream(b2w2[sp]))
@@ -715,13 +715,13 @@ internal static partial class PokemonDataDumper
 			var pt = new EndianBinaryReader(s_pt, endianness: Endianness.LittleEndian);
 			var hgss = new EndianBinaryReader(s_hgss, endianness: Endianness.LittleEndian);
 
-			// The table is the same in all five GBA games, so I will only read one
+			## The table is the same in all five GBA games, so I will only read one
 			_r.Stream.Position = 0x2091DC;
 			_s.Stream.Position = 0x20916C;
 			_fr.Stream.Position = 0x25EF0C;
 			_lg.Stream.Position = 0x25EEEC;
 			_e.Stream.Position = 0x32ADD8;
-			// The table is the same across DPPt, so I will only read one
+			## The table is the same across DPPt, so I will only read one
 			d.Stream.Position = 0x20668;
 			p.Stream.Position = 0x20668;
 			pt.Stream.Position = 0x29222;
@@ -748,13 +748,13 @@ internal static partial class PokemonDataDumper
 				}
 			}
 			ReadEggMoves(_r, true, PBEDDMoveObtainMethod.EggMove_RSFRLGE);
-			//ReadEggMoves(_s, true, PBEDDMoveObtainMethod.EggMove_RSFRLGE);
-			//ReadEggMoves(_fr, true, PBEDDMoveObtainMethod.EggMove_RSFRLGE);
-			//ReadEggMoves(_lg, true, PBEDDMoveObtainMethod.EggMove_RSFRLGE);
-			//ReadEggMoves(_e, true, PBEDDMoveObtainMethod.EggMove_RSFRLGE);
+			##ReadEggMoves(_s, true, PBEDDMoveObtainMethod.EggMove_RSFRLGE);
+			##ReadEggMoves(_fr, true, PBEDDMoveObtainMethod.EggMove_RSFRLGE);
+			##ReadEggMoves(_lg, true, PBEDDMoveObtainMethod.EggMove_RSFRLGE);
+			##ReadEggMoves(_e, true, PBEDDMoveObtainMethod.EggMove_RSFRLGE);
 			ReadEggMoves(d, false, PBEDDMoveObtainMethod.EggMove_DPPt);
-			//ReadEggMoves(p, false, PBEDDMoveObtainMethod.EggMove_DPPt);
-			//ReadEggMoves(pt, false, PBEDDMoveObtainMethod.EggMove_DPPt);
+			##ReadEggMoves(p, false, PBEDDMoveObtainMethod.EggMove_DPPt);
+			##ReadEggMoves(pt, false, PBEDDMoveObtainMethod.EggMove_DPPt);
 			ReadEggMoves(hgss, false, PBEDDMoveObtainMethod.EggMove_HGSS);
 		}
 	}
@@ -943,7 +943,7 @@ internal static partial class PokemonDataDumper
 			PBEDDMoveObtainMethod.LevelUp_HGSS,
 		};
 
-		// Nincada evolves starting at level 20
+		## Nincada evolves starting at level 20
 		foreach (KeyValuePair<(PBEMove, byte), PBEDDMoveObtainMethod> kvp in _dict[(PBESpecies.Ninjask, 0)].LevelUpMoves)
 		{
 			(PBEMove move, byte level) = kvp.Key;
@@ -1015,7 +1015,7 @@ internal static partial class PokemonDataDumper
 		AddOtherMove((PBESpecies.Torterra, 0), PBEMove.FrenzyPlant, flag);
 		AddOtherMove((PBESpecies.Infernape, 0), PBEMove.BlastBurn, flag);
 		AddOtherMove((PBESpecies.Empoleon, 0), PBEMove.HydroCannon, flag);
-		// Draco Meteor is taught to any Dragon type, including Arceus_Dragon
+		## Draco Meteor is taught to any Dragon type, including Arceus_Dragon
 		foreach (KeyValuePair<(PBESpecies, PBEForm), Pokemon> pkmn in _dict.Where(kvp => kvp.Key.Item1 <= PBESpecies.Arceus && kvp.Value.HasType(PBEType.Dragon)))
 		{
 			AddOtherMove(pkmn.Key, PBEMove.DracoMeteor, flag);
@@ -1064,7 +1064,7 @@ internal static partial class PokemonDataDumper
 	private static void WriteToDatabase(SqliteCommand cmd)
 	{
 		const char Split1Char = '+';
-		const char Split2Char = '|'; // Don't use commas since flags enums do
+		const char Split2Char = '|'; ## Don't use commas since flags enums do
 
 		cmd.CommandText = "DROP TABLE IF EXISTS PokemonData";
 		cmd.ExecuteNonQuery();
@@ -1095,7 +1095,7 @@ internal static partial class PokemonDataDumper
 			cmd.Parameters.AddWithValue("@12", pkmn.BaseEXPYield);
 			cmd.Parameters.AddWithValue("@13", pkmn.CatchRate);
 			cmd.Parameters.AddWithValue("@14", pkmn.FleeRate);
-			cmd.Parameters.AddWithValue("@15", pkmn.Weight.ToString("0.0")); // Gets weird if you don't truncate (like 9.9 becomes 9.89999999999999)
+			cmd.Parameters.AddWithValue("@15", pkmn.Weight.ToString("0.0")); ## Gets weird if you don't truncate (like 9.9 becomes 9.89999999999999)
 			list.Clear();
 			foreach ((PBESpecies, PBEForm) key in pkmn.PreEvolutions)
 			{

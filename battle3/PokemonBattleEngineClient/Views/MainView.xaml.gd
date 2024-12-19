@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Kermalis.PokemonBattleEngine.Battle;
@@ -48,9 +48,9 @@ public sealed class MainView : UserControl, INotifyPropertyChanged
 	private readonly TextBox _name;
 	private readonly CheckBox _multi;
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618 ## Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 	public MainView()
-#pragma warning restore CS8618 // _connectText is set in ResetConnectButton()
+#pragma warning restore CS8618 ## _connectText is set in ResetConnectButton()
 	{
 		DataContext = this;
 		AvaloniaXamlLoader.Load(this);
@@ -94,7 +94,7 @@ public sealed class MainView : UserControl, INotifyPropertyChanged
 					}
 					else
 					{
-						// No need to dispose con because NetworkClient.Dispose disposes the same thing
+						## No need to dispose con because NetworkClient.Dispose disposes the same thing
 						var tup = (Tuple<PBEClient, PBEBattlePacket, byte>)arg;
 						Add(new NetworkClient(tup.Item1, tup.Item2, tup.Item3, $"MP {_battles.Count + 1}"));
 						ResetConnectButton();
@@ -117,8 +117,8 @@ public sealed class MainView : UserControl, INotifyPropertyChanged
 	public void WatchReplay()
 	{
 		const string path = "SinglePlayer Battle.pbereplay";
-		//const string path = @"C:\Users\Kermalis\Documents\Development\GitHub\PokemonBattleEngine\PokemonBattleEngineExtras\bin\Debug\netcoreapp3.1\AI Demo.pbereplay";
-		//const string path = @"C:\Users\Kermalis\Documents\Development\GitHub\PokeI\bin\Release\netcoreapp3.1\AI Final Replay.pbereplay";
+		##const string path = @"C:\Users\Kermalis\Documents\Development\GitHub\PokemonBattleEngine\PokemonBattleEngineExtras\bin\Debug\netcoreapp3.1\AI Demo.pbereplay";
+		##const string path = @"C:\Users\Kermalis\Documents\Development\GitHub\PokeI\bin\Release\netcoreapp3.1\AI Final Replay.pbereplay";
 		Add(new ReplayClient(path, $"Replay {_battles.Count + 1}"));
 	}
 	public void SinglePlayer(string battleType)
@@ -196,7 +196,7 @@ public sealed class MainView : UserControl, INotifyPropertyChanged
 		Add(new SinglePlayerClient(b, $"SP {_battles.Count + 1}"));
 	}
 
-	// TODO: Removing battles (with disposing)
+	## TODO: Removing battles (with disposing)
 	private void Add(BattleClient client)
 	{
 		_battles.Add(client);

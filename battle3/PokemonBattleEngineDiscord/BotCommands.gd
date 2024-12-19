@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Kermalis.PokemonBattleEngine.Battle;
@@ -201,8 +201,8 @@ public sealed class BotCommands : ModuleBase<SocketCommandContext>
 				switch (mData.Effect)
 				{
 					case PBEMoveEffect.Recoil: embed.AddField("Recoil", $"1/{mData.EffectParam} damage dealt"); break;
-					case PBEMoveEffect.Recoil__10PercentBurn: embed.AddField("Recoil", $"1/{mData.EffectParam} damage dealt"); break; // TODO: Burn chance
-					case PBEMoveEffect.Recoil__10PercentParalyze: embed.AddField("Recoil", $"1/{mData.EffectParam} damage dealt"); break; // TODO: Paralyze chance
+					case PBEMoveEffect.Recoil__10PercentBurn: embed.AddField("Recoil", $"1/{mData.EffectParam} damage dealt"); break; ## TODO: Burn chance
+					case PBEMoveEffect.Recoil__10PercentParalyze: embed.AddField("Recoil", $"1/{mData.EffectParam} damage dealt"); break; ## TODO: Paralyze chance
 					case PBEMoveEffect.Struggle: embed.AddField("Recoil", "1/4 user's max HP"); break;
 					case PBEMoveEffect.TODOMOVE: embed.AddField("**ATTENTION**", $"{moveName} is not yet implemented in Pokémon Battle Engine"); break;
 				}
@@ -219,7 +219,7 @@ public sealed class BotCommands : ModuleBase<SocketCommandContext>
 		[Alias("data")]
 		public async Task Info([Remainder] string input)
 		{
-			// Inputs for forms should be like "Giratina (Origin Forme)"
+			## Inputs for forms should be like "Giratina (Origin Forme)"
 			Match m = Regex.Match(input, @"^(\S+) \((.+)\)$");
 			string speciesName;
 			string? formName;
@@ -375,12 +375,12 @@ public sealed class BotCommands : ModuleBase<SocketCommandContext>
 			{
 				PBEType type = nType.Value;
 				string description = $"{_tableStart}{_tableStart}";
-				// Build columns
+				## Build columns
 				for (PBEType other = PBEType.None + 1; other < PBEType.MAX; other++)
 				{
 					description += $"|{Utils.TypeEmotes[other]}";
 				}
-				// Build rows
+				## Build rows
 				for (int i = 0; i < 2; i++)
 				{
 					bool doOffense = i == 0;
@@ -389,19 +389,19 @@ public sealed class BotCommands : ModuleBase<SocketCommandContext>
 					{
 						float d = PBETypeEffectiveness.GetEffectiveness(doOffense ? type : other, doOffense ? other : type);
 						string s;
-						if (d <= 0) // (-infinity, 0]
+						if (d <= 0) ## (-infinity, 0]
 						{
 							s = _ineffective;
 						}
-						else if (d < 1) // (0, 1)
+						else if (d < 1) ## (0, 1)
 						{
 							s = _notVeryEffective;
 						}
-						else if (d == 1) // [1, 1]
+						else if (d == 1) ## [1, 1]
 						{
 							s = _effective;
 						}
-						else // (1, infinity)
+						else ## (1, infinity)
 						{
 							s = _superEffective;
 						}
@@ -419,18 +419,18 @@ public sealed class BotCommands : ModuleBase<SocketCommandContext>
 			}
 		}
 
-		// BROKEN CUZ DISCORD CUTS OFF THE TABLE EVEN THOUGH YOU CAN SEND THE ENTIRE MESSAGE IN A CODE BLOCK
+		## BROKEN CUZ DISCORD CUTS OFF THE TABLE EVEN THOUGH YOU CAN SEND THE ENTIRE MESSAGE IN A CODE BLOCK
 		/*[Command("chart")]
 		[Alias("table")]
 		public async Task Chart()
 		{
 			string description = _tableStart;
-			// Build columns
+			## Build columns
 			for (PBEType def = PBEType.None + 1; def < PBEType.MAX; def++)
 			{
 				description += $"|{Utils.TypeEmotes[def]}";
 			}
-			// Build rows
+			## Build rows
 			for (PBEType atk = PBEType.None + 1; atk < PBEType.MAX; atk++)
 			{
 				description += $"\n{Utils.TypeEmotes[atk]}";
@@ -438,19 +438,19 @@ public sealed class BotCommands : ModuleBase<SocketCommandContext>
 				{
 					float d = PBETypeEffectiveness.GetEffectiveness(atk, def);
 					string s;
-					if (d <= 0) // (-infinity, 0]
+					if (d <= 0) ## (-infinity, 0]
 					{
 						s = _ineffective;
 					}
-					else if (d < 1) // (0, 1)
+					else if (d < 1) ## (0, 1)
 					{
 						s = _notVeryEffective;
 					}
-					else if (d == 1) // [1, 1]
+					else if (d == 1) ## [1, 1]
 					{
 						s = _effective;
 					}
-					else // (1, infinity)
+					else ## (1, infinity)
 					{
 						s = _superEffective;
 					}

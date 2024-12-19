@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Xunit;
 using Xunit.Abstractions;
@@ -62,14 +62,14 @@ public class AutoCenterTests
 		#endregion
 	}
 
-	// https://github.com/Kermalis/PokemonBattleEngine/issues/318
+	## https:##github.com/Kermalis/PokemonBattleEngine/issues/318
 	[Theory]
 	[InlineData(true)]
 	[InlineData(false)]
 	public void AutoCenter_Works_Despite_Available(bool faintLeft)
 	{
 		#region Setup
-		PBEDataProvider.GlobalRandom.Seed = 0; // Seed ensures protect doesn't fail
+		PBEDataProvider.GlobalRandom.Seed = 0; ## Seed ensures protect doesn't fail
 		PBESettings settings = PBESettings.DefaultSettings;
 
 		var p0L = new TestPokemonCollection(faintLeft ? 1 : 2);
@@ -148,7 +148,7 @@ public class AutoCenterTests
 	public void AutoCenter_ActivatesFromHazard()
 	{
 		#region Setup
-		PBEDataProvider.GlobalRandom.Seed = 2; // Seed ensures Regigigas doesn't flinch and Rock Slide hits
+		PBEDataProvider.GlobalRandom.Seed = 2; ## Seed ensures Regigigas doesn't flinch and Rock Slide hits
 		PBESettings settings = PBESettings.DefaultSettings;
 
 		var p0 = new TestPokemonCollection(5);
@@ -188,7 +188,7 @@ public class AutoCenterTests
 		PBEBattlePokemon budew = t1.Party[0];
 		PBEBattlePokemon butterfree = t1.Party[1];
 		PBEBattlePokemon sunkern = t1.Party[2];
-		happiny.HP = 1; // Set Happiny HP to 1 so it faints on switch
+		happiny.HP = 1; ## Set Happiny HP to 1 so it faints on switch
 		happiny.UpdateHPPercentage();
 
 		battle.Begin();

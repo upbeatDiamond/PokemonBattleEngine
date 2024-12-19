@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Data.Legality;
@@ -103,7 +103,7 @@ public sealed class TeamBuilderView : UserControl, INotifyPropertyChanged
 	private readonly string _teamPath;
 	private readonly Button _addPartyButton;
 	private readonly Button _removePartyButton;
-	// Avalonia selection is broken (as always) so I need to manually get the SelectedItem instead of using the bindings :))))))))))))))
+	## Avalonia selection is broken (as always) so I need to manually get the SelectedItem instead of using the bindings :))))))))))))))
 	private readonly ListBox _partyListBox;
 	private readonly ListBox _teamListBox;
 	private bool _ignoreComboBoxChanges = false;
@@ -199,9 +199,9 @@ public sealed class TeamBuilderView : UserControl, INotifyPropertyChanged
 		_ignoreComboBoxChanges = false;
 	}
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618 ## Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 	public TeamBuilderView()
-#pragma warning restore CS8618 // _team, _pkmn, _spriteUri
+#pragma warning restore CS8618 ## _team, _pkmn, _spriteUri
 	{
 		DataContext = this;
 		AvaloniaXamlLoader.Load(this);
@@ -274,13 +274,13 @@ public sealed class TeamBuilderView : UserControl, INotifyPropertyChanged
 	{
 		_team.Party.ToJsonFile(Path.Combine(_teamPath, $"{_team.Name}.json"));
 	}
-	// I love Avalonia :))))))))))
-	// Using it for years and still has the same problems
+	## I love Avalonia :))))))))))
+	## Using it for years and still has the same problems
 	public void AddPartyMember()
 	{
 		int index = _team.Party.Count;
 		_team.Party.AddRandom(true);
-		_partyListBox.Items = null; // How is it so broken still
+		_partyListBox.Items = null; ## How is it so broken still
 		_partyListBox.Items = _team.Party;
 		Pkmn = _team.Party[index];
 	}
@@ -323,7 +323,7 @@ public sealed class TeamBuilderView : UserControl, INotifyPropertyChanged
 	public void UpdateSprites()
 	{
 		SpriteUri = Utils.GetPokemonSpriteUri(_pkmn);
-		// Force redraw of minisprite
+		## Force redraw of minisprite
 		IControl c = _partyListBox.ItemContainerGenerator.ContainerFromIndex(_partyListBox.SelectedIndex);
 		if (c is ListBoxItem item)
 		{

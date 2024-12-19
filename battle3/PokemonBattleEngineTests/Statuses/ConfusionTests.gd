@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Xunit;
 using Xunit.Abstractions;
@@ -19,7 +19,7 @@ public class ConfusionTests
 	public void Confusion_Heal__Bug(bool bugFix)
 	{
 		#region Setup
-		PBEDataProvider.GlobalRandom.Seed = 0; // Seed ensures Swagger does not miss and Deoxys hurts itself
+		PBEDataProvider.GlobalRandom.Seed = 0; ## Seed ensures Swagger does not miss and Deoxys hurts itself
 		var settings = new PBESettings { BugFix = bugFix };
 		settings.MakeReadOnly();
 
@@ -54,12 +54,12 @@ public class ConfusionTests
 		if (settings.BugFix)
 		{
 			Assert.True(battle.VerifyItemHappened(deoxys, deoxys, PBEItem.SitrusBerry, PBEItemAction.Consumed)
-				&& deoxys.Item == PBEItem.None); // Healed
+				&& deoxys.Item == PBEItem.None); ## Healed
 		}
 		else
 		{
 			Assert.True(!battle.VerifyItemHappened(deoxys, deoxys, PBEItem.SitrusBerry, PBEItemAction.Consumed)
-				&& deoxys.Item == PBEItem.SitrusBerry); // Buggy
+				&& deoxys.Item == PBEItem.SitrusBerry); ## Buggy
 		}
 		#endregion
 
@@ -72,7 +72,7 @@ public class ConfusionTests
 	public void Confusion_Does_Not_Ignore_Sturdy()
 	{
 		#region Setup
-		PBEDataProvider.GlobalRandom.Seed = 0; // Seed ensures Swagger does not miss and Deoxys hurts itself
+		PBEDataProvider.GlobalRandom.Seed = 0; ## Seed ensures Swagger does not miss and Deoxys hurts itself
 		PBESettings settings = PBESettings.DefaultSettings;
 
 		var p0 = new TestPokemonCollection(1);

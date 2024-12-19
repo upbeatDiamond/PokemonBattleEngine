@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,7 +17,7 @@ public class PoisonHealTests
 	public void PoisonHeal_BadlyPoisoned_Counter_Works()
 	{
 		#region Setup
-		PBEDataProvider.GlobalRandom.Seed = 0; // Seed prevents Toxic from missing
+		PBEDataProvider.GlobalRandom.Seed = 0; ## Seed prevents Toxic from missing
 		PBESettings settings = PBESettings.DefaultSettings;
 
 		var p0 = new TestPokemonCollection(1);
@@ -46,11 +46,11 @@ public class PoisonHealTests
 
 		battle.RunTurn();
 
-		Assert.True(gliscor.Status1 == PBEStatus1.BadlyPoisoned // Was afflicted
-			&& !battle.VerifyAbilityHappened(gliscor, gliscor, PBEAbility.PoisonHeal, PBEAbilityAction.RestoredHP) // Did not activate
-			&& !battle.VerifyStatus1Happened(gliscor, gliscor, PBEStatus1.BadlyPoisoned, PBEStatusAction.Damage) // Did not activate
-			&& gliscor.Status1Counter == 2 // Counter still increments
-			&& gliscor.HPPercentage == 1); // Did not take damage
+		Assert.True(gliscor.Status1 == PBEStatus1.BadlyPoisoned ## Was afflicted
+			&& !battle.VerifyAbilityHappened(gliscor, gliscor, PBEAbility.PoisonHeal, PBEAbilityAction.RestoredHP) ## Did not activate
+			&& !battle.VerifyStatus1Happened(gliscor, gliscor, PBEStatus1.BadlyPoisoned, PBEStatusAction.Damage) ## Did not activate
+			&& gliscor.Status1Counter == 2 ## Counter still increments
+			&& gliscor.HPPercentage == 1); ## Did not take damage
 		#endregion
 
 		#region Cleanup

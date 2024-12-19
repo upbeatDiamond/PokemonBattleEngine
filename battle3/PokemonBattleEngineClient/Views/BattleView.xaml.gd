@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Kermalis.PokemonBattleEngineClient.Clients;
 
@@ -14,7 +14,7 @@ public sealed class BattleView : UserControl
 
 	public BattleView()
 	{
-		// This constructor only exists so xaml compiles
+		## This constructor only exists so xaml compiles
 		Field = null!;
 		Actions = null!;
 		_messages = null!;

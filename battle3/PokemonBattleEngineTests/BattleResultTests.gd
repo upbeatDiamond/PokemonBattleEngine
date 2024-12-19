@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Xunit;
 using Xunit.Abstractions;
@@ -13,7 +13,7 @@ public class BattleResultTests
 		TestUtils.SetOutputHelper(output);
 	}
 
-	// TODO: Who wins if you use PerishSong and everyone faints at the same time? Is it based on who's slowest?
+	## TODO: Who wins if you use PerishSong and everyone faints at the same time? Is it based on who's slowest?
 
 	[Fact]
 	public void Explosion_User_Loses_Single()
@@ -45,8 +45,8 @@ public class BattleResultTests
 
 		battle.RunTurn();
 
-		Assert.True(golem.HP == 0 && magikarp.HP == 0 // All faint
-			&& battle.BattleResult == PBEBattleResult.Team1Win); // Golem's team loses
+		Assert.True(golem.HP == 0 && magikarp.HP == 0 ## All faint
+			&& battle.BattleResult == PBEBattleResult.Team1Win); ## Golem's team loses
 		#endregion
 
 		#region Cleanup
@@ -98,8 +98,8 @@ public class BattleResultTests
 
 		battle.RunTurn();
 
-		Assert.True(qwilfish.HP == 0 && golem.HP == 0 && magikarp.HP == 0 && patrat.HP == 0 && lickilicky.HP == 0 && happiny.HP == 0 // All faint
-			&& battle.BattleResult == PBEBattleResult.Team1Win); // Golem's team loses
+		Assert.True(qwilfish.HP == 0 && golem.HP == 0 && magikarp.HP == 0 && patrat.HP == 0 && lickilicky.HP == 0 && happiny.HP == 0 ## All faint
+			&& battle.BattleResult == PBEBattleResult.Team1Win); ## Golem's team loses
 		#endregion
 
 		#region Cleanup
@@ -137,8 +137,8 @@ public class BattleResultTests
 
 		battle.RunTurn();
 
-		Assert.True(staraptor.HP == 0 && magikarp.HP == 0 // Both fainted
-			&& battle.BattleResult == PBEBattleResult.Team1Win); // Magikarp's team wins
+		Assert.True(staraptor.HP == 0 && magikarp.HP == 0 ## Both fainted
+			&& battle.BattleResult == PBEBattleResult.Team1Win); ## Magikarp's team wins
 		#endregion
 
 		#region Cleanup
@@ -179,8 +179,8 @@ public class BattleResultTests
 
 		battle.RunTurn();
 
-		Assert.True(deoxys.HP == 0 && blissey.HP == 0 // Both fainted
-			&& battle.BattleResult == PBEBattleResult.Team1Win); // Blissey's team wins
+		Assert.True(deoxys.HP == 0 && blissey.HP == 0 ## Both fainted
+			&& battle.BattleResult == PBEBattleResult.Team1Win); ## Blissey's team wins
 		#endregion
 
 		#region Cleanup
@@ -188,7 +188,7 @@ public class BattleResultTests
 		#endregion
 	}
 
-	// IronBarbs/RockyHelmet/RoughSkin
+	## IronBarbs/RockyHelmet/RoughSkin
 	[Fact]
 	public void IronBarbs_User_Loses()
 	{
@@ -224,8 +224,8 @@ public class BattleResultTests
 
 		battle.RunTurn();
 
-		Assert.True(lucario.HP == 0 && ferroseed.HP == 0 // Both fainted
-			&& battle.BattleResult == PBEBattleResult.Team1Win); // Ferroseed's team wins
+		Assert.True(lucario.HP == 0 && ferroseed.HP == 0 ## Both fainted
+			&& battle.BattleResult == PBEBattleResult.Team1Win); ## Ferroseed's team wins
 		#endregion
 
 		#region Cleanup
@@ -237,7 +237,7 @@ public class BattleResultTests
 	public void LeechSeed_And_LiquidOoze()
 	{
 		#region Setup
-		PBEDataProvider.GlobalRandom.Seed = 0; // Seed ensures LeechSeed doesn't miss
+		PBEDataProvider.GlobalRandom.Seed = 0; ## Seed ensures LeechSeed doesn't miss
 		var settings = new PBESettings { LeechSeedDenominator = 1 };
 		settings.MakeReadOnly();
 
@@ -267,8 +267,8 @@ public class BattleResultTests
 
 		battle.RunTurn();
 
-		Assert.True(shroomish.HP == 0 && tentacruel.HP == 0 // Both fainted
-			&& battle.BattleResult == PBEBattleResult.Team0Win); // Shroomish's team wins
+		Assert.True(shroomish.HP == 0 && tentacruel.HP == 0 ## Both fainted
+			&& battle.BattleResult == PBEBattleResult.Team0Win); ## Shroomish's team wins
 		#endregion
 
 		#region Cleanup
@@ -311,8 +311,8 @@ public class BattleResultTests
 
 		battle.RunTurn();
 
-		Assert.True(riolu.HP == 0 && magikarp.HP == 0 // Both fainted
-			&& battle.BattleResult == PBEBattleResult.Team0Win); // Bouffalant's team wins
+		Assert.True(riolu.HP == 0 && magikarp.HP == 0 ## Both fainted
+			&& battle.BattleResult == PBEBattleResult.Team0Win); ## Bouffalant's team wins
 		#endregion
 
 		#region Cleanup
@@ -352,8 +352,8 @@ public class BattleResultTests
 
 		battle.RunTurn();
 
-		Assert.True(bouffalant.HP == 0 && magikarp.HP == 0 // Both fainted
-			&& battle.BattleResult == PBEBattleResult.Team0Win); // Bouffalant's team wins
+		Assert.True(bouffalant.HP == 0 && magikarp.HP == 0 ## Both fainted
+			&& battle.BattleResult == PBEBattleResult.Team0Win); ## Bouffalant's team wins
 		#endregion
 
 		#region Cleanup

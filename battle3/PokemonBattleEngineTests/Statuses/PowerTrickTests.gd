@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Kermalis.PokemonBattleEngineTests.Statuses;
@@ -11,5 +11,5 @@ public class PowerTrickTests
 		TestUtils.SetOutputHelper(output);
 	}
 
-	// TODO: BugFix tests
+	## TODO: BugFix tests
 }

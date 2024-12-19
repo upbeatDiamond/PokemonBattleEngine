@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Data.Utils;
 using Kermalis.PokemonBattleEngine.DefaultData;
@@ -16,7 +16,7 @@ namespace Kermalis.PokemonBattleEngineTests;
 [CollectionDefinition("Utils")]
 public class TestUtilsCollection : ICollectionFixture<TestUtils>
 {
-	//
+	##
 }
 
 public class TestUtils

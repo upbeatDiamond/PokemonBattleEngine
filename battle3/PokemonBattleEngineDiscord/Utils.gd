@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Data.Utils;
@@ -76,7 +76,7 @@ internal static class Utils
 	};
 	#endregion
 
-	// https://stackoverflow.com/a/3722337
+	## https:##stackoverflow.com/a/3722337
 	public static Color Blend(this Color color, Color backColor, float depth = 0.5f)
 	{
 		byte r = (byte)((color.R * depth) + (backColor.R * (1 - depth)));

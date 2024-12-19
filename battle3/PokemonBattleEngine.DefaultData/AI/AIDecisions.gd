@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Data.Utils;
 using System;
@@ -13,10 +13,10 @@ public partial class PBEDDAI
 {
 	private PBETurnAction DecideAction(PBEBattlePokemon user, List<PBETurnAction> actions, List<PBEBattlePokemon> standBy)
 	{
-		// Gather all options of switching and moves
+		## Gather all options of switching and moves
 		PBEMove[] usableMoves = user.GetUsableMoves();
 		var possibleActions = new List<(PBETurnAction Action, float Score)>();
-		for (int m = 0; m < usableMoves.Length; m++) // Score moves
+		for (int m = 0; m < usableMoves.Length; m++) ## Score moves
 		{
 			PBEMove move = usableMoves[m];
 			PBEType moveType = user.GetMoveType(move);
@@ -26,8 +26,8 @@ public partial class PBEDDAI
 							: PBEBattleUtils.GetPossibleTargets(user, moveTargets);
 			foreach (PBETurnTarget possibleTarget in possibleTargets)
 			{
-				// TODO: RandomFoeSurrounding (probably just account for the specific effects that use this target type)
-				// TODO: Don't queue up to do the same thing (two trying to afflict the same target when there are multiple targets)
+				## TODO: RandomFoeSurrounding (probably just account for the specific effects that use this target type)
+				## TODO: Don't queue up to do the same thing (two trying to afflict the same target when there are multiple targets)
 				var targets = new List<PBEBattlePokemon>();
 				if (possibleTarget.HasFlag(PBETurnTarget.AllyLeft))
 				{
@@ -60,12 +60,12 @@ public partial class PBEDDAI
 		if (user.CanSwitchOut())
 		{
 			PBEBattlePokemon[] availableForSwitch = Trainer.Party.Except(standBy).Where(p => p.FieldPosition == PBEFieldPosition.None && p.CanBattle).ToArray();
-			for (int s = 0; s < availableForSwitch.Length; s++) // Score switches
+			for (int s = 0; s < availableForSwitch.Length; s++) ## Score switches
 			{
 				PBEBattlePokemon switchPkmn = availableForSwitch[s];
-				// TODO: Entry hazards
-				// TODO: Known moves of active battlers
-				// TODO: Type effectiveness
+				## TODO: Entry hazards
+				## TODO: Known moves of active battlers
+				## TODO: Type effectiveness
 				float score = -10;
 				possibleActions.Add((new PBETurnAction(user, switchPkmn), score));
 			}
@@ -74,7 +74,7 @@ public partial class PBEDDAI
 		IOrderedEnumerable<(PBETurnAction Action, float Score)> byScore = possibleActions.OrderByDescending(t => t.Score);
 		Debug_LogGeneratedActions(user, byScore);
 		float bestScore = byScore.First().Score;
-		return PBEDataProvider.GlobalRandom.RandomElement(byScore.Where(t => t.Score == bestScore).ToArray()).Action; // Pick random action of the ones that tied for best score
+		return PBEDataProvider.GlobalRandom.RandomElement(byScore.Where(t => t.Score == bestScore).ToArray()).Action; ## Pick random action of the ones that tied for best score
 	}
 	private void Debug_LogGeneratedActions(PBEBattlePokemon user, IOrderedEnumerable<(PBETurnAction Action, float Score)> byScore)
 	{
@@ -182,33 +182,33 @@ public partial class PBEDDAI
 			{
 				foreach (PBEBattlePokemon target in targets)
 				{
-					// TODO: Favor hitting ally with move if waterabsorb/voltabsorb etc
-					// TODO: Liquid ooze
-					// TODO: Check items
-					// TODO: Stat changes and accuracy (even thunder/guillotine accuracy)
-					// TODO: Check base power specifically against hp remaining (include spread move damage reduction)
+					## TODO: Favor hitting ally with move if waterabsorb/voltabsorb etc
+					## TODO: Liquid ooze
+					## TODO: Check items
+					## TODO: Stat changes and accuracy (even thunder/guillotine accuracy)
+					## TODO: Check base power specifically against hp remaining (include spread move damage reduction)
 					PBETypeEffectiveness.IsAffectedByAttack(user, target, moveType, out float damageMultiplier, useKnownInfo: true);
-					if (damageMultiplier <= 0) // (-infinity, 0.0] Ineffective
+					if (damageMultiplier <= 0) ## (-infinity, 0.0] Ineffective
 					{
 						score += target.Team == Trainer.Team ? 0 : -60;
 					}
-					else if (damageMultiplier <= 0.25) // (0.0, 0.25] NotVeryEffective
+					else if (damageMultiplier <= 0.25) ## (0.0, 0.25] NotVeryEffective
 					{
 						score += target.Team == Trainer.Team ? -5 : -30;
 					}
-					else if (damageMultiplier < 1) // (0.25, 1.0) NotVeryEffective
+					else if (damageMultiplier < 1) ## (0.25, 1.0) NotVeryEffective
 					{
 						score += target.Team == Trainer.Team ? -10 : -10;
 					}
-					else if (damageMultiplier == 1) // [1.0, 1.0] Normal
+					else if (damageMultiplier == 1) ## [1.0, 1.0] Normal
 					{
 						score += target.Team == Trainer.Team ? -15 : +10;
 					}
-					else if (damageMultiplier < 4) // (1.0, 4.0) SuperEffective
+					else if (damageMultiplier < 4) ## (1.0, 4.0) SuperEffective
 					{
 						score += target.Team == Trainer.Team ? -20 : +25;
 					}
-					else // [4.0, infinity) SuperEffective
+					else ## [4.0, infinity) SuperEffective
 					{
 						score += target.Team == Trainer.Team ? -30 : +40;
 					}
@@ -223,7 +223,7 @@ public partial class PBEDDAI
 			{
 				foreach (PBEBattlePokemon target in targets)
 				{
-					// TODO: Destiny knot
+					## TODO: Destiny knot
 					if (target.IsAttractionPossible(user, useKnownInfo: true) == PBEResult.Success)
 					{
 						score += target.Team == Trainer.Team ? -20 : +40;
@@ -239,7 +239,7 @@ public partial class PBEDDAI
 			{
 				foreach (PBEBattlePokemon target in targets)
 				{
-					// TODO: Heatproof, physical attacker
+					## TODO: Heatproof, physical attacker
 					if (target.IsBurnPossible(user, useKnownInfo: true) == PBEResult.Success)
 					{
 						score += target.Team == Trainer.Team ? -20 : +40;
@@ -314,7 +314,7 @@ public partial class PBEDDAI
 			{
 				foreach (PBEBattlePokemon target in targets)
 				{
-					// TODO: Only swagger/flatter if the opponent most likely won't use it against you
+					## TODO: Only swagger/flatter if the opponent most likely won't use it against you
 					if (target.IsConfusionPossible(user, useKnownInfo: true) == PBEResult.Success)
 					{
 						score += target.Team == Trainer.Team ? -20 : +40;
@@ -428,7 +428,7 @@ public partial class PBEDDAI
 			{
 				foreach (PBEBattlePokemon target in targets)
 				{
-					// TODO: Poison Heal
+					## TODO: Poison Heal
 					if (target.IsPoisonPossible(user, useKnownInfo: true) == PBEResult.Success)
 					{
 						score += target.Team == Trainer.Team ? -20 : +40;
@@ -537,7 +537,7 @@ public partial class PBEDDAI
 			{
 				foreach (PBEBattlePokemon target in targets)
 				{
-					// TODO: Bad Dreams
+					## TODO: Bad Dreams
 					if (target.IsSleepPossible(user, useKnownInfo: true) == PBEResult.Success)
 					{
 						score += target.Team == Trainer.Team ? -20 : +40;
@@ -616,7 +616,7 @@ public partial class PBEDDAI
 			case PBEMoveEffect.WideGuard:
 			case PBEMoveEffect.WorrySeed:
 			{
-				// TODO
+				## TODO
 				break;
 			}
 			default: throw new InvalidDataException(nameof(IPBEMoveData.Effect));
@@ -625,7 +625,7 @@ public partial class PBEDDAI
 	}
 	private static void ScoreStatChange(PBEBattlePokemon user, PBEBattlePokemon target, PBEStat stat, int change, ref float score)
 	{
-		// TODO: Do we need the stat change? Physical vs special vs status users, and base stats/transform stats/power trick stats
+		## TODO: Do we need the stat change? Physical vs special vs status users, and base stats/transform stats/power trick stats
 		sbyte original = target.GetStatChange(stat);
 		sbyte maxStatChange = user.Battle.Settings.MaxStatChange;
 		change = Math.Max(-maxStatChange, Math.Min(maxStatChange, original + change)) - original;

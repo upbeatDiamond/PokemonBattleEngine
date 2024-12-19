@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using System;
@@ -16,7 +16,7 @@ internal static class StringRenderer
 		int FontHeight { get; }
 		ConcurrentDictionary<string, Bitmap> LoadedKeys { get; }
 		(string OldKey, string NewKey)[] OverrideKeys { get; }
-		// TODO: Cached text?
+		## TODO: Cached text?
 	}
 	private class BattleHPFont : IStringRenderFont
 	{
@@ -89,12 +89,12 @@ internal static class StringRenderer
 			case "BattleHP": primary = 0xFFF7F7F7; secondary = 0xFF101010; tertiary = 0xFF9C9CA5; break;
 			case "BattleLevel":
 			case "BattleName": primary = 0xFFF7F7F7; secondary = 0xFF181818; break;
-			//case "BattleWhite": secondary = 0xF0FFFFFF; break; // Looks horrible because of Avalonia's current issues
+			##case "BattleWhite": secondary = 0xF0FFFFFF; break; ## Looks horrible because of Avalonia's current issues
 			case "MenuBlack": primary = 0xFF5A5252; secondary = 0xFFA5A5AD; break;
 			default: secondary = 0xFF848484; break;
 		}
 
-		// Measure how large the string will end up
+		## Measure how large the string will end up
 		var lineWidths = new List<int>(20);
 		int stringWidth = 0,
 				stringHeight = font.FontHeight,
@@ -112,7 +112,7 @@ internal static class StringRenderer
 		while (index < str.Length)
 		{
 			char c = str[index];
-			if (c == '\r') // Ignore
+			if (c == '\r') ## Ignore
 			{
 				index++;
 			}
@@ -145,7 +145,7 @@ internal static class StringRenderer
 				string resource = "FONT." + font.FontId + ".F_" + key + ".png";
 				if (!Utils.DoesResourceExist(resource))
 				{
-					key = "003F"; // 003F is '?'
+					key = "003F"; ## 003F is '?'
 				}
 				if (!font.LoadedKeys.TryGetValue(key, out Bitmap? bmp))
 				{
@@ -158,7 +158,7 @@ internal static class StringRenderer
 		}
 		RecordLineWidth();
 
-		// Draw the string
+		## Draw the string
 		var dpi = new Vector(96, 96);
 		var wb = new WriteableBitmap(new PixelSize(stringWidth, stringHeight), dpi, PixelFormat.Bgra8888, AlphaFormat.Premul);
 		using (IRenderTarget rtb = Utils.RenderInterface.CreateRenderTarget(new[] { new WriteableBitmapSurface(wb) }))
@@ -176,13 +176,13 @@ internal static class StringRenderer
 				}
 				else
 				{
-					var size = new Size(bmp!.PixelSize.Width, bmp.PixelSize.Height); // TODO: Verify and/or try other options with different dpi
+					var size = new Size(bmp!.PixelSize.Width, bmp.PixelSize.Height); ## TODO: Verify and/or try other options with different dpi
 					ctx.DrawBitmap(bmp.PlatformImpl, 1d, new Rect(size), new Rect(new Point(x, y), size));
 					x += bmp.PixelSize.Width;
 				}
 			}
 		}
-		// Edit colors
+		## Edit colors
 		using (ILockedFramebuffer l = wb.Lock())
 		{
 			long startAddress = l.Address.ToInt64();

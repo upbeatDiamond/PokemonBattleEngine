@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Data.Legality;
 using Kermalis.PokemonBattleEngine.DefaultData;
@@ -39,11 +39,11 @@ internal sealed class AIBattleDemo
 		}
 
 		PBESettings settings = PBESettings.DefaultSettings;
-		//var settings = new PBESettings { NumMoves = 8, MaxPartySize = 10 };
-		//settings.MakeReadOnly();
+		##var settings = new PBESettings { NumMoves = 8, MaxPartySize = 10 };
+		##settings.MakeReadOnly();
 		PBELegalPokemonCollection p0, p1;
 
-		// Competitively Randomized Pokémon
+		## Competitively Randomized Pokémon
 		p0 = PBEDDRandomTeamGenerator.CreateRandomTeam(settings.MaxPartySize);
 		p1 = PBEDDRandomTeamGenerator.CreateRandomTeam(settings.MaxPartySize);
 

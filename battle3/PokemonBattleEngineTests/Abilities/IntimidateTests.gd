@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Xunit;
 using Xunit.Abstractions;
@@ -47,8 +47,8 @@ public class IntimidateTests
 		#endregion
 
 		#region Check
-		Assert.True(battle.VerifyAbilityHappened(luxray, luxray, PBEAbility.Intimidate, PBEAbilityAction.Stats) // Activated
-			&& happiny.AttackChange < 0 && magikarp.AttackChange < 0 && shuckle.AttackChange == 0 && skitty.AttackChange == 0); // Hit only surrounding foes
+		Assert.True(battle.VerifyAbilityHappened(luxray, luxray, PBEAbility.Intimidate, PBEAbilityAction.Stats) ## Activated
+			&& happiny.AttackChange < 0 && magikarp.AttackChange < 0 && shuckle.AttackChange == 0 && skitty.AttackChange == 0); ## Hit only surrounding foes
 		#endregion
 
 		#region Cleanup
@@ -86,7 +86,7 @@ public class IntimidateTests
 		#endregion
 
 		#region Check
-		Assert.False(battle.VerifyAbilityHappened(luxray, luxray, PBEAbility.Intimidate, PBEAbilityAction.Stats)); // Did not activate
+		Assert.False(battle.VerifyAbilityHappened(luxray, luxray, PBEAbility.Intimidate, PBEAbilityAction.Stats)); ## Did not activate
 		#endregion
 
 		#region Cleanup
@@ -138,8 +138,8 @@ public class IntimidateTests
 
 		battle.RunTurn();
 
-		Assert.True(battle.VerifyAbilityHappened(luxray, luxray, PBEAbility.Intimidate, PBEAbilityAction.Stats) // Activated
-			&& battle.VerifyMoveResultHappened(luxray, shuckle, PBEResult.Ineffective_Substitute) && shuckle.AttackChange == 0); // Did not affect
+		Assert.True(battle.VerifyAbilityHappened(luxray, luxray, PBEAbility.Intimidate, PBEAbilityAction.Stats) ## Activated
+			&& battle.VerifyMoveResultHappened(luxray, shuckle, PBEResult.Ineffective_Substitute) && shuckle.AttackChange == 0); ## Did not affect
 		#endregion
 
 		#region Cleanup

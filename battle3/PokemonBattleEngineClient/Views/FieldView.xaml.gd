@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Markup.Xaml;
@@ -53,7 +53,7 @@ public sealed class FieldView : UserControl, INotifyPropertyChanged
 	private BattleView _battleView;
 	private readonly Rectangle _dim;
 	private readonly GifImage _gif;
-	// Resources
+	## Resources
 	private static IBrush _hailstormDim = null!,
 			_harshSunlightDim = null!,
 			_rainDim = null!,
@@ -100,7 +100,7 @@ public sealed class FieldView : UserControl, INotifyPropertyChanged
 
 		_dim = this.FindControl<Rectangle>("WeatherDim");
 		_gif = this.FindControl<GifImage>("WeatherGif");
-		// These are set in the appropriate states
+		## These are set in the appropriate states
 		BGSource = null!;
 		_message = null!;
 		_battleView = null!;
@@ -166,9 +166,9 @@ public sealed class FieldView : UserControl, INotifyPropertyChanged
 				this.FindControl<HPBarView>("Bar1_Center").Location = new Point(204, 6);
 				this.FindControl<HPBarView>("Bar1_Left").Location = new Point(358, 6);
 
-				this.FindControl<PokemonView>("Battler0_Left").Location = new Point(-46, 384); // Hidden
+				this.FindControl<PokemonView>("Battler0_Left").Location = new Point(-46, 384); ## Hidden
 				this.FindControl<PokemonView>("Battler0_Center").Location = new Point(52, 72);
-				this.FindControl<PokemonView>("Battler0_Right").Location = new Point(228, 384); // Hidden
+				this.FindControl<PokemonView>("Battler0_Right").Location = new Point(228, 384); ## Hidden
 
 				this.FindControl<PokemonView>("Battler1_Right").Location = new Point(211, -34);
 				this.FindControl<PokemonView>("Battler1_Center").Location = new Point(282, 16);
@@ -184,7 +184,7 @@ public sealed class FieldView : UserControl, INotifyPropertyChanged
 	internal void SetMessage(string message)
 	{
 		Message = message;
-		MessageBoxVisible = !string.IsNullOrWhiteSpace(message); // Currently always true
+		MessageBoxVisible = !string.IsNullOrWhiteSpace(message); ## Currently always true
 	}
 
 	internal void UpdateWeather()
@@ -235,7 +235,7 @@ public sealed class FieldView : UserControl, INotifyPropertyChanged
 	private void GetPokemonViewStuff(PBEBattlePokemon pkmn, PBEFieldPosition position, out bool backSprite, out HPBarView hpView, out PokemonView pkmnView)
 	{
 		byte? owner = _battleView.Client.Trainer?.Team.Id;
-		backSprite = pkmn.Team.Id == 0 ? owner != 1 : owner == 1; // Spectators and replays view from team 0's perspective
+		backSprite = pkmn.Team.Id == 0 ? owner != 1 : owner == 1; ## Spectators and replays view from team 0's perspective
 		hpView = this.FindControl<HPBarView>($"Bar{(backSprite ? 0 : 1)}_{position}");
 		pkmnView = this.FindControl<PokemonView>($"Battler{(backSprite ? 0 : 1)}_{position}");
 	}
@@ -251,7 +251,7 @@ public sealed class FieldView : UserControl, INotifyPropertyChanged
 			pkmnView.Update(pkmn, backSprite, useKnownInfo);
 		}
 	}
-	// pkmn.FieldPosition must be updated before calling these
+	## pkmn.FieldPosition must be updated before calling these
 	internal void ShowPokemon(PBEBattlePokemon pkmn)
 	{
 		Dispatcher.UIThread.InvokeAsync(() =>

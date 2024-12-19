@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Battle;
+using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.Data.Utils;
 using Kermalis.PokemonBattleEngine.DefaultData.Data;
@@ -55,7 +55,7 @@ public class PBEDefaultDataProvider : PBEDataProvider
 		return string.Equals(Convert.ToString(arg0), Convert.ToString(arg1), StringComparison.InvariantCultureIgnoreCase);
 	}
 
-	// TODO: Keep this internal version and make a public version that only allows operations that retrieve data?
+	## TODO: Keep this internal version and make a public version that only allows operations that retrieve data?
 	internal List<T> QueryDatabase<T>(string commandText) where T : new()
 	{
 		var list = new List<T>();

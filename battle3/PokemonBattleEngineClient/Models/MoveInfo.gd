@@ -1,4 +1,4 @@
-﻿using Avalonia.Media;
+using Avalonia.Media;
 using Kermalis.PokemonBattleEngine.Battle;
 using Kermalis.PokemonBattleEngine.Data;
 using Kermalis.PokemonBattleEngine.DefaultData;
@@ -65,7 +65,7 @@ public sealed class MoveInfo
 			sb.AppendLine(s);
 			sb.AppendLine($"Category: {mData.Category}");
 			PBEBattleMoveset.PBEBattleMovesetSlot? slot = pkmn.Moves[move];
-			if (slot is not null) // TempLocked move you do not own (like Struggle)
+			if (slot is not null) ## TempLocked move you do not own (like Struggle)
 			{
 				sb.AppendLine($"PP: {slot.PP}/{slot.MaxPP}");
 			}
@@ -83,8 +83,8 @@ public sealed class MoveInfo
 			switch (mData.Effect)
 			{
 				case PBEMoveEffect.Recoil: sb.AppendLine($"Recoil: 1/{mData.EffectParam} damage dealt"); break;
-				case PBEMoveEffect.Recoil__10PercentBurn: sb.AppendLine($"Recoil: 1/{mData.EffectParam} damage dealt"); break; // TODO: Burn chance
-				case PBEMoveEffect.Recoil__10PercentParalyze: sb.AppendLine($"Recoil: 1/{mData.EffectParam} damage dealt"); break; // TODO: Paralyze chance
+				case PBEMoveEffect.Recoil__10PercentBurn: sb.AppendLine($"Recoil: 1/{mData.EffectParam} damage dealt"); break; ## TODO: Burn chance
+				case PBEMoveEffect.Recoil__10PercentParalyze: sb.AppendLine($"Recoil: 1/{mData.EffectParam} damage dealt"); break; ## TODO: Paralyze chance
 				case PBEMoveEffect.Struggle: sb.AppendLine("Recoil: 1/4 user's max HP"); break;
 			}
 			sb.AppendLine();

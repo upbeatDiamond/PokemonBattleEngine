@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Kermalis.PokemonBattleEngine.Battle;
@@ -80,7 +80,7 @@ internal static class Matchmaking
 	private static async Task StartBattle(IGuild guild, SocketUser? battler0, SocketUser? battler1, string team0Name, string team1Name, string team0Mention, string team1Mention)
 	{
 		PBELegalPokemonCollection p0, p1;
-		// Competitively Randomized Pokémon
+		## Competitively Randomized Pokémon
 		p0 = PBEDDRandomTeamGenerator.CreateRandomTeam(3);
 		p1 = PBEDDRandomTeamGenerator.CreateRandomTeam(3);
 
