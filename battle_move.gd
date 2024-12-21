@@ -1,7 +1,7 @@
 class_name PBEMove
 
-var Type : PBEType
-var Category : PBEMoveCategory
+var Type : PBEEnums.PBEType
+var Category : PBEEnums.PBEMoveCategory
 var Priority : int
 ##/ <summary>0 PPTier will become 1 PP (unaffected by pp ups)</summary>
 var PPTier : int
@@ -11,8 +11,8 @@ var Power : int
 var Accuracy : int
 var Effect : PBEMoveEffect
 var EffectParam : int
-var Targets : PBEMoveTarget
-var Flags : PBEMoveFlag
+var Targets : PBEEnums.PBEMoveTarget
+var Flags : PBEEnums.PBEMoveFlag
 
 #public static class PBEMoveDataExtensions
 
@@ -52,8 +52,8 @@ func IsMoveUsable() -> bool:
 	return Effect.IsMoveUsable();
 
 
-func _init(type:PBEType, category:PBEMoveCategory, priority:int, ppTier:int, power:int, accuracy:int,
-	effect:PBEMoveEffect, effectParam:int, targets:PBEMoveTarget, flags:PBEMoveFlag):
+func _init(type:PBEEnums.PBEType, category:PBEEnums.PBEMoveCategory, priority:int, ppTier:int, power:int, accuracy:int,
+	effect:PBEMoveEffect, effectParam:int, targets:PBEEnums.PBEMoveTarget, flags:PBEEnums.PBEMoveFlag):
 	Type = type; 
 	Category = category; 
 	Priority = priority; 
@@ -80,7 +80,7 @@ func _to_string() -> String:#String() -> String:
 	return sb
 
 
-func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], mData:IPBEMoveData, moveType:PBEType) -> float:
+func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], mData:IPBEMoveData, moveType:PBEEnums.PBEType) -> float:
 	var basePower : float
 	
 	#region Get move's base power
@@ -161,21 +161,21 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 
 	#region Item-specific power boosts
 	match (moveType):
-		PBEType.Bug:
+		PBEEnums.PBEType.Bug:
 			match (user.Item):
 				PBEItem.InsectPlate, PBEItem.SilverPowder:
 					basePower *= 1.2
 				PBEItem.BugGem:
 					BroadcastItem(user, user, PBEItem.BugGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Dark:
+		PBEEnums.PBEType.Dark:
 			match (user.Item):
 				PBEItem.BlackGlasses, PBEItem.DreadPlate:
 					basePower *= 1.2
 				PBEItem.DarkGem:
 					BroadcastItem(user, user, PBEItem.DarkGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Dragon:
+		PBEEnums.PBEType.Dragon:
 			match (user.Item):
 				PBEItem.AdamantOrb:
 					if (user.OriginalSpecies == PBESpecies.Dialga):
@@ -192,7 +192,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.DragonGem:
 					BroadcastItem(user, user, PBEItem.DragonGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Electric:
+		PBEEnums.PBEType.Electric:
 			match (user.Item):
 				PBEItem.Magnet, \
 				PBEItem.ZapPlate:
@@ -200,7 +200,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.ElectricGem:
 					BroadcastItem(user, user, PBEItem.ElectricGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Fighting:
+		PBEEnums.PBEType.Fighting:
 			match (user.Item):
 				PBEItem.BlackBelt, \
 				PBEItem.FistPlate:
@@ -208,7 +208,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.FightingGem:
 					BroadcastItem(user, user, PBEItem.FightingGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Fire:
+		PBEEnums.PBEType.Fire:
 			match (user.Item):
 				PBEItem.Charcoal, \
 				PBEItem.FlamePlate:
@@ -216,7 +216,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.FireGem:
 					BroadcastItem(user, user, PBEItem.FireGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Flying:
+		PBEEnums.PBEType.Flying:
 			match (user.Item):
 				PBEItem.SharpBeak, \
 				PBEItem.SkyPlate:
@@ -224,7 +224,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.FlyingGem:
 					BroadcastItem(user, user, PBEItem.FlyingGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Ghost:
+		PBEEnums.PBEType.Ghost:
 			match (user.Item):
 				PBEItem.GriseousOrb:
 					if (user.OriginalSpecies == PBESpecies.Giratina && user.RevertForm == PBEForm.Giratina_Origin):
@@ -235,7 +235,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.GhostGem:
 					BroadcastItem(user, user, PBEItem.GhostGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Grass:
+		PBEEnums.PBEType.Grass:
 			match (user.Item):
 				PBEItem.MeadowPlate, \
 				PBEItem.MiracleSeed, \
@@ -244,7 +244,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.GrassGem:
 					BroadcastItem(user, user, PBEItem.GrassGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Ground:
+		PBEEnums.PBEType.Ground:
 			match (user.Item):
 				PBEItem.EarthPlate, \
 				PBEItem.SoftSand:
@@ -252,7 +252,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.GroundGem:
 					BroadcastItem(user, user, PBEItem.GroundGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Ice:
+		PBEEnums.PBEType.Ice:
 			match (user.Item):
 				PBEItem.IciclePlate, \
 				PBEItem.NeverMeltIce:
@@ -260,16 +260,16 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.IceGem:
 					BroadcastItem(user, user, PBEItem.IceGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.None:
+		PBEEnums.PBEType.None:
 			pass
-		PBEType.Normal:
+		PBEEnums.PBEType.Normal:
 			match (user.Item):
 				PBEItem.SilkScarf:
 					basePower *= 1.2
 				PBEItem.NormalGem:
 					BroadcastItem(user, user, PBEItem.NormalGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Poison:
+		PBEEnums.PBEType.Poison:
 			match (user.Item):
 				PBEItem.PoisonBarb, \
 				PBEItem.ToxicPlate:
@@ -277,7 +277,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.PoisonGem:
 					BroadcastItem(user, user, PBEItem.PoisonGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Psychic:
+		PBEEnums.PBEType.Psychic:
 			match (user.Item):
 				PBEItem.MindPlate, \
 				PBEItem.OddIncense, \
@@ -286,7 +286,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.PsychicGem:
 					BroadcastItem(user, user, PBEItem.PsychicGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Rock:
+		PBEEnums.PBEType.Rock:
 			match (user.Item):
 				PBEItem.HardStone, \
 				PBEItem.RockIncense, \
@@ -295,7 +295,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.RockGem:
 					BroadcastItem(user, user, PBEItem.RockGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Steel:
+		PBEEnums.PBEType.Steel:
 			match (user.Item):
 				PBEItem.AdamantOrb:
 					if (user.OriginalSpecies == PBESpecies.Dialga):
@@ -306,7 +306,7 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 				PBEItem.SteelGem:
 					BroadcastItem(user, user, PBEItem.SteelGem, PBEItemAction.Consumed);
 					basePower *= 1.5
-		PBEType.Water:
+		PBEEnums.PBEType.Water:
 			match (user.Item):
 				PBEItem.LustrousOrb:
 					if (user.OriginalSpecies == PBESpecies.Palkia):
@@ -342,51 +342,51 @@ func CalculateBasePower(user:PBEBattlePokemon, targets:Array[PBEBattlePokemon], 
 	if (ShouldDoWeatherEffects()):
 		match (Weather):
 			PBEWeather.HarshSunlight:
-				if (moveType == PBEType.Fire):
+				if (moveType == PBEEnums.PBEType.Fire):
 					basePower *= 1.5
-				elif (moveType == PBEType.Water):
+				elif (moveType == PBEEnums.PBEType.Water):
 					basePower *= 0.5
 			PBEWeather.Rain:
-				if (moveType == PBEType.Water):
+				if (moveType == PBEEnums.PBEType.Water):
 					basePower *= 1.5
-				elif (moveType == PBEType.Fire):
+				elif (moveType == PBEEnums.PBEType.Fire):
 					basePower *= 0.5
 			PBEWeather.Sandstorm:
-				if (user.Ability == PBEAbility.SandForce && (moveType == PBEType.Rock || moveType == PBEType.Ground || moveType == PBEType.Steel)):
+				if (user.Ability == PBEAbility.SandForce && (moveType == PBEEnums.PBEType.Rock || moveType == PBEEnums.PBEType.Ground || moveType == PBEEnums.PBEType.Steel)):
 					basePower *= 1.3
 	#endregion
 
 	#region Other power boosts
 	if (user.Status2.HasFlag(PBEStatus2.HelpingHand)):
 		basePower *= 1.5
-	if (user.Ability == PBEAbility.FlareBoost && mData.Category == PBEMoveCategory.Special && user.Status1 == PBEStatus1.Burned):
+	if (user.Ability == PBEAbility.FlareBoost && mData.Category == PBEEnums.PBEMoveCategory.Special && user.Status1 == PBEStatus1.Burned):
 		basePower *= 1.5
-	if (user.Ability == PBEAbility.ToxicBoost && mData.Category == PBEMoveCategory.Physical && (user.Status1 == PBEStatus1.Poisoned || user.Status1 == PBEStatus1.BadlyPoisoned)):
+	if (user.Ability == PBEAbility.ToxicBoost && mData.Category == PBEEnums.PBEMoveCategory.Physical && (user.Status1 == PBEStatus1.Poisoned || user.Status1 == PBEStatus1.BadlyPoisoned)):
 		basePower *= 1.5
 	if (user.Item == PBEItem.LifeOrb):
 		basePower *= 1.3
-	if (user.Ability == PBEAbility.IronFist && mData.Flags.HasFlag(PBEMoveFlag.AffectedByIronFist)):
+	if (user.Ability == PBEAbility.IronFist && mData.Flags.HasFlag(PBEEnums.PBEMoveFlag.AffectedByIronFist)):
 		basePower *= 1.2
-	if (user.Ability == PBEAbility.Reckless && mData.Flags.HasFlag(PBEMoveFlag.AffectedByReckless)):
+	if (user.Ability == PBEAbility.Reckless && mData.Flags.HasFlag(PBEEnums.PBEMoveFlag.AffectedByReckless)):
 		basePower *= 1.2
-	if (user.Item == PBEItem.MuscleBand && mData.Category == PBEMoveCategory.Physical):
+	if (user.Item == PBEItem.MuscleBand && mData.Category == PBEEnums.PBEMoveCategory.Physical):
 		basePower *= 1.1
-	if (user.Item == PBEItem.WiseGlasses && mData.Category == PBEMoveCategory.Special):
+	if (user.Item == PBEItem.WiseGlasses && mData.Category == PBEEnums.PBEMoveCategory.Special):
 		basePower *= 1.1
 	#endregion
 
 	return basePower;
 
 
-func CalculateDamageMultiplier(user:PBEBattlePokemon, target:PBEBattlePokemon, mData:IPBEMoveData, moveType:PBEType, moveResult:PBEResult, criticalHit:bool) -> float:
+func CalculateDamageMultiplier(user:PBEBattlePokemon, target:PBEBattlePokemon, mData:IPBEMoveData, moveType:PBEEnums.PBEType, moveResult:PBEResult, criticalHit:bool) -> float:
 	var damageMultiplier : float = 1;
-	if (target.Status2.HasFlag(PBEStatus2.Airborne) && mData.Flags.HasFlag(PBEMoveFlag.DoubleDamageAirborne)):
+	if (target.Status2.HasFlag(PBEStatus2.Airborne) && mData.Flags.HasFlag(PBEEnums.PBEMoveFlag.DoubleDamageAirborne)):
 		damageMultiplier *= 2.0
-	if (target.Minimize_Used && mData.Flags.HasFlag(PBEMoveFlag.DoubleDamageMinimized)):
+	if (target.Minimize_Used && mData.Flags.HasFlag(PBEEnums.PBEMoveFlag.DoubleDamageMinimized)):
 		damageMultiplier *= 2.0
-	if (target.Status2.HasFlag(PBEStatus2.Underground) && mData.Flags.HasFlag(PBEMoveFlag.DoubleDamageUnderground)):
+	if (target.Status2.HasFlag(PBEStatus2.Underground) && mData.Flags.HasFlag(PBEEnums.PBEMoveFlag.DoubleDamageUnderground)):
 		damageMultiplier *= 2.0
-	if (target.Status2.HasFlag(PBEStatus2.Underwater) && mData.Flags.HasFlag(PBEMoveFlag.DoubleDamageUnderwater)):
+	if (target.Status2.HasFlag(PBEStatus2.Underwater) && mData.Flags.HasFlag(PBEEnums.PBEMoveFlag.DoubleDamageUnderwater)):
 		damageMultiplier *= 2.0
 
 	if (criticalHit):
@@ -394,8 +394,8 @@ func CalculateDamageMultiplier(user:PBEBattlePokemon, target:PBEBattlePokemon, m
 		if (user.Ability == PBEAbility.Sniper):
 			damageMultiplier *= 1.5
 	elif (user.Ability != PBEAbility.Infiltrator):
-		if ((target.Team.TeamStatus.HasFlag(PBETeamStatus.Reflect) && mData.Category == PBEMoveCategory.Physical) \
-			|| (target.Team.TeamStatus.HasFlag(PBETeamStatus.LightScreen) && mData.Category == PBEMoveCategory.Special)):
+		if ((target.Team.TeamStatus.HasFlag(PBETeamStatus.Reflect) && mData.Category == PBEEnums.PBEMoveCategory.Physical) \
+			|| (target.Team.TeamStatus.HasFlag(PBETeamStatus.LightScreen) && mData.Category == PBEEnums.PBEMoveCategory.Special)):
 			if (target.Team.NumPkmnOnField == 1):
 				damageMultiplier *= 0.0
 			else:
@@ -415,14 +415,14 @@ func CalculateDamageMultiplier(user:PBEBattlePokemon, target:PBEBattlePokemon, m
 			damageMultiplier *= 2.0
 		else:
 			damageMultiplier *= 1.5
-	if (mData.Category == PBEMoveCategory.Physical && user.Status1 == PBEStatus1.Burned && user.Ability != PBEAbility.Guts):
+	if (mData.Category == PBEEnums.PBEMoveCategory.Physical && user.Status1 == PBEStatus1.Burned && user.Ability != PBEAbility.Guts):
 		damageMultiplier *= 0.5
-	if (moveType == PBEType.Fire && target.Ability == PBEAbility.Heatproof && !user.HasCancellingAbility()):
+	if (moveType == PBEEnums.PBEType.Fire && target.Ability == PBEAbility.Heatproof && !user.HasCancellingAbility()):
 		damageMultiplier *= 0.5
 	return damageMultiplier
 
 
-func CalculateAttack(user:PBEBattlePokemon, target:PBEBattlePokemon, moveType:PBEType, initialAttack:float) -> float:
+func CalculateAttack(user:PBEBattlePokemon, target:PBEBattlePokemon, moveType:PBEEnums.PBEType, initialAttack:float) -> float:
 	var attack : float = initialAttack;
 	
 	if (user.Ability == PBEAbility.HugePower || user.Ability == PBEAbility.PurePower):
@@ -431,13 +431,13 @@ func CalculateAttack(user:PBEBattlePokemon, target:PBEBattlePokemon, moveType:PB
 		attack *= 2.0
 	if (user.Item == PBEItem.LightBall && user.OriginalSpecies == PBESpecies.Pikachu):
 		attack *= 2.0
-	if (moveType == PBEType.Bug && user.Ability == PBEAbility.Swarm && user.HP <= user.MaxHP / 3):
+	if (moveType == PBEEnums.PBEType.Bug && user.Ability == PBEAbility.Swarm && user.HP <= user.MaxHP / 3):
 		attack *= 1.5
-	if (moveType == PBEType.Fire && user.Ability == PBEAbility.Blaze && user.HP <= user.MaxHP / 3):
+	if (moveType == PBEEnums.PBEType.Fire && user.Ability == PBEAbility.Blaze && user.HP <= user.MaxHP / 3):
 		attack *= 1.5
-	if (moveType == PBEType.Grass && user.Ability == PBEAbility.Overgrow && user.HP <= user.MaxHP / 3):
+	if (moveType == PBEEnums.PBEType.Grass && user.Ability == PBEAbility.Overgrow && user.HP <= user.MaxHP / 3):
 		attack *= 1.5
-	if (moveType == PBEType.Water && user.Ability == PBEAbility.Torrent && user.HP <= user.MaxHP / 3):
+	if (moveType == PBEEnums.PBEType.Water && user.Ability == PBEAbility.Torrent && user.HP <= user.MaxHP / 3):
 		attack *= 1.5
 	if (user.Ability == PBEAbility.Hustle):
 		attack *= 1.5
@@ -447,7 +447,7 @@ func CalculateAttack(user:PBEBattlePokemon, target:PBEBattlePokemon, moveType:PB
 		attack *= 1.5
 	#if (!user.HasCancellingAbility() && ShouldDoWeatherEffects() && Weather == PBEWeather.HarshSunlight && user.Team.ActiveBattlers.FindIndex(p => p.Ability == PBEAbility.FlowerGift) != -1):
 		#attack *= 1.5
-	if ((moveType == PBEType.Fire || moveType == PBEType.Ice) && target.Ability == PBEAbility.ThickFat && user.HasCancellingAbility()):
+	if ((moveType == PBEEnums.PBEType.Fire || moveType == PBEEnums.PBEType.Ice) && target.Ability == PBEAbility.ThickFat && user.HasCancellingAbility()):
 		attack *= 0.5
 	if (user.Ability == PBEAbility.Defeatist && user.HP <= user.MaxHP / 2):
 		attack *= 0.5
@@ -456,10 +456,10 @@ func CalculateAttack(user:PBEBattlePokemon, target:PBEBattlePokemon, moveType:PB
 	return attack;
 
 
-func CalculateDamage(user:PBEBattlePokemon, target:PBEBattlePokemon, mData:IPBEMoveData, moveType:PBEType, basePower:float, criticalHit:bool) -> int:
+func CalculateDamage(user:PBEBattlePokemon, target:PBEBattlePokemon, mData:IPBEMoveData, moveType:PBEEnums.PBEType, basePower:float, criticalHit:bool) -> int:
 	var aPkmn : PBEBattlePokemon
-	var aCat : PBEMoveCategory = mData.Category
-	var dCat : PBEMoveCategory
+	var aCat : PBEEnums.PBEMoveCategory = mData.Category
+	var dCat : PBEEnums.PBEMoveCategory
 	
 	match (mData.Effect):
 		PBEMoveEffect.FoulPlay:
@@ -467,7 +467,7 @@ func CalculateDamage(user:PBEBattlePokemon, target:PBEBattlePokemon, mData:IPBEM
 			dCat = aCat
 		PBEMoveEffect.Psyshock:
 			aPkmn = user
-			dCat = PBEMoveCategory.Physical
+			dCat = PBEEnums.PBEMoveCategory.Physical
 		_:
 			aPkmn = user
 			dCat = aCat
@@ -476,13 +476,13 @@ func CalculateDamage(user:PBEBattlePokemon, target:PBEBattlePokemon, mData:IPBEM
 	var ignoreD : bool  = user != target && (mData.Effect == PBEMoveEffect.ChipAway || user.Ability == PBEAbility.Unaware);
 	var a : float
 	var d : float
-	if (aCat == PBEMoveCategory.Physical):
+	if (aCat == PBEEnums.PBEMoveCategory.Physical):
 		var m : float = 1 if ignoreA else GetStatChangeModifier(max(0, aPkmn.AttackChange) if criticalHit else aPkmn.AttackChange, false);
 		a = CalculateAttack(user, target, moveType, aPkmn.Attack * m);
 	else:
 		var m : float = 1 if ignoreA else GetStatChangeModifier(max(0, aPkmn.SpAttackChange) if criticalHit else aPkmn.SpAttackChange, false);
 		a = CalculateSpAttack(user, target, moveType, aPkmn.SpAttack * m);
-	if (dCat == PBEMoveCategory.Physical):
+	if (dCat == PBEEnums.PBEMoveCategory.Physical):
 		var m : float = 1 if ignoreD else GetStatChangeModifier(min(0, target.DefenseChange) if criticalHit else target.DefenseChange, false);
 		d = CalculateDefense(user, target, target.Defense * m);
 	else:
