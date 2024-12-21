@@ -1,4 +1,4 @@
-﻿using Kermalis.PokemonBattleEngine.Data.Utils;
+using Kermalis.PokemonBattleEngine.Data.Utils;
 
 namespace Kermalis.PokemonBattleEngine.Data;
 
